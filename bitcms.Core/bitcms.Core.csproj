@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{857B0B77-EAD7-4C4E-9726-B54E48936FF3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>bitcms</RootNamespace>
+    <AssemblyName>bitcms.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MySql.Data, Version=6.9.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.6.9.9\lib\net45\MySql.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MySql.Data.Entity.EF6, Version=6.9.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.Entity.6.9.9\lib\net45\MySql.Data.Entity.EF6.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\bitcms.web3.0\bin\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Mvc, Version=4.0.0.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\bitcms.web3.1\bin\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Common\Cookie.cs" />
+    <Compile Include="Common\DataCache.cs" />
+    <Compile Include="Common\Fetch.cs" />
+    <Compile Include="Common\Logs.cs" />
+    <Compile Include="Common\SerializationHelper.cs" />
+    <Compile Include="Common\TemplateCache.cs" />
+    <Compile Include="Common\Upload.cs" />
+    <Compile Include="Common\Utils.cs" />
+    <Compile Include="Config\Entity\PageInfo.cs" />
+    <Compile Include="Config\Entity\SignatureInfo.cs" />
+    <Compile Include="Config\Entity\TempCacheInfo.cs" />
+    <Compile Include="Config\Entity\UploadConfigInfo.cs" />
+    <Compile Include="Config\SiteConfig.cs" />
+    <Compile Include="Config\UploadConfig.cs" />
+    <Compile Include="Config\MapRouteConfig.cs" />
+    <Compile Include="Config\UserConfig.cs" />
+    <Compile Include="DataProvider\DataBase.cs" />
+    <Compile Include="DataProvider\DbContext.cs" />
+    <Compile Include="DataProvider\PredicateExtensions.cs" />
+    <Compile Include="Data\AdminMenuManage.cs" />
+    <Compile Include="Data\AdsManage.cs" />
+    <Compile Include="Data\CityManage.cs" />
+    <Compile Include="Data\CMSManage.cs" />
+    <Compile Include="Data\DetailChannelManage.cs" />
+    <Compile Include="Data\DetailGalleryManage.cs" />
+    <Compile Include="Data\DetailHitsManage.cs" />
+    <Compile Include="Data\DetailManage.cs" />
+    <Compile Include="Data\FavoritesManage.cs" />
+    <Compile Include="Data\FollowManage.cs" />
+    <Compile Include="Data\RefereeManage.cs" />
+    <Compile Include="Data\UserPasswordManage.cs" />
+    <Compile Include="Data\ViewPointManage.cs" />
+    <Compile Include="Data\DictionaryManage.cs" />
+    <Compile Include="Data\ItemManage.cs" />
+    <Compile Include="Data\MapRouteManage.cs" />
+    <Compile Include="Data\ModuleManage.cs" />
+    <Compile Include="Data\ReviewManage.cs" />
+    <Compile Include="Data\RoleManage.cs" />
+    <Compile Include="Data\RolePowerManage.cs" />
+    <Compile Include="Data\ScoreEventManage.cs" />
+    <Compile Include="Data\ScoreLogManage.cs" />
+    <Compile Include="Data\UserBindManage.cs" />
+    <Compile Include="Data\UserManage.cs" />
+    <Compile Include="Entity\AdminMenuInfo.cs" />
+    <Compile Include="Entity\AdminMenuShortcutInfo.cs" />
+    <Compile Include="Entity\AdsInfo.cs" />
+    <Compile Include="Config\Entity\AttachmentInfo.cs" />
+    <Compile Include="Entity\CityInfo.cs" />
+    <Compile Include="Entity\DetailChannelInfo.cs" />
+    <Compile Include="Entity\DetailGalleryInfo.cs" />
+    <Compile Include="Entity\DetailHitsInfo.cs" />
+    <Compile Include="Entity\DetailInfo.cs" />
+    <Compile Include="Entity\FavoritesInfo.cs" />
+    <Compile Include="Entity\FollowInfo.cs" />
+    <Compile Include="Entity\RefereeInfo.cs" />
+    <Compile Include="Entity\ViewPointInfo.cs" />
+    <Compile Include="Entity\DictionaryInfo.cs" />
+    <Compile Include="Entity\DictionaryKeyInfo.cs" />
+    <Compile Include="Config\Entity\Enums.cs" />
+    <Compile Include="Entity\ItemInfo.cs" />
+    <Compile Include="Entity\MapRouteInfo.cs" />
+    <Compile Include="Entity\ModuleInfo.cs" />
+    <Compile Include="Config\Entity\SiteConfigInfo.cs" />
+    <Compile Include="Entity\ReviewInfo.cs" />
+    <Compile Include="Entity\RoleInfo.cs" />
+    <Compile Include="Entity\RolePowerInfo.cs" />
+    <Compile Include="Entity\ScoreEventInfo.cs" />
+    <Compile Include="Entity\ScoreLogInfo.cs" />
+    <Compile Include="Entity\UserInfo.cs" />
+    <Compile Include="Config\Entity\UserOnlineInfo.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Ueditor\Config.cs" />
+    <Compile Include="Ueditor\ConfigHandler.cs" />
+    <Compile Include="Ueditor\CrawlerHandler.cs" />
+    <Compile Include="Ueditor\Handler.cs" />
+    <Compile Include="Ueditor\ListFileHandler.cs" />
+    <Compile Include="Ueditor\NotSupportedHandler.cs" />
+    <Compile Include="Ueditor\PathFormater.cs" />
+    <Compile Include="Ueditor\UploadHandler.cs" />
+    <Compile Include="UI\BaseActionController.cs" />
+    <Compile Include="UI\BaseAdminController.cs" />
+    <Compile Include="UI\BaseApiController.cs" />
+    <Compile Include="UI\BaseController.cs" />
+    <Compile Include="UI\BaseSiteController.cs" />
+    <Compile Include="UI\FilterConfig.cs" />
+    <Compile Include="UI\RouteConfig.cs" />
+    <Compile Include="UI\VerifyKey.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
