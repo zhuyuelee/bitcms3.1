@@ -1,0 +1,11 @@
+﻿
+* { margin: 0; padding: 0; }
+body { font: 14px/1.5 \5FAE\8F6F\96C5\9ED1, Arial,'Microsoft Yahei',STHeiti,sans-serif; letter-spacing: 1px; color: #373737;  }
+li, dd, dt { list-style: none; }
+
+/*输入框*/
+input, textarea, select { display: inline-block; padding-left: 10px; border: 1px solid #e6e6e6; background-color: #fff; border-radius: 2px; outline: 0; -webkit-transition: border-color .3s cubic-bezier(.65,.05,.35,.5); transition: border-color .3s cubic-bezier(.65,.05,.35,.5); -webkit-box-sizing: border-box!important; -moz-box-sizing: border-box!important; box-sizing: border-box!important; }
+button, input, optgroup, option, select, textarea { outline: 0; }
+    button:focus, input:focus, optgroup:focus, option:focus, select:focus, textarea:focus { outline: 0; border: 1px solid #4cae4c; }
+.error { position:fixed;width:100%;height:100%;text-align:center;display:inline-table;}
+.error .error_msg{ display:table-cell; vertical-align:middle;}

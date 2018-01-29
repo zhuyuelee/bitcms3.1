@@ -1,0 +1,524 @@
+﻿<div class="row">
+    <div class="left main_nav">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="glyphicon glyphicon-th-list"></i>
+                广告管理
+                <div class="pull-right">
+                    <button type="button" id="btn_del" class="btn btn-xs btn-danger">删除</button>
+                </div>
+            </div>
+            <div id="treeview" data-id="" class="tree ajax">
+            </div>
+        </div>
+    </div>
+    <div class="right main-context">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="glyphicon glyphicon-edit"></i>
+                广告详情操作
+                <div class="pull-right">
+                    <button id="btn_add" class="btn btn-xs btn-success">添加广告</button>
+                    <button id="btn_addkey" class="btn btn-xs btn-primary">添加广告详情</button>
+                </div>
+            </div>
+            <div class="panel-body" id="ads-box">
+                <form method="post" id="form-submit" action="#" class="form-horizontal validate">
+                    <div class="form-group">
+                        <label for="Title" class="col-xs-2 control-label">
+                            广告名称
+                            <i class="text-danger">*</i>
+                        </label>
+                        <div class="col-xs-10">
+                            <input type="text" class="form-control" required="required" name="Title" id="Title" placeholder="广告名称" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="AdsCode" class="col-xs-2 control-label">编码</label>
+                        <div class="col-xs-10">
+                            <input type="text" class="form-control" required="required" maxlength="32" name="AdsCode" id="AdsCode" placeholder="编码" />
+                            <span class="help-block">32位以内，包含字母，数字和下划线。</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="AdsType" class="col-xs-2 control-label">广告类型</label>
+                        <div class="col-xs-10 ">
+                            <div class=" radio">
+                                <label>
+                                    <input type="radio" name="AdsType" value="0" />文字
+                                </label>
+                                <label>
+                                    <input type="radio" id="AdsType" name="AdsType" value="1" checked="checked" />图片
+                                </label>
+                                <label>
+                                    <input type="radio" name="AdsType" value="2" />代码
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" id="adsize-box">
+                        <label for="Width" class="col-xs-2 control-label">
+                            尺寸
+                            <i class="text-danger">*</i>
+                        </label>
+                        <div class="col-xs-5">
+                            <input type="text" class="form-control" name="AdsWidth" id="AdsWidth" placeholder="宽" />
+                            <span class="help-block">宽，可输入100px或100%。</span>
+                        </div>
+                        <div class="col-xs-5">
+                            <input type="text" class="form-control" name="AdsHeight" id="AdsHeight" placeholder="高" />
+                            <span class="help-block">高，可输入100px或100%。</span>
+                        </div>
+                    </div>
+                    <div class="tags">
+                        <div class="form-group keys">
+                            <label for="Tags1" class="col-xs-2 control-label">Tags1</label>
+                            <div class="col-xs-10">
+                                <input type="text" class="form-control" maxlength="32" name="Tags" id="Tags1" value="" placeholder="Tag" />
+                                <span class="help-block" id="btn-box">
+                                    <button type="button" class="btn btn-xs  btn-info">
+                                        <i class="glyphicon glyphicon-plus"></i>
+                                        添加Tag</button>
+                                    <button type="button" class="btn btn-xs" style="display: none;">
+                                        <i class="glyphicon glyphicon-minus"></i>
+                                        删除Tag</button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="Introduce" class="col-xs-2 control-label">
+                            说明
+                        </label>
+                        <div class="col-xs-10">
+                            <textarea class="form-control" name="Introduce" id="Introduce" placeholder="说明"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-offset-2 col-xs-10">
+                            <input type="text" id="AdsId" name="AdsId" value="0" style="display: none;" />
+                            <button type="submit" id="submit" class="btn btn-primary">提交</button>
+                            <button type="reset" class="btn">重置</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="panel-body" id="adsdetail-box" style="display: none;">
+                <form method="post" id="form-adsdetail" action="#" class="form-horizontal validate">
+                    <div class="form-group" id="statistics-box" style="display: none;">
+                        <label for="AdsDetailTitle" class="col-xs-2 control-label">
+                            展示次数
+                        </label>
+                        <div class="col-xs-4">
+                            <input type="text" class="form-control" readonly="readonly" id="ShowNum" />
+                        </div>
+                        <label for="AdsDetailTitle" class="col-xs-2 control-label">
+                            点击次数
+                        </label>
+                        <div class="col-xs-4">
+                            <input type="text" class="form-control" readonly="readonly" id="HitsNum" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                    </div>
+                    <div class="form-group">
+                        <label for="AdsDetailTitle" class="col-xs-2 control-label">
+                            广告名称
+                            <i class="text-danger">*</i>
+                        </label>
+                        <div class="col-xs-10">
+                            <input type="text" class="form-control" required="required" name="Title" id="AdsDetailTitle" placeholder="广告名称" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="adsCodes" class="col-xs-2 control-label">
+                            广告
+                            <i class="text-danger">*</i>
+                        </label>
+                        <div class="col-xs-10">
+                            <select class="form-control" name="adsCode" id="adsCodes">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="AdsDetailTitle" class="col-xs-2 control-label">
+                            开始展示时间
+                            <i class="text-danger">*</i>
+                        </label>
+                        <div class="col-xs-10">
+                            <div class="input-group date form_date">
+                                <input type="datetime" required="required" class="form-control" name="StartDate" id="StartDate" placeholder="开始展示时间" />
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="AdsDetailTitle" class="col-xs-2 control-label">
+                            有效期(天)
+                            <i class="text-danger">*</i>
+                        </label>
+                        <div class="col-xs-10">
+                            <input type="number" min="0" class="form-control" required="required" name="ShowDays" id="ShowDays" placeholder="有效期" />
+                        </div>
+                    </div>
+                    <div class="form-group" id="tag-box">
+                        <label for="Tag" class="col-xs-2 control-label">
+                            标签
+                        </label>
+                        <div class="col-xs-10 adtag">
+                           
+                        </div>
+                    </div>
+                    <div class="form-group" id="size-box">
+                        <label for="Width" class="col-xs-2 control-label">
+                            尺寸
+                            <i class="text-danger">*</i>
+                        </label>
+                        <div class="col-xs-5">
+                            <input type="text" class="form-control" name="Width" id="Width" placeholder="宽" />
+                            <span class="help-block">宽，可输入100px或100%。</span>
+                        </div>
+                        <div class="col-xs-5">
+                            <input type="text" class="form-control" name="Height" id="Height" placeholder="高" />
+                            <span class="help-block">高，可输入100px或100%。</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="path-box">
+                        <label for="Path" class="col-xs-2 control-label">
+                            图片
+                        </label>
+                        <div class="col-xs-8">
+                            <input type="text" class="form-control" required="required" id="Path" name="Path" placeholder="图片地址" />
+                        </div>
+                        <div class="col-xs-2">
+                            <button type="button" id="fileupload" class="btn btn-primary btn-block">上传</button>
+                            <input type="file" class="form-control" id="file" style="display: none;" />
+                        </div>
+                    </div>
+                    <div class="form-group" id="link-box">
+                        <label for="Link" class="col-xs-2 control-label">
+                            链接
+                        </label>
+                        <div class="col-xs-10">
+                            <input type="text" class="form-control" name="Link" required="required" id="Link" placeholder="链接" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="Description" class="col-xs-2 control-label">
+                            描述/代码
+                        </label>
+                        <div class="col-xs-10">
+                            <textarea class="form-control" name="Description" id="Description" placeholder="描述/代码"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="OrderNo" class="col-xs-2 control-label">
+                            排序
+                        </label>
+                        <div class="col-xs-10">
+                            <input type="number" min="0" class="form-control" name="OrderNo" value="200" id="OrderNo" placeholder="排序" />
+                            <span class="help-block">数字，越小越靠前。</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-offset-2 col-xs-10">
+                            <input type="text" id="AdsDetailId" name="AdsDetailId" value="0" style="display: none;" />
+                            <input type="text" id="AdsIds" name="AdsId" value="0" style="display: none;" />
+                            <button type="submit" id="submit-key" class="btn btn-primary">提交</button>
+                            <button type="reset" class="btn">重置</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Script{
+<script>
+    $(function () {
+
+        var tags = $(".tags").setTags({
+            "btnbox": ".help-block", maxsize: 5, addkey: function (i, box) {
+                $("label.control-label", box).text("Tags" + i);
+                $("label.control-label", box).attr("for", "Tags" + i);
+                $(":input", box).val("");
+                $(":input", box).attr("id", "Tags" + i);
+            }
+        });
+        //日历
+        $('.form_date').datetimepicker({
+            language: 'zh-CN',
+            weekStart: 1,
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: 1,
+            startView: 2,
+            minView: 2,
+            format: 'yyyy-mm-dd'
+        });
+        $("#fileupload").click(function () {
+            $("#file").click();
+        });
+        //图片上传
+        $("#file").h5_upload({
+            folder: "ads", cut: 0, maxheight: 1000, maxwidth: 1200, watermark: 0, change: function () {
+            }, success: function (result) {
+                if (result.error == 0) {
+                    $("#Path").val(result.data);
+                } else {
+                    layer.alert("上传失败！", { icon: 5 });
+                }
+            }
+        });
+
+        //重置广告form
+        var resetAdsForm = function () {
+            if ($("#ads-box").is(":hidden")) {
+                $("#ads-box").fadeIn();
+                $("#adsdetail-box").hide();
+            }
+            $("#AdsCode").prop("readonly", false);
+            $("#adsize-box").show();
+
+           
+            tags.reset(1);
+        };
+        //重置广告详情标签下拉列表
+        var resetAdsDetailTags = function (tags) {
+            var input = "";
+            if (tags != null && tags.length > 0) {
+                            
+                input = '<select class="form-control" id="Tag" name="Tag" required="required"><option value="">=选择Tags=</option>';
+                var tag = tags.split(",");
+                $(tag).each(function (i, n) {
+                    input += "<option value='" + n + "'>" + n + "</option>";
+                });
+                input += "</select>";
+            } else {
+                input = '<input type="text" class="form-control" id="Tag" name="Tag"  placeholder="标签"/>';
+            }
+            $("#tag-box").show();
+            $("#tag-box .adtag").html(input);
+        };
+
+        var resetAdsType = function (adstype) {
+            switch (adstype) {
+                case 0:
+                    $("#size-box").hide();
+                    $("#path-box").hide();
+                    $("#link-box").show();
+                    break;
+                case 1:
+                    $("#size-box").show();
+                    $("#path-box").show();
+                    $("#link-box").show();
+                    break;
+                default:
+                    $("#size-box").hide();
+                    $("#path-box").hide();
+                    $("#link-box").hide();
+                    break;
+
+            }
+        };
+        //广告类型
+        $(":radio[name=AdsType]").click(function () {
+            if ($(this).val() == 1) {
+                $("#adsize-box").show();
+            } else {
+                $("#adsize-box").hide();
+            }
+        });
+
+        //树形菜单
+        $("#treeview").tree({
+            deep: 1, ajax: "/admin/ads/loadjson/", click: function (li) {
+                if (li.attr("data-id")) {
+
+                    var type = li.children("a:first").attr("href");
+                    $.getJSON("/admin/ads/loadmodel/", { id: li.attr("data-id"), type: type }, function (result) {
+                        if (result.error == 0) {
+                            if (type == "#ads") {//广告
+                                resetAdsForm();
+                                $("#AdsId").val(result.data.AdsId);
+                                $("#Title").val(result.data.Title);
+                                $("#AdsCode").val(result.data.AdsCode);
+                                $(":radio[name=AdsType][value=" + result.data.AdsType + "]").prop("checked", true);
+                                $("#AdsWidth").val(result.data.AdsWidth);
+                                $("#AdsHeight").val(result.data.AdsHeight);
+                                $("#Introduce").val(result.data.Introduce);
+                                if ($("#AdsType").prop("checked")) {
+                                    $("#adsize-box").show();
+                                } else {
+                                    $("#adsize-box").hide();
+                                }
+
+                                $("#AdsCode").prop("readonly", true);
+                                if (result.data.Tags != null && result.data.Tags.length > 0) {
+                                    var tag = result.data.Tags.split(",");
+                                    tags.reset(tag.length, function (boxs) {
+                                        boxs.each(function (i) {
+                                            $(":input", this).val(tag[i]);
+                                        });
+                                    });
+                                }
+
+                            } else {//广告详情
+                                if ($("#adsdetail-box").is(":hidden")) {
+                                    $("#ads-box").hide();
+                                    $("#adsdetail-box").fadeIn();
+                                }
+                                $("#statistics-box").show();
+                                resetAdsType(result.data.ads.AdsType);
+
+                                var li = $("li[data-id=" + result.data.ads.AdsCode + "][data-level=0]");
+                                $("#adsCodes").empty().append("<option value='" + li.attr("data-id") + "'>" + $.trim(li.children("a:first").text()) + "</option>");
+
+                                $("#ShowNum").val(result.data.adsdetail.ShowNum + "次");
+                                $("#HitsNum").val(result.data.adsdetail.HitsNum + "次");
+                                $("#AdsDetailTitle").val(result.data.adsdetail.Title);
+
+                                resetAdsDetailTags(result.data.ads.Tags);
+                                $("#Tag").val(result.data.adsdetail.Tag);
+
+                                $("#Path").val(result.data.adsdetail.Path);
+
+                                $("#ShowDays").val(result.data.adsdetail.ShowDays);
+                                if (result.data.adsdetail.StartDate != null) {
+                                    $("#StartDate").val(jsonDateFormat(result.data.adsdetail.StartDate, "yyyy-MM-dd"));
+                                } else {
+                                    $("#StartDate").val("");
+                                }
+                                $("#Description").val(result.data.adsdetail.Description);
+
+                                $("#Width").val(result.data.adsdetail.Width);
+                                $("#Height").val(result.data.adsdetail.Height);
+                                $("#Link").val(result.data.adsdetail.Link);
+                                $("#OrderNo").val(result.data.adsdetail.OrderNo);
+                                $("#AdsDetailId").val(result.data.adsdetail.AdsDetailId);
+                                $("#AdsIds").val(result.data.adsdetail.AdsId);
+
+                            }
+                        } else {
+                            ajaxResult(result);
+                        }
+                    });
+                }
+                return false;
+            }
+        });
+
+        $("#btn_add").click(function () {
+            resetAdsForm();
+        });
+
+
+        //添加key
+        $("#btn_addkey").click(function () {
+            if ($("a.active", "#treeview").size() == 0) {
+                layer.msg("添加广告详情前请先选择广告！", { icon: 1 });
+            } else {
+                if ($("#adsdetail-box").is(":hidden")) {
+                    $("#ads-box").hide();
+                    $("#adsdetail-box").fadeIn();
+                }
+                var ads = "";
+
+                var link = $("a.active", "#treeview");
+                if (link.is("a[href=#key]")) {
+                    var li = link.closest("li[data-level=0]");
+                    ads += "<option value='" + li.attr("data-id") + "'>" + $.trim(li.children("a:first").text()) + "</option>";
+                } else {
+                    ads += "<option value='" + link.parent().attr("data-id") + "'>" + $.trim(link.text()) + "</option>";
+                }
+                $("#adsCodes").empty().append(ads);
+                $("#form-adsdetail")[0].reset();
+                $("#statistics-box").hide();
+
+                $.getJSON("/admin/ads/loadmodel/", { id: $("#adsCodes").val(), type: "#ads" }, function (result) {
+                    if (result.error == 0) {
+                        resetAdsDetailTags(result.data.Tags);
+                        resetAdsType(result.data.AdsType);
+                        if (result.data.AdsType == 1) {
+                            $("#Width").val(result.data.AdsWidth);
+                            $("#Height").val(result.data.AdsHeight);
+                        }
+
+                    } else {
+                        resetAdsDetailTags(null);
+                    }
+                });
+
+            }
+
+
+        });
+        //删除菜单
+        $("#btn_del").click(function () {
+            if ($("a.active", "#treeview").size() == 0) {
+                layer.alert("请选择要删除的数据！", { icon: 5 });
+            } else {
+                var li = $("a.active:first", "#treeview").parent("li");
+                if (li.is("[data-id]")) {
+                    layer.confirm('确认删除该条数据！', {
+                        title: '删除确认？'
+                    },
+                     function () {
+                         $.post("/admin/ads/delete", { "id": li.attr("data-id"), "type": li.children("a:first").attr("href") }, function (result) {
+                             ajaxResult(result);
+
+                         });
+                     });
+                } else {
+                    layer.alert("选择要删除的数据不完整！");
+                }
+            }
+        });
+
+        //验证表单
+        formValidate("#form-submit", {
+            rules: {
+                "AdsCode": {
+                    key: true,
+                    remote: {
+                        url: "/admin/ads/checkcode/",     //后台处理程序
+                        type: "get",               //数据发送方式
+                        data: {                     //要传递的数据
+                            adsid: function () { return $("#AdsId").val() }
+                        }
+                    }
+                }
+            },
+            messages: {
+                "AdsCode": {
+                    remote: "编码已经存在",
+                },
+            },
+            submitHandler: function (form) {
+                setSubmit($("#submit", form));
+                $.post("/admin/ads/update/", $(form).serialize(), function (result) {
+                    setSubmit($("#submit", form));
+                    ajaxResult(result);
+                }, "JSON");
+                return false;
+            }
+        });
+
+        //验证广告表单
+        formValidate("#form-adsdetail", {
+            submitHandler: function (form) {
+                setSubmit($("#submit-key", form));
+                $.post("/admin/ads/updateadsdetail/", $(form).serialize(), function (result) {
+                    setSubmit($("#submit-key", form));
+                    ajaxResult(result);
+                }, "JSON");
+                return false;
+            }
+        });
+
+    });
+
+</script>
+}

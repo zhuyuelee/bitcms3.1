@@ -1,0 +1,49 @@
+﻿@model List<bitcms.Entity.AdminMenuInfo>
+<dl>
+    @for (var i = 0; i < Model.Count; i++)
+    {
+        <dt class=" @if (i == 0)
+                    {<text>active</text>}" data-id="@(Model[i].AdminMenuId)" data-shortcat="0">
+            @if (!string.IsNullOrEmpty(Model[i].Icon))
+            {
+                <i class="@Model[i].Icon"></i>
+            }
+            <span>
+                @(Model[i].MenuName)
+                <label class="glyphicon @if (i == 0)
+                                        {<text>glyphicon-chevron-down</text>}
+                                        else
+                                        {<text>glyphicon-chevron-right</text>}">
+                </label>
+            </span>
+        </dt>
+        <dd>
+            @if (i == 0)
+            {
+                if (ViewBag.childMenus.Count > 0)
+                {
+                    foreach (var menu in ViewBag.childMenus)
+                    {
+                        var controller = menu.Controller;
+                        if(!string.IsNullOrEmpty(menu.Parm))
+                        {
+                            controller += "?" + menu.Parm;
+                        }
+                <a  data-area="@menu.Area" href="@controller">
+                    @if (!string.IsNullOrEmpty(menu.Icon))
+                    {
+                        <i class="@menu.Icon"></i>
+                    }
+                    <span>
+                        @(menu.MenuName)</span>
+                </a>
+                    }
+                }
+                else
+                {
+                <a>无节点</a> 
+                }
+            }
+        </dd>
+    }
+</dl>

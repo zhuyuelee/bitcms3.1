@@ -1,0 +1,59 @@
+﻿@{
+    Layout = null;
+    var manage = new bitcms.Data.CMSManage();
+    var did = bitcms.Common.Utils.strToInt(ViewBag.parms["did"]);
+    var replyid = bitcms.Common.Utils.strToInt(ViewBag.parms["rid"]);
+    var page = new bitcms.Entity.PageInfo()
+    {
+        PageSize = 5,
+        PageNumber = Utils.strToInt(ViewBag.parms["page"]),
+    };
+    var list = manage.getReplyList(page, "news", replyid, 0);
+}
+@if (list.Count > 0)
+{
+    <ul>
+        @foreach (UserReviewInfo info in list)
+        {
+            <li>
+                <h5><a>@info.UserName</a> <small>@Utils.dateDiff(info.InDate, SiteConfig.getLocalTime())</small></h5>
+                <p>
+                   @{
+        var secrecy = false;
+        if (info.Secrecy == 1)
+        {
+            if (info.UserId != ViewBag.userOnline.UserId)
+            {
+                var roleinfo = manage.getRoleInfo(ViewBag.userOnline.UserInfo.RoleId);
+                if (roleinfo == null || roleinfo.RoleType != "admin")
+                {
+                    secrecy = true;
+                }
+            }
+        }
+        if (secrecy)
+        {
+                    <span class="label label-info">
+                        <i class="glyphicon glyphicon-warning-sign"></i>
+                        保密评论</span>
+        }
+        else
+        {
+                    @info.Content
+        }
+                }
+                </p>
+            </li>
+        }
+    </ul>
+}
+
+@if (page.PageCount > 1)
+{
+    <div class="page">
+        @Html.Raw(Utils.getPages(page.PageNumber, page.PageCount, "/replylist/" + replyid + "/{0}", 0))
+    </div>
+}
+@{
+    manage.Dispose();
+    }

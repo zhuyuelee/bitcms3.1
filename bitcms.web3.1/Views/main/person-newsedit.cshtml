@@ -1,0 +1,300 @@
+﻿@{
+    if (ViewBag.userOnline.UserId <= 0)
+    {
+        Response.Redirect("/login?url=" + Utils.urlEncode(Fetch.getUrl()));
+    }
+
+    ViewBag.personNav = "news";
+    Layout = "~/Views/Shared/_UserCenterLayout.cshtml";
+    var manage = new bitcms.Data.CMSManage();
+    var channelInfo = manage.getDetailChannelInfo("news");
+    var itemlist = manage.getItemList("news");
+    var did = Utils.strToInt(ViewBag.parms["did"]);
+    DetailInfo detailinfo = null;
+    if (did > 0)
+    {
+        detailinfo = manage.getDetailInfo(did);
+        ViewBag.Title = "资讯修改";
+    }
+    else
+    {
+        ViewBag.personNav = "newsadd";
+        ViewBag.Title = "资讯添加";
+    }
+    if (detailinfo == null)
+    {
+        detailinfo = new DetailInfo();
+        detailinfo.Display = 1;
+    }
+}
+
+<div class="mainbox">
+    @Html.Partial("_person-nav")
+    <div class="rightside">
+        <form action="#" method="post" id="form-news" class="form-horizontal">
+            <div class="form-group">
+                <label for="title" class="col-sm-2 control-label">标题</label>
+                <div class="col-sm-6">
+                    <input class="form-control" id="title" name="title" required="required" value="@detailinfo.Title"  type="text" placeholder="标题">
+                </div>
+                <div class="col-sm-2 checkbox">
+                    <label>
+                        <input type="checkbox" name="display" @if (detailinfo.Display == 1)
+                                                              {
+                                                                  <text> checked="checked" </text>
+                                                              } value="1" />
+                        上线</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="itemid" class="col-sm-2 control-label">栏目</label>
+                <div class="col-sm-8">
+                    <select id="itemid" name="itemid" required="required" class="form-control">
+                        <option value="">选择栏目</option>
+                        @{
+                            var rootitemlist = itemlist.FindAll(g => g.FatherId == 0);
+                            foreach (var info in rootitemlist)
+                            {
+                                if (channelInfo.ItemDeep == 1)
+                                {
+                            <option value="@info.ItemId" @if (detailinfo.ItemId == info.ItemId)
+                                                         {<text> selected="selected"</text>}>@info.ItemName</option>
+                                }
+                                else
+                                {
+                                    var childitemlist = itemlist.FindAll(g => g.FatherId == info.ItemId);
+                                    if (childitemlist.Count == 0)
+                                    { 
+                            <option value="@info.ItemId" @if (detailinfo.ItemId == info.ItemId)
+                                                         {<text> selected="selected"</text>}>@info.ItemName</option>
+                                    }
+                                    else
+                                    {
+                            <optgroup label="@info.ItemName">
+                                @{
+                                        foreach (var childinfo in childitemlist)
+                                        {
+                                            if (channelInfo.ItemDeep == 2)
+                                            { 
+                                    <option value="@childinfo.ItemId" @if (detailinfo.ItemId == childinfo.ItemId)
+                                                                      {<text> selected="selected"</text>}>@childinfo.ItemName</option>
+                                            }
+                                            else
+                                            {
+                                                var smalliemList = itemlist.FindAll(g => g.FatherId == childinfo.ItemId);
+                                    <option @if (smalliemList.Count > 0)
+                                            {<text> disabled="disabled"</text>} value="@childinfo.ItemId">@childinfo.ItemName</option>
+                                            foreach (var smallitemInfo in smalliemList)
+                                            {
+                                    <option value="@smallitemInfo.ItemId" @if (detailinfo.ItemId == smallitemInfo.ItemId)
+                                                                          {<text> selected="selected"</text>}>&nbsp;&nbsp;@smallitemInfo.ItemName</option>
+                                            }
+
+                                            }
+                                        }
+                                }
+                            </optgroup>
+                                    }
+                                }
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="keyword" class="col-sm-2 control-label">关键字</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" name="keyword" id="keyword"  placeholder="关键字" />
+                    <span class="help-block">多个关键字请用英文逗号分开</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">图集</label>
+                <div class="col-sm-8 picbox">
+                    <ul>
+                        @if (detailinfo != null)
+                        {
+                            var gallerylist = manage.getDetailGalleryList(did);
+                            foreach (var galleryinfo in gallerylist)
+                            { 
+                            <li data-id="@galleryinfo.GalleryId">
+                                <img src="@galleryinfo.Path" title="@galleryinfo.Title" alt="@galleryinfo.Title" /><i>&times;</i></li>
+                            }
+                        }
+                        <li class="upload">
+                            <input type="file" id="fileupload" multiple="multiple" accept="image/*" title="请选择要上传的图片" />
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="resume" class="col-sm-2 control-label">简要介绍</label>
+                <div class="col-sm-8">
+                    <textarea name="resume" id="resume" required="required" class="form-control" rows="3" placeholder="简要介绍">@(detailinfo.Resume == null ? "" : detailinfo.Resume)</textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="content" class="col-sm-2 control-label">详细内容</label>
+                <div class="col-sm-8">
+                    @{
+                        var content = "";
+                        var cid = 0;
+                        if (did > 0)
+                        {
+                            var contentinfo = manage.getDetailContentInfo(did, 0);
+                            if (contentinfo != null)
+                            {
+                                content = contentinfo.Content;
+                                cid = contentinfo.ContentId;
+                            }
+                        }
+                    }
+
+                    <textarea name="content" id="content" class="form-control" rows="3" placeholder="详细内容">@content</textarea>
+                </div>
+            </div>
+            @if (ViewBag.config.EnabledDetailVerifykey)
+            {
+                <div class="form-group">
+                    <label for="content" class="col-sm-2 control-label">验证码</label>
+                    <div class="col-sm-8">
+                        <div class="input-group verifykey">
+                            <input type="text" class="form-control" name="verifykey" id="verifykey" autocomplete="off" required="required" placeholder="验证码">
+                            <label class="input-group-addon" for="verifykey" id="refreshverifykey" style="padding: 0;">
+                                <img src="/tools/verifyKey/detail/80/32" />
+                            </label>
+                        </div>
+                        <input type="text" name="key" value="detail" class="hidden" />
+                    </div>
+                </div>
+            }
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <input type="text" id="cid" name="cid" value="@cid" class="hidden" />
+                    <input type="text" name="city" id="city" class="hidden" />
+                    <input type="text" id="pics" name="pics" class="hidden" />
+                    <input type="text" id="channelcode" name="channelcode" value="@channelInfo.ChannelCode"  class="hidden" />
+                    <input type="text" id="detailid" name="detailid" value="@did"  class="hidden" />
+                    <input type="submit" class="btn  btn-danger" value="提交" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+@section Style{
+    <link href="/js/bootstrap/css/bootstrap-tagsinput.css" rel="stylesheet">
+}
+@section Script{
+    <script src="/ueditor/ueditor.config.js" charset="utf-8"></script>
+    <script src="/ueditor/ueditor.all.min.js" charset="utf-8"></script>
+    <script src="/js/jquery.validate.min.js" charset="utf-8"></script>
+    <script src="/js/jquery.validate.methods.min.js" charset="utf-8"></script>
+
+    <script src="/js/jquery.h5_upload.js" charset="utf-8"></script>
+    <script src="/js/bootstrap/js/bootstrap-tagsinput.min.js" charset="utf-8"></script>
+    @if (ViewBag.config.EnabledDetailVerifykey)
+    {
+        <script>
+            $(function () {
+                $("#form-news").delegate(".verifykey>:input", "focus", function () {
+                    var input = $(this);
+                    input.val("");
+                    var key = $(":input[name=key]", input.closest(".form-group")).val();
+                    $("img", input.parent()).attr("src", "/tools/verifyKey/" + key + "/80/32?t=" + new Date().getMilliseconds());
+                });
+            });
+        </script>
+    }
+    <script>
+        $(function () {
+            var areatext = editor('content');
+            $("#keyword").tagsinput({ width: 'auto', height: "30px", defaultText: "添加标签" });;
+            @if (detailinfo.DetailId > 0 && !string.IsNullOrEmpty(detailinfo.Keyword))
+            {
+            <text>
+            $("#keyword").tagsinput('removeAll');
+            $("#keyword").tagsinput('add', "@detailinfo.Keyword");
+            </text>
+            }
+
+            //缩略图上传
+            $("#fileupload").h5_upload({
+                preview: function (img, index) {
+                    var picbox = $('<li data-id="0"><img src="" /><i>&times;</i></li>');
+                    $("img", picbox).attr("src", img);
+                    $(picbox).attr("data-index", index);
+                    $(".upload").before(picbox);
+                }, folder: "@channelInfo.ChannelCode", cut: 0, maxheight: "@channelInfo.Height", maxwidth: "@channelInfo.Width", watermark: 0, success: function (result, file, index) {
+                    if (result.error == 0) {
+                        var picbox = $("li[data-index=" + index + "]", ".picbox");
+                        $("img", picbox).attr("src", result.data);
+                        var filename = file.filename;
+                        $("img", picbox).attr("alt", filename);
+                        $("img", picbox).attr("title", filename);
+                    } else {
+                        layer.alert("上传失败！", { icon: 5 });
+                    }
+                }
+            });
+            //移除封面
+            $(".picbox").delegate("li>i", "click", function () {
+                $(this).parent().remove();
+            });
+
+
+            //验证
+            var validate = formValidate("#form-news", {
+                ignore: ":hidden",
+                messages: {
+                    title: {
+                        required: "标题为空",
+                    },
+                    itemid: {
+                        required: "请选择栏目",
+                    },
+                    resume: {
+                        required: "简要介绍为空",
+                    },
+                    content: {
+                        required: "详细内容为空",
+                    },
+                    verifykey: {
+                        required: "验证码为空",
+                    },
+                },
+                submitHandler: function (form) {
+                    var index = layer.load(); //换了种风格
+
+                    var gallery = new Array();
+                    //封面
+                    if ($(".picbox").size() > 0) {
+                        $(".picbox li").each(function (i, n) {
+                            var box = $(n);
+                            if (!box.is(".upload")) {
+                                gallery.push({ "GalleryId": box.attr("data-id"), "Path": $("img", box).attr("src"), "Title": $("#Title").val(), "Cover": i == 0 ? 1 : 0, "GalleryType": 0, "OrderNo": i });
+                            };
+                        });
+                    }
+                    $("#pics").val(JSON.stringify(gallery));
+
+
+                    $.post("/cmsaction/updatedetail", $(form).serialize(), function (result) {
+                        layer.close(index);
+                        if (result.error == 0) {
+                            layer.msg('操作成功', { icon: 1 }, function (index) {
+                                location.href = "/person/news";
+                            });
+                        } else {
+                            layer.alert(result.message, { icon: 5 });
+                        };
+                    }, "JSON");
+                    return false;
+                }
+            });
+        });
+    </script>
+}
+@{
+    manage.Dispose();
+}

@@ -1,0 +1,39 @@
+﻿<script>
+    //检查登录
+    var checkloginstate = function (fun) {
+        var user = $(document).data("user");
+        if (user) {
+            if (typeof (fun) == "function") {
+                fun(user);
+            }
+        } else {
+            $.post("/cmsaction/getloginstate", function (result) {
+                $(document).data("user", result);
+                if (typeof (fun) == "function") {
+                    fun(result);
+                }
+            }, "JSON");
+        }
+    };
+
+    $(function () {
+
+        //退出
+        $(".signout").click(function () {
+            $.post("/cmsaction/signout", function (result) {
+                ajaxResult(result, parent.location.href);
+            }, "JSON");
+        });
+
+        var getUser = function (user) {
+            if (user && user.UserId > 0) {
+                $("span:first", ".user").addClass("hidden");
+                $("span:last", ".user").removeClass("hidden");
+                $("span:last label", ".user").text(user.UserName);
+                $("span:last img", ".user").attr("src", "/tools/getavatar/" + user.UserId + "/28/28");
+
+            }
+        };
+        checkloginstate(getUser);
+    });
+</script>

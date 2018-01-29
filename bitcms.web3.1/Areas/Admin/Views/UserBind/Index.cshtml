@@ -1,0 +1,267 @@
+﻿@model List<bitcms.Entity.ModuleInfo>
+
+<div class="row" id="userbindbox">
+    <div class="left main_nav">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="glyphicon glyphicon-th-list"></i>
+                会员筛选
+            </div>
+            <table id="list-table" class="table table-hover">
+            </table>
+        </div>
+    </div>
+    <div class="right main-context">
+        <div class="table-responsive">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="glyphicon glyphicon-edit"></i>
+                    账号绑定
+                     <div class="pull-right">
+                         <button id="btn_del" class="btn btn-xs btn-danger">删除</button>
+                     </div>
+                </div>
+                <table id="list-userbind" class="table table-hover">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/html" id="edituserbind">
+    <div class="container-fluid">
+        <form method="post" id="form-submit" action="#" style="padding-top: 10px;" class="form-horizontal validate">
+            <div class="form-group">
+                <label for="UserCode" class="col-xs-2 control-label">
+                    账号
+                </label>
+                <div class="col-xs-7">
+                    <input type="text" class="form-control" required="required" name="UserCode" id="UserCode" placeholder="绑定账号" />
+                </div>
+                <div class="col-xs-3 checkbox">
+                    <label>
+                        <input type="checkbox" value="1" checked="checked" name="Verify" id="Verify" />
+                        认证</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="ModuleCode" class="col-xs-2 control-label">
+                    类型
+                </label>
+                <div class="col-xs-10">
+                    <select class="form-control" required="required" name="ModuleCode" id="ModuleCode">
+                        <option value="">=选择类型=</option>
+                        @foreach (var info in Model)
+                        {
+                            <text><option value="@info.ModuleCode">@info.ModuleName</option></text>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="NickName" class="col-xs-2 control-label">
+                    昵称
+                </label>
+                <div class="col-xs-10">
+                    <input type="text" class="form-control" required="required" name="NickName" id="NickName" placeholder="昵称" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-xs-offset-2 col-xs-10">
+                    <input type="text" name="UserBindId" id="UserBindId" style="display: none;" />
+                    <input type="text" name="UserId" id="UserId" value="" style="display: none;" />
+                    <button type="submit" id="submit" class="btn btn-primary"> 提 交 </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</script>
+@section Script{
+
+<script>
+    $(function () {
+        $("#userbindbox").delegate(".userbindadd,.userbindedit", "click", function () {
+            var btn = $(this);
+            layer.open({
+                title: "账号绑定",
+                type: 1,
+                content: $("#edituserbind").html(),
+                success: function (layero, index) {
+                    $("#UserId", layero).val(btn.attr("data-userid"));
+                    if (btn.is(".userbindedit")) {
+                        $("#UserBindId", layero).val(btn.attr("data-userbindid"));
+                        $("#UserCode", layero).val(btn.attr("data-usercode"));
+                        $("#Verify", layero).prop(btn.attr("data-verify") == 1);
+                        $("#ModuleCode", layero).val(btn.attr("data-key"));
+                        $("#NickName", layero).val(btn.attr("data-nickname"));
+                    }
+
+                    //验证表单
+                    formValidate("#form-submit", {
+                        rules: {
+                            "UserCode": {
+                                remote: {
+                                    url: "/admin/userbind/checkcode/",     //后台处理程序
+                                    type: "get",               //数据发送方式
+                                    dataFilter: function (data, type) {
+                                        var valid = false;
+                                        var result = JSON.parse(data);
+                                        if (result.error == 0) {
+                                            if (result.data.UserId == 0 || (result.data.UserId > 0 && result.data.UserId == $("#UserId", layero).val())) {
+                                                valid = true;
+                                            } 
+                                        }
+                                        return valid;
+                                    }
+                                }
+                            }
+                        },
+                        messages: {
+                            UserCode: {
+                                remote: "账号已存在"
+                            },
+                        },
+                        submitHandler: function (form) {
+                            setSubmit($("#submit", form));
+                            $.post("/admin/userbind/update/", $(form).serialize(), function (result) {
+                                layer.close(index);
+                                setSubmit($("#submit", form));
+                                ajaxResult(result);
+                            }, "JSON");
+                            return false;
+                        }
+                    });
+                }
+            });
+        });
+
+        //管理员
+        var table = $("#list-table");
+        table = initBootstrapTable(table, {
+            url: "/admin/userbind/loadjson",
+            columns: [
+                {
+                    field: 'state',
+                    checkbox: true,
+                    align: 'center',
+                    valign: 'middle'
+                },
+                    {
+                        title: '会员',
+                        field: 'UserName',
+                        valign: 'middle'
+                    },
+                    {
+                        title: '操作',
+                        field: 'UserId',
+                        align: 'center',
+                        valign: 'middle',
+                        formatter: function (val, row, index) {
+                            return '<button type="button"  data-userid="' + val + '"  class="userbindadd btn btn-primary btn-xs">添加绑定</button>';
+                        }
+                    }
+            ],
+            onCheck: function (row) {
+                getuserbind(row.UserId);
+
+            }
+        });
+
+        var userbindtable = null;
+        var getuserbind = function (userid) {
+            if (userbindtable == null) {
+                userbindtable = $("#list-userbind");
+                userbindtable.attr("id", userid);
+                initBootstrapTable(userbindtable, {
+                    url: "/admin/userbind/loaduserbind",
+                    singleSelect: false,
+                    queryParams: function (params) {
+                        return {
+                            userid: userbindtable.attr("id"),
+                            key: userbindtable.bootstrapTable("getOptions").searchText,
+                        pagesize: params.pageSize,
+                            pagenumber: params.pageNumber,
+                            totalcount: userbindtable.attr("data-totalRows") || 0
+                        };
+                    },
+                    columns: [
+                        {
+                            field: 'state',
+                            checkbox: true,
+                            align: 'center',
+                            valign: 'middle'
+                        },
+                        {
+                            title: '昵称',
+                            field: 'NickName',
+                            valign: 'middle'
+                        },
+                        {
+                            title: '绑定账号',
+                            field: 'UserCode',
+                            valign: 'middle'
+                        },
+                        {
+                            title: '绑定类型',
+                            field: 'ModuleCode',
+                            align: 'center',
+                            valign: 'middle',
+                        },
+                            {
+                                title: '认证',
+                                field: 'Verify',
+                                align: 'center',
+                                valign: 'middle',
+                                formatter: function (val, row, index) {
+                                    if (val == 1) {
+                                        return "<p class='text-success'>已认证</p>";
+                                    } else {
+                                        return "未认证";
+                                    }
+                                }
+                            },
+                    {
+                        title: '操作',
+                        field: 'UserId',
+                        align: 'center',
+                        valign: 'middle',
+                        formatter: function (val, row, index) {
+                            return '<button type="button" data-nickname="' + row.NickName + '" data-usercode="' + row.UserCode + '" data-verify="' + row.Verify + '" data-key="' + row.ModuleCode + '"  data-userbindid="' + row.UserBindId + '"  data-userid="' + row.UserId + '" class="userbindedit btn btn-primary btn-xs">修改</button>';
+                        }
+                    }
+                    ]
+                });
+            } else {
+                userbindtable.attr("id", userid);
+                userbindtable.attr("data-totalRows", "0");
+                userbindtable.bootstrapTable("refresh");
+            }
+        };
+        getuserbind(0);
+
+
+        //删除菜单
+        $("#btn_del").click(function () {
+            var delrows = userbindtable.bootstrapTable('getSelections');
+            if (delrows.length == 0) {
+                layer.alert("请选择要删除的数据！", { icon: 5 });
+            } else {
+                layer.confirm('确认删除该条数据！', {
+                    title: '删除确认？', // <-- If you didn't specify it, dialog type will be used,
+                }, function () {
+                    var ids = "";
+                    $(delrows).each(function (i, n) {
+                        if (ids.length > 0)
+                            ids += ",";
+                        ids += n.UserBindId;
+                    });
+                    if (ids.length > 0) {
+                        $.post("/admin/userbind/delete", { "ids": ids }, function (result) {
+                            ajaxResult(result);
+                        });
+                    };
+                });
+            }
+        });
+    });
+</script>
+    }

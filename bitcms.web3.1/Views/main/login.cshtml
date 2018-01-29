@@ -1,0 +1,141 @@
+﻿@{
+    Layout = "~/Views/Shared/_UserCenterLayout.cshtml";
+    ViewBag.Title = "会员登录";
+}
+<div class="row">
+    <div class="col-sm-8 hidden-xs">
+        <img class="img-responsive center-block" src="https://passport.baidu.com/static/passpc-account/img/login/login-bg.png" />
+    </div>
+    <div class="col-sm-4">
+        <form action="#" method="post" id="form-login">
+            <h3>@ViewBag.Title</h3>
+            <div class="form-group">
+                <label for="username">会员账号</label>
+                <input type="text" class="form-control" name="username" id="username" required="required" placeholder="会员账号（中文、英文和数字）">
+            </div>
+            <div class="form-group">
+                <label for="password">登录密码</label>
+                <input type="password" class="form-control" name="password" id="password" required="required" placeholder="登录密码">
+            </div>
+            <div class="form-group checkbox">
+                <label>
+                    <input type="checkbox" id="expires" value="30" />
+                    记住密码</label>
+            </div>
+            <div class="form-group btnbox">
+                <input type="submit" class="btn  btn-primary btn-block" value="登录" />
+            </div>
+            <div>
+                <label class="pull-left"><a href="/service">注册</a></label>
+                <label class="pull-right"><a href="/service">找回密码</a></label>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script id="verifykeybox" type="text/html">
+    <div class="row verifykey">
+        <div class="col-xs-6">
+            <div class="form-group">
+                <label for="verifykey">验证码</label>
+                <input type="text" class="form-control" autocomplete="off" name="verifykey" id="verifykey" required="required" placeholder="验证码">
+                <input type="text" id="key" value="login" class="hidden">
+            </div>
+        </div>
+        <div class="col-xs-6">
+            <div class="form-group">
+                <div>
+                    <label for="verifykey" id="refreshverifykey">刷新验证码</label>
+                </div>
+                <img src="/tools/verifyKey/login/100/30" class="img-rounded" />
+            </div>
+        </div>
+    </div>
+</script>
+@section Script{
+    <script src="/js/jquery.validate.min.js" charset="utf-8"></script>
+    <script src="/js/jquery.validate.methods.min.js" charset="utf-8"></script>
+
+    <script>
+        $(function () {
+            var refreshverifykey = function () {
+                $("#verifykey", $(".verifykey")).val("");
+                $(".img-rounded", $(".verifykey")).attr("src", "/tools/verifyKey/login/100/30?t=" + new Date().getMilliseconds());
+            };
+
+            var addVerifykey = function () {
+                if ($(".verifykey").size() == 0) {
+                    $(".btnbox").prev().before($("#verifykeybox").html());
+                }
+                refreshverifykey();
+            };
+
+            @if (ViewBag.userOnline.LoginVerifykey)
+            {
+            <text>
+            addVerifykey();
+            </text>
+            }
+
+
+            $("#form-login").delegate("#refreshverifykey", "click", function () {
+                refreshverifykey();
+            });
+            var validate = formValidate('#form-login', {
+                rules: {
+                    "username": {
+                        username: true,
+                        zhLength: [4, 16],
+                    },
+                    verifykey: {
+                        digits: true,
+                        minlength: 4,
+                        maxlength: 4,
+                    }
+                },
+                messages: {
+                    username: {
+                        required: "会员账号为空",
+                    },
+                    password: {
+                        required: "密码为空"
+                    },
+                    verifykey: {
+                        required: "验证码为空",
+                        digits: "验证码为5位数字",
+                        minlength: "验证码为5位数字",
+                        maxlength: "验证码为5位数字"
+                    },
+                },
+
+                submitHandler: function (form) {
+                    var loadindex = layer.load();
+
+                    $.post("/cmsaction/login", { username: $("#username", form).val(), password: $.md5($("#password", form).val()), key: $("#key", form).val(), verifykey: $("#verifykey", form).val(), expires: $("#expires", form).val() }, function (result) {
+                        layer.close(loadindex);
+                        if (result.error == 0) {
+                            layer.msg('登录成功', { icon: 1 }, function (index) {
+                                var url = $.getQueryString("url");
+                                if (url == null) {
+                                    url = location.href.toLocaleLowerCase();
+                                    if (url.lastIndexOf("/login") > -1) {
+                                        url = "/person";
+                                    } else if (url.lastIndexOf("#") > -1) {
+                                        url = url.substr(0, url.indexOf("#"));
+                                    }
+                                }
+                                location.href = url;
+                            });
+                        } else {
+                            if (result.data && result.data.loginVerifykey) {
+                                addVerifykey();
+                            }
+                            ajaxResult(result, location.href);
+                        }
+                    }, "JSON");
+                    return false;
+                }
+            });
+        });
+    </script>
+}

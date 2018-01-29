@@ -1,0 +1,148 @@
+﻿@{
+    Layout = "~/Views/Shared/_UserCenterLayout.cshtml";
+    ViewBag.Title = "会员注册";
+    
+}
+<div class="row">
+    <div class="col-md-7 col-sm-8">
+        <form action="#" method="post" id="form-register">
+            <h3>@ViewBag.Title</h3>
+            <div class="form-group">
+                <label for="username">会员账号</label>
+                <input type="text" class="form-control" name="username" id="username" required="required" placeholder="会员账号（中文、英文和数字）">
+            </div>
+            <div class="form-group">
+                <label for="password">密码</label>
+                <input type="password" class="form-control" name="password" id="password" required="required" placeholder="密码（长度在4-16之间）">
+            </div>
+            <div class="form-group">
+                <label for="password">确认密码</label>
+                <input type="password" class="form-control" name="repassword" id="repassword" placeholder="确认密码">
+            </div>
+            @if (ViewBag.config.EnabledRegisterVerifykey)
+            {
+                <div class="row verifykey">
+                    <div class="col-xs-6 col-md-8">
+                        <div class="form-group">
+                            <label for="verifykey">验证码</label>
+                            <input type="text" class="form-control" name="verifykey" id="verifykey" required="required" placeholder="验证码">
+                            <input type="text"  name="key" id="key" value="register" class="hidden">
+                        </div>
+                    </div>
+                    <div class="col-xs-6 col-md-4">
+                        <div class="form-group">
+                            <div>
+                                <label for="verifykey" id="refreshverifykey">刷新验证码</label>
+                            </div>
+                            <img src="/tools/verifyKey/register/100/30" class="img-rounded" />
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="form-group btnbox">
+                <input type="submit" class="btn  btn-primary btn-block" value="注册" />
+            </div>
+            <div>
+                <label class="pull-right"><a href="/login">已有账号，现在登录</a></label>
+            </div>
+        </form>
+    </div>
+    <div class="col-sm-1 hidden-xs hidden-sm">
+        &nbsp;
+    </div>
+    <div class="col-sm-4  hidden-xs">
+        <img class="img-responsive center-block" src="https://passport.baidu.com/static/passpc-account/img/login/login-bg.png" />
+    </div>
+</div>
+@section Script{
+    <script src="/js/jquery.validate.min.js" charset="utf-8"></script>
+    <script src="/js/jquery.validate.methods.min.js" charset="utf-8"></script>
+    <script>
+        $(function () {
+            @if (ViewBag.config.EnabledRegisterVerifykey)
+            {
+            <text>
+            var refreshverifykey = function () {
+                $("#verifykey", $(".verifykey")).val("");
+                $(".img-rounded", $(".verifykey")).attr("src", "/tools/verifyKey/register/100/30?t=" + new Date().getMilliseconds());
+            };
+            $("#form-register").delegate("#refreshverifykey", "click", function () {
+                refreshverifykey();
+            });
+
+            </text>
+            }
+
+            //验证
+            var validate = formValidate("#form-register", {
+                ignore: ":hidden",
+                rules: {
+                    username: {
+                        required: true,
+                        remote: {
+                            async: false,
+                            url: "/cmsaction/checkusername",     //后台处理程序
+                            type: "post",
+                            dataFilter: function (data, type) {
+                                var valid = false;
+                                var result = JSON.parse(data);
+                                if (result.error == 0) {
+                                    if (result.data.Count <= 0) {
+                                        valid = true;
+                                    }
+                                }
+                                return valid;
+                            }
+                        }
+                    },
+
+                    password: {
+                        required: true,
+                        rangelength: [4, 16],
+                    },
+                    repassword: {
+                        equalTo: "#password",
+                    },
+                    
+                },
+                messages: {
+                    username: {
+                        required: "会员账号为空",
+                        remote: "会员账号已存在"
+                    },
+                   
+                    verifykey: {
+                        required: "验证码为空",
+                    },
+                    password: {
+                        required: "密码为空",
+                        rangelength: "长度在{0}-{1}之间"
+                    },
+                    repassword: {
+                        equalTo: "两次密码输入不一致",
+                    },
+                },
+                submitHandler: function (form) {
+                    var index = layer.load(); //换了种风格
+                    var username = $("#username").val();
+                    var password = $("#password").val();
+                    var verifykey = $("#verifykey").val();
+
+                    $.post("/cmsaction/register", { username: username, password: $.md5(password), verifykey: verifykey }, function (result) {
+                        layer.close(index);
+                        if (result.error == 0) {
+                            layer.msg('注册成功', { icon: 1 }, function (index) {
+                                location.href = "/person";
+                            });
+                        } else {
+                            refreshverifykey();
+                            ajaxResult(result, location.href);
+                        };
+                    }, "JSON");
+                }
+            });
+
+        });
+    </script>
+
+}

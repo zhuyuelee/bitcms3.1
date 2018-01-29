@@ -1,0 +1,361 @@
+﻿@{
+    Layout = "_Layout.cshtml";
+    ViewBag.Title = "网站配置";
+}
+
+<form method="post" action="#" id="form_step">
+    <div class="main">
+        <h3>数据库信息</h3>
+        <p class="lead">
+            请认真填写下面的数据库信息
+        </p>
+        <div class="row">
+            <div class="col-sm-7">
+                <div class="row">
+                    <div class="col-sm-8">
+                        <div class="form-group">
+                            <label for="server">数据库服务器</label>
+                            <input type="text" class="form-control" id="server" name="server" value="(local)" required="required" placeholder="数据库服务器">
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="port">服务器端口</label>
+                            <input type="number" class="form-control" id="port" name="port" value="3306" required="required" placeholder="服务器端口">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="database">数据库名称</label>
+                            <input type="text" class="form-control" id="database" name="database" required="required" placeholder="数据库名称">
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="characterset">数据库编码</label>
+                            <select class="form-control" id="characterset" name="characterset">
+                                <option value="utf8">utf8</option>
+                                <option value="gbk">gbk</option>
+                                <option value="big5">big5</option>
+                                <option value="gb2312">gb2312</option>
+                                <option value="utf8mb4">utf8mb4</option>
+                                <option value="latin1">latin1</option>
+                                <option value="euckr">euckr</option>
+                                <option value="armscii8">armscii8</option>
+                                <option value="ascii">ascii</option>
+                                <option value="binary">binary</option>
+                                <option value="cp1250">cp1250</option>
+                                <option value="cp1251">cp1251</option>
+                                <option value="cp1256">cp1256</option>
+                                <option value="cp1257">cp1257</option>
+                                <option value="cp850">cp850</option>
+                                <option value="cp852">cp852</option>
+                                <option value="cp866">cp866</option>
+                                <option value="cp932">cp932</option>
+                                <option value="dec8">dec8</option>
+                                <option value="eucjpms">eucjpms</option>
+                                <option value="geostd8">geostd8</option>
+                                <option value="greek">greek</option>
+                                <option value="hebrew">hebrew</option>
+                                <option value="hp8">hp8</option>
+                                <option value="keybcs2">keybcs2</option>
+                                <option value="koi8r">koi8r</option>
+                                <option value="koi8u">koi8u</option>
+                                <option value="latin2">latin2</option>
+                                <option value="latin5">latin5</option>
+                                <option value="latin7">latin7</option>
+                                <option value="macce">macce</option>
+                                <option value="macroman">macroman</option>
+                                <option value="sjis">sjis</option>
+                                <option value="swe7">swe7</option>
+                                <option value="tis620">tis620</option>
+                                <option value="ucs2">ucs2</option>
+                                <option value="ujis">ujis</option>
+                                <option value="utf16">utf16</option>
+                                <option value="utf16le">utf16le</option>
+                                <option value="utf32">utf32</option>
+                            </select>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="userid">数据库帐号</label>
+                            <input type="text" class="form-control" id="userid" name="userid" required="required" placeholder="数据库帐号">
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="password">数据库管理帐号密码</label>
+                            <input type="text" class="form-control" id="password" name="password" required="required" placeholder="数据库管理帐号密码">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group checkbox">
+                            <label for="drop">
+                                <input type="checkbox" id="drop" name="drop" value="1" checked="checked">
+                                包含DROP语句
+                            </label>
+                            <label for="testdata">
+                                <input type="checkbox" id="testdata" name="testdata" value="1" checked="checked">
+                                测试数据
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-5">
+                <p>
+                    <span class="label label-info">
+                        <i class="glyphicon glyphicon-tag"></i>
+                        Tips</span>
+                </p>
+                <p>
+                    1、<b>数据库服务器</b>如为本地，一般为<span class="text-primary">(local)</span>或<span class="text-primary">127.0.0.1</span>;如为远程服务器，请填写<span class="text-primary">服务器IP</span>或<span class="text-primary">域名</span>。
+                </p>
+                <p>
+                    2、<b>数据库服务器端口</b>默认为<span class="text-primary">3306</span>，如有更改，请填写更改后的端口号。
+                </p>
+                <p>
+                    3、本安装程序不新建数据库，请在数据库服务器上创建数据库后再填写创建后的<b>数据库名称</b>。
+                </p>
+                <p>
+                    4、<span class="text-primary">包含DROP语句</span>，执行安装SQL语句时将删除数据库中现有的表、视图和函数；<b>如数据库中已有数据，请做好备份</b>。
+                </p>
+            </div>
+        </div>
+
+        <h3>系统配置</h3>
+        <p class="lead">
+            请认真填写下面的系统配置信息
+        </p>
+        <div class="row">
+            <div class="col-sm-7">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="username">网站名称</label>
+                            <input type="text" class="form-control" id="sitename" name="sitename" required="required" placeholder="网站名称">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="sitedomain">网站域名</label>
+                            <input type="text" class="form-control" id="sitedomain" name="sitedomain" required="required" placeholder="http(s)://">
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="sitepath">网站目录</label>
+                            <input type="text" class="form-control" id="sitepath" name="sitepath" value="/" required="required" placeholder="网站目录">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <label for="username">管理员账号</label>
+                            <input type="text" class="form-control" id="username" name="username" required="required" placeholder="管理员账号">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="adminpassword">管理员密码</label>
+                            <input type="password" class="form-control" id="adminpassword" name="adminpassword" required="required" placeholder="管理员密码">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-6">
+                            <label for="adminrepassword">管理员密码确认</label>
+                            <input type="password" class="form-control" id="adminrepassword" name="adminrepassword" placeholder="管理员密码确认">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-5">
+                <p>
+                    <span class="label label-info">
+                        <i class="glyphicon glyphicon-tag"></i>
+                        Tips</span>
+                </p>
+                <p>
+                    1、如果要安装在站点的子目录，则填写/site/(site为子目录的名字，不需要建立文件夹)，否则就填写“/”。
+                </p>
+                <p>
+                    2、管理员账号为<b>网站创始人</b>，拥有一般管理员没有的特殊权限。请注意保护账号安全。
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="text-right">
+        <button type="submit" class="btn btn-primary">安 装</button>
+    </div>
+</form>
+<script src="/js/jquery-1.10.2.min.js" charset="utf-8"></script>
+<script src="/js/layer/layer.js" charset="utf-8"></script>
+<script src="/js/jquery.md5.js" charset="utf-8"></script>
+
+<script src="/js/jquery.validate.min.js" charset="utf-8"></script>
+<script src="/js/jquery.validate.methods.min.js" charset="utf-8"></script>
+<script>
+    $(function () {
+        $("#sitedomain").val((location.protocol + "//" + location.host + "/").toLowerCase());
+        var complateInstall = function (form) {
+            var index = layer.msg('正在初始化系统配置', { icon: 16, shade: 0.01 });
+            $.post("systemconfig", { server: $("#server", form).val(), port: $("#port", form).val(), database: $("#database", form).val(), userid: $("#userid", form).val(), password: $("#password", form).val(), characterset: $("#characterset", form).val(), sitename: $("#sitename", form).val(), sitedomain: $("#sitedomain", form).val(), sitepath: $("#sitepath", form).val() }, function (result) {
+                layer.close(index);
+                if (result.error == 0) {
+                    layer.msg('系统配置初始化完成', { icon: 1 }, function () {
+                        index = layer.msg('正在初始化系统管理员', { icon: 16, shade: 0.01 });
+                        $.post("initadminuser", { username: $("#username", form).val(), adminpassword: $.md5($("#adminpassword", form).val()) }, function (result) {
+                            layer.close(index);
+                            if (result.error == 0) {
+                                layer.msg('系统管理员初始化完成', { icon: 1 }, function () {
+                                    location.href = "succeed?username=" + $("#username", form).val();
+                                });
+                            } else {
+                                layer.alert("系统管理员初始化失败", { icon: 5 });
+                            };
+                        }, "JSON");
+                    });
+                } else {
+                    layer.alert("系统配置初始化失败", { icon: 5 });
+                };
+            }, "JSON");
+        };
+
+        $("#form_step").validate({
+            errorElement: 'label', //default input error message container
+            errorClass: 'help-block', // default input error message class
+            focusInvalid: true, // do not focus the last invalid input
+            rules: {
+                database: {
+                    key: true,
+                },
+                port: {
+                    digits: true,
+                    range: [1, 65535],
+                },
+                userid: {
+                    key: true,
+                },
+                adminpassword: {
+                    minlength: 5,
+                },
+                adminrepassword: {
+                    equalTo: "#adminpassword",
+                },
+            },
+            messages: {
+                server: {
+                    required: "数据库服务器为空",
+                },
+                port: {
+                    required: "服务器端口为空",
+                    range: "服务器端口在{0}-{1}之间的整数",
+                    digits: "服务器端口必须输入大于零的整数"
+                },
+                database: {
+                    required: "数据库名称为空",
+                },
+                userid: {
+                    required: "数据库帐号为空",
+                },
+                sitedomain: {
+                    required: "网站域名为空",
+                    url: "网站域名格式不正确",
+                },
+                password: {
+                    required: "数据库管理帐号密码为空",
+                },
+                sitename: {
+                    required: "网站名称为空",
+                },
+                sitepath: {
+                    required: "网站目录为空",
+                },
+                username: {
+                    required: "管理员账号为空",
+                },
+                adminpassword: {
+                    required: "管理员密码为空",
+                    minlength: "管理员密码至少为{0}位",
+                },
+                adminrepassword: {
+                    equalTo: "管理员密码输入不一致",
+                },
+
+            },
+            highlight: function (element) { // hightlight error inputs
+                $(element)
+                    .closest('.form-group').addClass('has-error'); // set error class to the control group
+            },
+
+            success: function (label) {
+                label.closest('.form-group').removeClass('has-error').addClass('has-success');
+                label.remove();
+            },
+            errorPlacement: function (error, element) {
+                if (element.parent().is(".input-group"))
+                    error.insertAfter(element.parent());
+                else
+                    error.insertAfter(element);
+            },
+            submitHandler: function (form) {
+                var index = layer.msg('正在验证数据库服务器', { icon: 16, shade: 0.01 });
+                $.post("checkdatabase", { server: $("#server", form).val(), port: $("#port", form).val(), database: $("#database", form).val(), userid: $("#userid", form).val(), password: $("#password", form).val() }, function (result) {
+                    layer.close(index);
+                    if (result.error == 0) {
+                        layer.msg('数据库验证成功', { icon: 1 }, function () {
+                            index = layer.msg('正在创建数据库表和视图', { icon: 16, shade: 0.01 });
+                            $.post("createtable", { server: $("#server", form).val(), port: $("#port", form).val(), database: $("#database", form).val(), userid: $("#userid", form).val(), password: $("#password", form).val(), characterset: $("#characterset", form).val(), drop: $("#drop:checked", form).val() }, function (result) {
+                                layer.close(index);
+                                if (result.error == 0) {
+                                    var msg = "";
+                                    if (result.data && result.data.count > 0) {
+                                        $(result.data).each(function (i, n) {
+                                            msg += "<p>" + n + "</p>";
+                                        });
+                                    }
+
+                                    layer.msg(msg || '数据库表和视图创建完成', { icon: 1 }, function (index) {
+                                        if ($("#testdata:checked", form).size() == 1) {
+                                            index = layer.msg('正在导入测试数据', { icon: 16, shade: 0.01 });
+                                            $.post("inserttestdata", { server: $("#server", form).val(), port: $("#port", form).val(), database: $("#database", form).val(), userid: $("#userid", form).val(), password: $("#password", form).val(), characterset: $("#characterset", form).val() }, function (result) {
+                                                layer.close(index);
+                                                if (result.error == 0) {
+                                                    layer.msg('测试数据测试导入完成', { icon: 1 }, function (index) {
+                                                        complateInstall(form);
+                                                    });
+                                                } else {
+                                                    layer.alert("测试数据测试导入失败", { icon: 5 });
+                                                };
+                                            }, "JSON");
+                                        } else {
+                                            complateInstall(form);
+                                        }
+                                    });
+                                } else {
+                                    layer.alert("数据库表和视图创建失败", { icon: 5 });
+                                };
+                            }, "JSON");
+                        });
+                    } else {
+                        layer.alert("数据库验证失败", { icon: 5 });
+                    };
+                }, "JSON");
+                return;
+            }
+        });
+    });
+</script>

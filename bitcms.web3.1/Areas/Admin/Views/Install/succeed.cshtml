@@ -1,0 +1,28 @@
+﻿@model Dictionary<string, bool>
+
+@{
+    Layout = "_Layout.cshtml";
+    ViewBag.Title = "安装";
+}
+
+<div class="main">
+    <h3>安装</h3>
+    <p>恭喜! 您已经成功安装，为了安全，请及时删除install目录下的文件</p>
+    <p>用管理员登录后，您可以在首页中点击“系统设置”进入论坛后台进行站点设置</p>
+    <p>网站名称：<span class="text-primary">@ViewBag.config.SiteName</span></p>
+    <p>网站域名：<span class="text-primary">@ViewBag.config.SiteDomain</span></p>
+    <p>管理员账号：<span class="text-primary">@ViewBag.username</span></p>
+
+    <p>为了保障安全，强烈建议到bitcms内容管理系统官方网站下载安装程序</p>
+    <ul class="steps">
+        <li><a href="http://bitcms.net">bitcms内容管理系统官方网站</a></li>
+        <li><a href="http://bitcms.net/doc/v3">bitcms 3.X 文档中心</a></li>
+        <li><a href="http://bitcms.net/bbs">开发者社区</a></li>
+        <li><a href="http://bitcms.net/bbs/forum/12">BUG反馈</a></li>
+    </ul>
+</div>
+<div class="text-right">
+    <a class="btn btn-default" href="/admin">管理中心</a>
+    <a class="btn btn-success" href="/">进入网站</a>
+</div>
+

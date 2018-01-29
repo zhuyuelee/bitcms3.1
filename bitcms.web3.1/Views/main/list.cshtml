@@ -1,0 +1,97 @@
+﻿@{
+    Layout = null;
+    var manage = new bitcms.Data.CMSManage();
+    var cid = bitcms.Common.Utils.strToInt(ViewBag.parms["cid"]);
+    var userid = bitcms.Common.Utils.strToInt(ViewBag.parms["uid"]);
+    var page = new bitcms.Entity.PageInfo()
+    {
+        PageSize = 8,
+        PageNumber = Utils.strToInt(ViewBag.parms["page"]),
+        Key = ViewBag.parms["key"]
+    };
+    var list = manage.getUserDetailList(page, "news", cid, userid);
+}
+@if (list.Count > 0)
+{
+    foreach (UserDetailInfo info in list)
+    {
+        var reg = @"cover:(\d+)";
+        var num = 0;
+        if (!string.IsNullOrEmpty(info.GalleryStatistics) && bitcms.Common.Utils.verifyMatch(reg, info.GalleryStatistics))
+        {
+            var cover = bitcms.Common.Utils.getMatchValue(reg, info.GalleryStatistics);
+            if (!string.IsNullOrEmpty(cover))
+            {
+                num = bitcms.Common.Utils.strToInt(cover.Substring(cover.IndexOf(':') + 1));
+            }
+        }
+        if (num > 3)
+        {
+            var gallerylist = manage.getDetailGalleryList(4, info.DetailId, bitcms.Entity.GalleryType.picture, true);
+    <section>
+        <a href="/info_@info.DetailId">
+            <h3>@info.Title</h3>
+        </a>
+        <ul>
+            @foreach (var galleryinfo in gallerylist)
+            {
+                <li>
+                    <a href="info_@info.DetailId" title="@galleryinfo.Title">
+                        <img src="/tools/getimg/@galleryinfo.GalleryId/240/168" title="@galleryinfo.Title" class="img-rounded" />
+                    </a>
+                </li>
+            }
+        </ul>
+        <footer>
+            <a class="btn btn-info">@info.ItemName</a>
+            <a class="avatar" href="/user/@info.UserId">
+                @info.UserName</a>
+            <span>@(info.ReviewNum)评论</span> <span>@info.InDate.ToString("MM-dd HH:mm")</span>
+        </footer>
+    </section>
+
+        }
+        else
+        {
+    <section>
+        <a href="info_@info.DetailId"></a>
+        <dl>
+            @if (info.GalleryId > 0)
+            {
+                <dt><a href="/info_@info.DetailId">
+                    <img src="/tools/getimg/@info.GalleryId/170/120" title="@info.Title" class="img-rounded" /></a>
+                </dt>
+            }
+            <dd>
+                <a href="/info_@info.DetailId">
+                    <h3>@info.Title</h3>
+                </a>
+                <p><a href="/info_@info.DetailId">@info.Resume </a></p>
+                <footer>
+                    <a class="btn btn-info">@info.ItemName</a>
+                    <a class="avatar" href="/user/@info.UserId">
+                        @info.UserName</a>
+                    <span>@(info.ReviewNum)评论</span> <span>@info.InDate.ToString("MM-dd HH:mm")</span>
+                </footer>
+            </dd>
+        </dl>
+
+    </section>
+        }
+    }
+}
+else if (page.PageNumber == 1)
+{
+    <div class="more text-center">
+        暂无内容
+    </div>
+}
+@if (page.PageCount > page.PageNumber)
+{
+    <div class="more text-center">
+        <a href="javascript:void(0);" data-page="@(page.PageNumber + 1)" data-cid="@cid" data-uid="@userid">加载更多</a>
+    </div>
+}
+@{
+    manage.Dispose();
+}

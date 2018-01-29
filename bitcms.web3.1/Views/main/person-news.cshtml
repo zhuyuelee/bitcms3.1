@@ -1,0 +1,86 @@
+﻿@{
+    if (ViewBag.userOnline.UserId <= 0)
+    {
+        Response.Redirect("/login?url=" + Utils.urlEncode(Fetch.getUrl()));
+    }
+
+    ViewBag.personNav = "news";
+    Layout = "~/Views/Shared/_UserCenterLayout.cshtml";
+    ViewBag.Title = "内容管理";
+    var manage = new bitcms.Data.CMSManage();
+    var key = ViewBag.parms["key"];
+
+    bitcms.Entity.PageInfo page = new bitcms.Entity.PageInfo()
+    {
+        PageNumber = bitcms.Common.Utils.strToInt(ViewBag.parms["page"]),
+        PageSize = 10,
+        Key = key
+    };
+    List<bitcms.Entity.DetailInfo> newsList = manage.getDetailList(page, "news", 0, ViewBag.userOnline.UserId, -1, 0, false);
+}
+<div class="mainbox">
+    @Html.Partial("_person-nav")
+    <div class="rightside row">
+        <div class="col-sm-10">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>标题</th>
+                        <th style="width: 100px;">点击</th>
+                        <th style="width: 100px;">管理</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (newsList.Count > 0)
+                    {
+                        foreach (DetailInfo info in newsList)
+                        {
+                        <tr>
+                            <td><a href="/info_@info.DetailId" target="_blank">@info.Title</a></td>
+                            <td>@info.HitsNum
+                            </td>
+                            <td><a href="javascript:void(0);" class="btn btn-danger btn-xs del" data-id="@info.DetailId">删除</a> <a class="btn btn-primary btn-xs" href="/person/news/edit/@info.DetailId">修改</a></td>
+                        </tr>
+                        }
+                    }
+                    else
+                    {
+                        ViewBag.message = "<a href='/person/news/add'>添加资讯</a>";
+                        <tr>
+                            <td colspan="3">
+                                @Html.Partial("_404")
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            @if (page.PageCount > 1)
+            {
+                <div class="page">
+                    @Html.Raw(Utils.getPages(page.PageNumber, page.PageCount, "/person/news/{0}", 5))
+                </div>
+            }
+        </div>
+
+    </div>
+</div>
+@{
+    manage.Dispose();
+}
+
+@section Script{
+    <script>
+        $(function () {
+            $(".table .del").on("click", function () {
+                var did = parseInt($(this).attr("data-id"));
+                if (did > 0) {
+                    layer.confirm('确认删除选中资讯？', { title: '删除确认？' }, function () {
+                        $.post("/cmsaction/deletedetail", { "id": did }, function (result) {
+                            ajaxResult(result, location.href);
+                        });
+                    });
+                }
+            });
+        });
+    </script>
+}

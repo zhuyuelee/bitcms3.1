@@ -1,0 +1,328 @@
+﻿<div class="row">
+    <div class="left main_nav">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="glyphicon glyphicon-th-list"></i>
+                管理目录
+                <div class="pull-right">
+                    <button type="button" id="btn_del" class="btn btn-xs btn-danger">删除</button>
+                </div>
+            </div>
+            @{
+                var usertype = ViewBag.usertype as List<bitcms.Entity.DictionaryKeyInfo>;
+            }
+            <div id="nav-tabs" class="btn-group btn-group-justified" role="group" @if (usertype.Count == 1)
+                                                                                  {
+                                                                                  <text> style="display:none;"</text>
+                                                                                  }>
+                @{
+                    var smallbtn = "";
+                    if (usertype.Count > 4)
+                    {
+                        smallbtn = "btn-xs";
+                    }
+                    else if (usertype.Count > 2)
+                    {
+                        smallbtn = "btn-sm";
+                    }
+                    var index = 0;
+                    foreach (var type in usertype)
+                    {
+                    <a href="javascript:void(0);" data-type="@type.Value" class="btn @if (index == 0)
+                                                                                     {<text> btn-primary</text> index++;
+                                                                                     }
+                                                                                     else
+                                                                                     {<text> btn-default</text> }@smallbtn">@type.Title</a>
+                    }
+                }
+            </div>
+            <div id="treeview" data-id="0" class="tree ajax">
+            </div>
+        </div>
+    </div>
+    <div class="right main-context">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="glyphicon glyphicon-edit"></i>
+                目录管理操作
+                <div class="pull-right">
+                    <button type="button" id="btn_add" class="btn btn-xs btn-success">添加</button>
+                </div>
+            </div>
+            <div class="panel-body">
+                <form method="post" id="form-submit" action="#" class="form-horizontal validate">
+                    <div class="form-group">
+                        <label for="MenuName" class="col-xs-2 control-label">
+                            菜单名称
+                            <i class="text-danger">*</i>
+                        </label>
+                        <div class="col-xs-8">
+                            <input type="text" class="form-control" required="required" name="MenuName" id="MenuName" placeholder="节点名称" />
+                        </div>
+                        <div class="col-xs-2 checkbox">
+                            <label>
+                                <input type="checkbox" value="1" checked="checked" name="Display" id="Display" />
+                                显示菜单</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="FatherId" class="col-xs-2 control-label">分类</label>
+                        <div class="col-xs-10">
+                            <select id="FatherId" name="FatherId" class="form-control">
+                                <option value="0" data-fatherid="-1">+根节点</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="hidden" id="box-controller">
+                        <div class="form-group">
+                            <label for="Area" class="col-xs-2 control-label">
+                                类控制器
+                            <i class="text-danger">*</i>
+                            </label>
+                            <div class="col-xs-4">
+                                @Html.DropDownList("Area", ViewBag.area as SelectList, "=Area区域=", new { @class = "form-control", required = "required" })
+                            </div>
+                            <div class="col-xs-6">
+                                <input type="text" class="form-control" required="required" name="Controller" id="Controller" placeholder="类控制器(Controller)" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="MenuName" class="col-xs-2 control-label">
+                                参数
+                            <i class="text-danger">*</i>
+                            </label>
+                            <div class="col-xs-10">
+                                <input type="text" class="form-control" name="Parm" id="Parm" placeholder="参数" />
+                                <span class="help-block">使用键值对的形式key=val，多个参数使用&隔开</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="Icon" class="col-xs-2 control-label">
+                            图标
+                        </label>
+                        <div class="col-xs-10">
+                            <input type="text" class="form-control" name="Icon" id="Icon" placeholder="图标" />
+                        </div>
+                        <div class="col-xs-2">
+                            <input type="button" class="btn btn-primary  btn-block" id="choseicon" value="图标" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="OrderNo" class="col-xs-2 control-label">排序</label>
+                        <div class="col-xs-10">
+                            <input type="number" min="0" max="999" value="200" class="form-control" name="OrderNo" id="OrderNo" placeholder="排序" />
+                            <span class="help-block">数字，越小越靠前。</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-xs-offset-2 col-xs-10">
+                            <input type="text" name="AdminMenuId" id="AdminMenuId" style="display: none;" />
+                            <input type="text" name="RoleType" id="RoleType" value="" style="display: none;" />
+                            <button type="submit" id="submit" class="btn btn-primary">提交</button>
+                            <button type="reset" class="btn">重置</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script type="text/html" id="iconlist">
+    <div class="container-fluid">
+        <div class='row show-grid'>
+            @{
+                var iconlist = ViewBag.icon as List<bitcms.Entity.DictionaryKeyInfo>;
+                foreach (var icon in iconlist)
+                {
+                <div class="col-xs-1">
+                    <span class="@icon.Value"></span>
+                </div>
+                }
+            
+            }
+        </div>
+    </div>
+</script>
+@section Script{
+    <script>
+        $(function () {
+            //选择图标
+            $("#choseicon").click(function () {
+                layer.open({
+                    title: "选择图标",
+                    type: 1,
+                    area: ['620px', '320px'], //宽高
+                    content: $("#iconlist").html(),
+                    success: function (layero, index) {
+                        $(".col-xs-1", layero).click(function () {
+                            $("#Icon").val($(this).children("span").attr("class"));
+                            layer.close(index); //如果设定了yes回调，需进行手工关闭
+                        });
+                    }
+                });
+            });
+            var setController = function (mid) {
+                var menu = $.trim($("option[value=" + mid + "]").text());
+                if (menu.indexOf("├") > -1) {//三级菜单
+                    $("#box-controller.hidden").removeClass("hidden");
+                    $("#lab-shortcut.hidden").removeClass("hidden");
+                } else {
+                    $("#box-controller:not(.hidden)").addClass("hidden");
+                    $("#lab-shortcut:not(.hidden)").addClass("hidden");
+                }
+            };
+            $("#btn_add").click(function () {
+                $("#FatherId>option").each(function (i) {
+                    if (i > 0) {
+                        var option = $(this);
+                        if (option.is("[disabled]")) {
+                            option.removeAttr("disabled");
+                        }
+                    }
+                });
+            });
+
+            $("#FatherId").change(function () {
+                var sel = $(this);
+                setController(sel.val());
+            });
+            var loadTree = function (type) {
+                //树形菜单
+                $.get("/admin/adminmenu/loadmenus/", { t: type }, function (result) {
+                    var option = '';
+                    if (result.error == 0) {
+                        $(result.data).each(function (i, n) {
+                            option += '<option value="' + n.AdminMenuId + '" data-fatherid="' + n.FatherId + '">' + n.MenuName + '</option>';
+                        });
+                    } else {
+                        ajaxResult(result);
+                    }
+                    $("#FatherId").empty().html(option);
+                });
+                $("#RoleType").val(type);
+                $("#treeview").empty().addClass("ajax");
+                $("#treeview").tree({
+                    ajax: "/admin/adminmenu/loadjson/?t=" + type, click: function (li) {
+                        if (li.attr("data-id") > 0) {
+                            if ($(".main-context").is(":hidden") == 1) {
+                                $(".main-context:hidden").show();
+                            }
+                            $.getJSON("/admin/adminmenu/loadmodel/", { id: li.attr("data-id") }, function (result) {
+                                if (result.error == 0) {
+                                    $("#MenuName").val(result.data.MenuName);
+                                    $("#FatherId").val(result.data.FatherId);
+                                    var disabled = false;
+                                    $("#FatherId>option").each(function (i) {
+                                        if (i > 0) {
+                                            var option = $(this);
+                                            var title = option.text();
+                                            var val = option.attr("value");
+                                            var fatherid = option.attr("data-fatherid")
+
+                                            if (result.data.AdminMenuId == val) {
+                                                disabled = true;
+                                            } else if (fatherid == 0) {
+                                                disabled = false;
+                                            }
+
+                                            if (disabled) {
+                                                option.attr("disabled", "disabled");
+                                            } else if (option.is("[disabled]")) {
+                                                option.removeAttr("disabled");
+                                            }
+                                        }
+                                    });
+                                    setController(result.data.FatherId);
+                                    $("#Area").val(result.data.Area);
+                                    $("#Controller").val(result.data.Controller);
+                                    $("#Parm").val(result.data.Parm);
+                                    $("#Icon").val(result.data.Icon);
+                                    $("#OrderNo").val(result.data.OrderNo);
+                                    $("#Display").prop("checked", result.data.Display == 1);
+
+                                    $("#AdminMenuId").val(result.data.AdminMenuId);
+                                } else {
+                                    ajaxResult(result);
+                                }
+                            });
+                        }
+                        return false;
+                    }
+                });
+            };
+
+            $("#nav-tabs>a.btn").click(function () {
+                if (!$(this).is(".btn-primary")) {
+                    var link = $(this);
+                    link.siblings(".btn-primary").removeClass("btn-primary").addClass("btn-default");
+                    link.removeClass("btn-default").addClass("btn-primary");
+                    loadTree(link.attr("data-type"));
+                }
+            });
+            //管理目录
+            loadTree($("#nav-tabs>a.btn-primary").attr("data-type"));
+
+
+            //删除菜单
+            $("#btn_del").click(function () {
+                if ($("a.active", "#treeview").size() == 0) {
+                    layer.alert("请选择要删除的数据！", { icon: 5 });
+                } else {
+                    var li = $("a.active:first", "#treeview").parent("li");
+                    if (li.is("[data-id]")) {
+                        layer.confirm('确认删除该条数据（如该数据下有子菜单，将删除失败）！', {
+                            title: '删除确认？'
+                        }, function () {
+                            $.post("/admin/adminmenu/delete", { "id": li.attr("data-id") }, function (result) {
+                                ajaxResult(result);
+                            });
+                        });
+                    } else {
+                        layer.alert("要删除的数据不完整！", { icon: 5 });
+                    }
+                }
+            });
+
+            //验证表单
+            formValidate("#form-submit", {
+                rules: {
+                    "Controller": {
+                        required: function () {
+                            return $("#Controller").is(":visible");
+                        },
+                        remote: {
+                            url: "/admin/adminmenu/checkcode/",     //后台处理程序
+                            type: "get",               //数据发送方式
+                            data: {                     //要传递的数据
+                                control: function () { return $("#Controller").val() },
+                                area: function () { return $("#Area").val() },
+                                aid: function () { return $("#AdminMenuId").val() },
+                                parm: function () { return $("#Parm").val() },
+                            }
+                        }
+                    }
+                },
+                messages: {
+                    "Controller": {
+                        required: "不能为空！",
+                        remote: "控制器已经存在"
+                    }
+                },
+                submitHandler: function (form) {
+                    $("#RoleType").val($("#nav-tabs>a.btn-primary").attr("data-type"));
+
+                    setSubmit($("#submit", form));
+                    $.post("/admin/adminmenu/update/", $(form).serialize(), function (result) {
+                        setSubmit($("#submit", form));
+                        ajaxResult(result);
+                    }, "JSON");
+                    return false;
+                }
+            });
+        });
+
+    </script>
+}

@@ -1,0 +1,89 @@
+﻿@{
+    if (ViewBag.userOnline.UserId <= 0)
+    {
+        Response.Redirect("/login?url=" + Utils.urlEncode(Fetch.getUrl()));
+    }
+    Layout = "~/Views/Shared/_UserCenterLayout.cshtml";
+    ViewBag.Title = "会员中心";
+
+    var manage = new CMSManage();
+
+    var userinfo = manage.getUserInfo(ViewBag.userOnline.UserId);
+
+    var avatar = userinfo.Avatar;
+    if (string.IsNullOrEmpty(avatar))
+    {
+        avatar = "/images/noavatar_middle.gif";
+    }
+}
+<div class="mainbox">
+
+    @Html.Partial("_person-nav")
+
+
+    <div class="rightside">
+        <dl class="userinfo">
+            <dt>
+                <img src="@avatar" class="avatar"  alt="@userinfo.UserName" title="@userinfo.UserName" onerror="this.src='/images/noavatar_middle.gif'"/>
+
+                <label>
+                    更换头像
+                    <input type="file" id="avatarupload" />
+                </label>
+            </dt>
+            <dd>
+                <p><b>@userinfo.UserName</b></p>
+                <p>
+                    @{
+                        var roleInfo = manage.getRoleInfo(userinfo.RoleId);
+                        if (roleInfo != null)
+                        {
+                        <span>@roleInfo.RoleName</span>
+                        }
+                        if (userinfo.VerifyMember != 1)
+                        {
+                        <label>未认证</label>
+                        }
+                    }
+                </p>
+                <p>
+                    <span>积分：@userinfo.Score</span>
+                    <a href="/person/scorelog" class="btn btn-primary btn-xs">积分记录</a>
+                </p>
+                <p>
+                    <span>粉丝：@userinfo.FollowNum</span>
+                    <a href="/person/follow" class="btn btn-primary btn-xs">查看</a>
+                </p>
+            </dd>
+        </dl>
+    </div>
+</div>
+
+@{
+    manage.Dispose();
+}
+
+
+@section Script{
+        <script src="/js/jquery.h5_upload.js" charset="utf-8"></script>
+<script>
+    $(function () {
+        //头像上传
+        var loadindex;
+        $("#avatarupload").h5_upload({
+            preview: ".avatar", folder: "avatar", cut: 1, maxheight: 320, maxwidth: 320, watermark: 0, change: function () {
+                loadindex = layer.load();
+            }, success: function (result) {
+                if (result.error == 0) {
+                    $(".avatar").attr("src", result.data);
+                    $.post("/cmsaction/updateavatar", { avatar: result.data }, function (result) {
+                        layer.close(loadindex);
+                    }, "JSON");
+                } else {
+                    layer.alert("上传失败！", { icon: 5 });
+                }
+            }
+        });
+    });
+</script>
+    }

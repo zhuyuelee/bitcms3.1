@@ -1,0 +1,404 @@
+﻿@model List<bitcms.Entity.AdminMenuInfo>
+
+
+<div class="row">
+    <div class="left main_nav">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="glyphicon glyphicon-th-list"></i>
+                会员角色
+              <div class="pull-right">
+                  <button type="button" id="btn_del" class="btn btn-xs btn-danger">删除</button>
+              </div>
+            </div>
+            <table id="list-table" class="table table-hover">
+            </table>
+        </div>
+    </div>
+    <div class="right main-context">
+        <div class="table-responsive">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="glyphicon glyphicon-edit"></i>
+                    权限管理操作
+                 <div class="pull-right">
+                     <button type="button" id="btn_add" class="btn btn-xs btn-success">添加</button>
+                 </div>
+                </div>
+                <div class="panel-body">
+                    <form method="post" id="form-submit" action="#" class="form-horizontal">
+                        <div class="form-group">
+                            <label for="RoleName" class="col-xs-2 control-label">
+                                角色名
+                            <i class="text-danger">*</i>
+                            </label>
+                            <div class="col-xs-8">
+                                <input type="text" class="form-control" required="required" name="RoleName" id="RoleName" placeholder="角色名" />
+                            </div>
+                            <div class="col-xs-2 checkbox">
+                                <label>
+                                    <input type="checkbox" value="1" name="Lock" id="Lock" />
+                                    锁定角色</label>
+                            </div>
+                        </div>
+                        <div class="form-group" id="roletypeset">
+                            <label class="col-xs-2 control-label">
+                                角色类型
+                            <i class="text-danger">*</i>
+                            </label>
+                            <div class="col-xs-10">
+                                <div class="radio">
+                                    @{
+                                        var usertype = ViewBag.usertype as List<bitcms.Entity.DictionaryKeyInfo>;
+
+                                        var index = 0;
+                                        foreach (var type in usertype)
+                                        {
+                                        <label>
+                                            <input type="radio" name="RoleType" value="@type.Value" @if (index == 0)
+                                                                                                    {<text> checked="checked"</text> index++;
+                                                                                                    }/>
+                                            @type.Title
+                                        </label>
+                                        }
+                
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="Path" class="col-xs-2 control-label">
+                                图标
+                            </label>
+                            <div class="col-xs-8">
+                                <input type="text" class="form-control" id="Icon" name="Icon" placeholder="角色图标" />
+                            </div>
+                            <div class="col-xs-2">
+                                <button type="button" id="fileupload" class="btn btn-primary btn-block">上传</button>
+                                <input type="file" class="form-control" id="file" style="display: none;" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="ReadPower" class="col-xs-2 control-label">
+                                阅读权限
+                            </label>
+                            <div class="col-xs-10">
+                                <input type="number" min="0" max="100" class="form-control" required="required" name="ReadPower" id="ReadPower" placeholder="阅读权限" />
+                                <span class="help-block">0-100之间的数字</span>
+                            </div>
+                        </div>
+                        <div class="form-group" id="scoreset">
+                            <label class="col-xs-2 control-label">
+                                最小积分
+                            </label>
+                            <div class="col-xs-10">
+                                <input type="number" min="0" class="form-control " name="MinScore" id="MinScore" placeholder="最小积分" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="OrderNo" class="col-xs-2 control-label">
+                                排序
+                            </label>
+                            <div class="col-xs-10">
+                                <input type="number" min="0"  class="form-control" required="required" name="OrderNo" id="OrderNo" placeholder="排序" />
+                                <span class="help-block">越小越靠前</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="Resume" class="col-xs-2 control-label">
+                                简要说明
+                            <i class="text-danger">*</i>
+                            </label>
+                            <div class="col-xs-10">
+                            <textarea class="form-control" id="Resume" name="Resume" placeholder="简要说明"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group" id="role-power">
+                            <label class="col-xs-2 control-label">
+                                权限
+                            <i class="text-danger">*</i>
+                            </label>
+                            @{
+                                var roots = Model.FindAll(g => g.FatherId == 0);
+                            }
+                            <div class="col-xs-10">
+
+                                @foreach (var root in roots)
+                                {
+                                    <table class="table table-hover" data-type="@root.RoleType">
+
+                                        @{var childList = Model.FindAll(g => g.FatherId == root.AdminMenuId);
+                                          foreach (var child in childList)
+                                          { 
+                                            <tr class="father" data-id="@child.AdminMenuId" data-fid="@child.FatherId" >
+                                                <th style="width: 30%;">@child.MenuName</th>
+                                                <td>
+                                                    <label>
+                                                        <input type="checkbox" value="@child.AdminMenuId" class="checkall" />
+                                                        全选
+                                                    </label>
+                                                </td>
+                                            </tr>
+                                              var powerList = Model.FindAll(g => g.FatherId == child.AdminMenuId);
+                                              foreach (var power in powerList)
+                                              { 
+                                            <tr  class="child" data-fid="@power.FatherId" data-id="@power.AdminMenuId">
+                                                <td>&nbsp;├─&nbsp;@power.MenuName</td>
+                                                <td class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" value="@power.AdminMenuId" class="read" />
+                                                        读
+                                                    </label>
+                                                    <label>
+                                                        <input type="checkbox" value="@power.AdminMenuId" class="edit" disabled />
+                                                        写
+                                                    </label>
+                                                </td>
+                                            </tr>
+                                              }
+                                          }
+                                        }
+                                    </table>
+                                }
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-xs-offset-2 col-xs-10">
+                                <input type="hidden" name="powerList" id="powerList" />
+                                <input type="text" name="RoleId" id="RoleId" style="display: none;" />
+                                <button type="submit" id="submit" class="btn btn-primary">提交</button>
+                                <button type="reset" class="btn">重置</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+@section Script{
+
+<script>
+    $(function () {
+        $("#fileupload").click(function () {
+            $("#file").click();
+        });
+        //图片上传
+        $("#file").h5_upload({
+            folder: "ads", cut: 0, maxheight: 1000, maxwidth: 1200, watermark: 0, change: function () {
+            }, success: function (result) {
+                if (result.error == 0) {
+                    $("#Icon").val(result.data);
+                } else {
+                    layer.alert("上传失败！", { icon: 5 });
+                }
+            }
+        });
+
+        //重置表单
+        var resetForm = function () {
+            setPower($(":radio:first", "#roletypeset").val());
+        };
+        var setPower = function (roletype) {
+            if (roletype == "score") {
+                $("#scoreset").show();
+            } else {
+                $("#scoreset").hide();
+            }
+
+            $(":checkbox", "#role-power").prop("checked", false);
+            var tabs = $("table[data-type=" + roletype + "]", "#role-power");
+            if (tabs.size() > 0) {
+                $("#role-power").show();
+                tabs.show();
+                $("table[data-type!=" + roletype + "]", "#role-power").hide();
+            } else {
+                $("#role-power").hide();
+            };
+        };
+
+        $("#btn_add").click(function () {
+            resetForm();
+        });
+        resetForm();
+        //设置角色类型权限
+        $(":radio", "#roletypeset").click(function () {
+            setPower($(this).val());
+        });
+
+        //角色
+        var table = $("#list-table");
+        table = initBootstrapTable(table, {
+            url: "/admin/role/loadjson",
+            search: false,
+            columns: [
+                {
+                    field: 'state',
+                    checkbox: true,
+                    align: 'center',
+                    valign: 'middle'
+                },
+                    {
+                        title: '角色名',
+                        field: 'RoleName',
+                        valign: 'middle'
+                    },
+                    {
+                        title: '类型',
+                        field: 'RoleType',
+                        valign: 'middle',
+                        formatter: function (val, row, index) {
+                            var roletype = $(":radio[value=" + val + "]", "#roletypeset").parent().text();
+                            if (!roletype) {
+                                roletype = "未定义";
+                            }
+                            return roletype;
+                        }
+                    }
+            ],
+            onCheck: function (row) {
+                //重置权限表
+                $(":checkbox:checked", "#role-power").prop("checked", false);
+                $(".edit:checkbox:not(:disabled)", "#role-power").prop("disabled", true);
+
+                $.get("/admin/role/loadmodel/", { "id": row.RoleId }, function (result) {
+                    if (result.error == 0) {
+                        $("#RoleName").val(row.RoleName);
+                        if (row.Lock == 1) {
+                            $("#Lock").prop("checked", true);
+                        } else {
+                            $("#Lock").prop("checked", false);
+                        }
+                        $(":radio[value=" + row.RoleType + "]", ".radio").prop("checked", true);
+                        setPower(row.RoleType);
+                        $("#Icon").val(result.Icon);
+                        $("#ReadPower").val(row.ReadPower);
+                        $("#MinScore").val(row.MinScore);
+                        $("#MaxScore").val(row.MaxScore);
+                        $("#RoleId").val(row.RoleId);
+                        $("#OrderNo").val(row.OrderNo);
+                        $("#Resume").val(row.Resume);
+                        if (result.data.length > 0) {
+                            $(result.data).each(function (i, n) {
+                                var tr = $("tr.child[data-id=" + n.AdminMenuId + "]");
+                                $(".read:checkbox", tr).prop("checked", true);
+                                if (n.Edit) {
+                                    $(".edit:checkbox", tr).prop({ "checked": true, "disabled": false });
+                                    //全选
+                                    var fid = tr.attr("data-fid");
+                                    if ($(":checkbox:not(:checked)", "tr.child[data-fid=" + fid + "]").size() == 0) {
+                                        $(".checkall[value=" + fid + "]").prop("checked", true);
+                                    }
+                                } else {
+                                    $(".edit:checkbox", tr).prop({ "disabled": false });
+                                }
+                            });
+                        }
+                    } else {
+                        ajaxResult(result);
+                    }
+                });
+            }
+        });
+
+        //删除菜单
+        $("#btn_del").click(function () {
+            var delrows = $("#list-table").bootstrapTable('getSelections');
+            if (delrows.length == 0) {
+                layer.alert("请选择要删除的数据！");
+            } else {
+                layer.confirm('确认删除该条数据（如该角色下有会员数据，将删除失败）！', {
+                    title: '删除确认？'
+                },
+                    function () {
+                        var ids = "";
+                        $(delrows).each(function (i, n) {
+                            if (ids.length > 0)
+                                ids += ",";
+                            ids += n.RoleId;
+                        });
+                        if (ids.length > 0) {
+                            $.post("/admin/role/delete", { "ids": ids }, function (result) {
+                                ajaxResult(result);
+                            });
+                        }
+                    });
+            }
+        });
+
+        //角色权限全选
+        $(".checkall").change(function () {
+            var check = $(this);
+            if (check.is(":checked")) {//选中
+                $(".edit:checkbox[disabled]", "tr.child[data-fid=" + check.val() + "]").prop("disabled", false);
+                $(":checkbox", "tr.child[data-fid=" + check.val() + "]").prop("checked", true);
+            } else {
+                $(".edit:checkbox", "tr.child[data-fid=" + check.val() + "]").prop("disabled", true);
+                $(":checkbox", "tr.child[data-fid=" + check.val() + "]").prop("checked", false);
+            }
+        });
+        //角色权限单选
+        $(".read,.edit", "#role-power").change(function () {
+            var check = $(this);
+            var tr = check.parentsUntil("tr").parent();
+            var fid = tr.attr("data-fid");
+            if (check.is(":checked")) {
+                if (check.is(".read")) {
+                    $(".edit", check.parentsUntil("tr.child").parent()).prop("disabled", false);
+                } else if ($(":checkbox:not(:checked)", "tr.child[data-fid=" + fid + "]").size() == 0) {
+                    $(".checkall[value=" + fid + "]").prop("checked", true);
+                }
+
+            } else {
+                $(".edit", check.parent().siblings()).prop({ "disabled": true, "checked": false });
+                if ($(".checkall[value=" + fid + "]:checked").size() > 0) {//去除全选
+                    $(".checkall[value=" + fid + "]:checked").prop("checked", false);
+                }
+            }
+        });
+
+        //验证表单
+        formValidate("#form-submit", {
+            submitHandler: function (form) {
+                setSubmit($("#submit", form));
+                if ($("#role-power").is(":visible")) {
+                    var roleid = $("#RoleId").val();
+                    if (!roleid) {
+                        roleid = "0";
+                    }
+                    var rolePower = "[";
+                    $(".table:visible tr.father", "#role-power").each(function (i) {
+                        var tr = $(this);
+                        if ($(":checkbox:checked", "tr.child[data-fid=" + tr.attr("data-id") + "]").size() > 0) {
+                            if (rolePower.length > 1) {
+                                rolePower += ",";
+                            }
+                            rolePower += "{\"RoleId\":" + roleid + ",\"AdminMenuId\":" + tr.attr("data-fid") + ",\"Read\":1,\"Edit\":0}";
+                            rolePower += ",{\"RoleId\":" + roleid + ",\"AdminMenuId\":" + tr.attr("data-id") + ",\"Read\":1,\"Edit\":0}";
+
+                            $(".read:checkbox:checked", "tr.child[data-fid=" + tr.attr("data-id") + "]").each(function (j) {
+                                var checkbox = $(this);
+                                var editpower = 0;
+                                if ($(".edit", checkbox.parent().siblings()).is(":checked")) {
+                                    editpower = 1;
+                                }
+                                rolePower += ",{\"RoleId\":" + roleid + ",\"AdminMenuId\":" + checkbox.val() + ",\"Read\":1,\"Edit\":" + editpower + "}";
+                            });
+                        }
+
+                    });
+                    rolePower += "]";
+                    $("#powerList").val(rolePower);
+                }
+                $.post("/admin/role/update/", $(form).serialize(), function (result) {
+                    setSubmit($("#submit", form));
+                    ajaxResult(result);
+                }, "JSON");
+                return false;
+            }
+        });
+    });
+
+</script>
+}

@@ -1,0 +1,74 @@
+﻿@{
+    if (ViewBag.userOnline.UserId <= 0)
+    {
+        Response.Redirect("/login?url=" + Utils.urlEncode(Fetch.getUrl()));
+    }
+    
+    Layout = "~/Views/Shared/_UserCenterLayout.cshtml";
+    ViewBag.Title = "积分记录";
+
+    var manage = new CMSManage();
+    ViewBag.personNav = "scorelog";
+    var userInfo = manage.getUserInfo(ViewBag.userOnline.UserId);
+    var provincelist = manage.getCityList(0);
+
+    var avatar = userInfo.Avatar;
+    if (string.IsNullOrEmpty(avatar))
+    {
+        avatar = "/images/noavatar_middle.gif";
+    }
+
+    var page = new bitcms.Entity.PageInfo()
+    {
+        PageSize = 10,
+        PageNumber = Utils.strToInt(ViewBag.parms["page"]),
+        Key = ViewBag.parms["key"]
+    };
+    var list = manage.getScoreLogList(page, ViewBag.userOnline.UserId);
+}
+
+<div class="mainbox">
+    @Html.Partial("_person-nav")
+    <div class="rightside row">
+        <div class="col-sm-10">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>事件</th>
+                        <th>积分</th>
+                        <th>时间</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (ScoreLogsInfo loginfo in list)
+                    {
+                        <tr>
+                            <td>@loginfo.Reason</td>
+                            <td><span>@loginfo.Score
+                                @if (loginfo.IncomeOrExpenses == 1)
+                                { <text>（-）</text>}
+                                else
+                                {
+                                    <text>（+）</text>
+                                }</span>
+                            </td>
+                            <td>@loginfo.InDate.ToString("yyyy-MM-dd HH:mm")</td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+            @if (page.PageCount > 1)
+            {
+                <div class="page">
+                    @Html.Raw(Utils.getPages(page.PageNumber, page.PageCount, "/person/scorelog/{0}", 5))
+                </div>
+            }
+        </div>
+
+    </div>
+</div>
+
+@{
+    manage.Dispose();
+}

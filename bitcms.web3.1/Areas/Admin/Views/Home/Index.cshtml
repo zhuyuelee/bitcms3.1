@@ -1,0 +1,230 @@
+﻿@{
+    Layout = null;
+    ViewBag.Title = ViewBag.config.SiteName;
+}
+<!DOCTYPE html>
+<html class="no-js" lang="zh-cn">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title  - 后台管理系统</title>
+    @Html.Partial("_style")
+    <!-- 注意： 如果通过 file://  引入 Respond.js 文件，则该文件无法起效果 -->
+    <!--[if lt IE 9]>
+         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+         <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+      <![endif]-->
+</head>
+
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse" aria-expanded="false">
+                    <span class="sr-only">导航</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand text-hide" href="@(ViewBag.config.SitePath)">bitcms</a>
+            </div>
+            <div class="collapse navbar-collapse">
+                <ul id="nav" class="nav navbar-nav">
+                    <li class="active">
+                        <a href="javascript:void(0);" data-id="0" data-shortcat="1">
+                            <i class="glyphicon glyphicon-home"></i>
+                            首页</a>
+                    </li>
+                    @foreach (var menu in ViewBag.menus)
+                    {
+                        <li>
+                            <a data-id="@menu.AdminMenuId" data-shortcat="0" href="javascript:void(0);">
+                                @if (!string.IsNullOrEmpty(@menu.Icon))
+                                {
+                                    <i class="@menu.Icon"></i>
+                                }
+                                @menu.MenuName</a>
+                        </li>
+                    }
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-user"></i>
+                            @ViewBag.adminUserInfo.UserName <i class="caret"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a tabindex="-1" href="javascript:void(0);" data-area="admin" data-href="changepassword/" class="shortcutmenu"><i class="glyphicon glyphicon-lock"></i>
+                                    修改密码</a>
+                            </li>
+                            <li>
+                                <a tabindex="-1" href="javascript:void(0);" data-area="admin" data-href="shortcutmenu/" class="shortcutmenu"><i class="glyphicon glyphicon-send"></i>
+                                    快捷菜单</a>
+                            </li>
+                            <li class="divider"></li>
+                            <li>
+                                <a tabindex="-1" href="?t=out"><i class="glyphicon glyphicon-log-out"></i>
+                                    退出</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div id="leftnav">
+        <div id="sidebar"></div>
+    </div>
+    <div id="container">
+        <iframe src="/admin/home/main" id="iframe-content"></iframe>
+    </div>
+
+
+    <!-- /block -->
+    @Html.Partial("_script")
+
+    <script>
+
+
+        //加载
+        var loadContent = function (area, href, path) {
+            var bar = $("#leftnav");
+            if (bar.is(".active")) {
+                bar.removeClass("active");
+            }
+            $("#iframe-content").attr("data-path", path);
+            $("#iframe-content").attr("src", "/" + area + "/" + href);
+        };
+
+        $("#iframe-content").on("load", function () {
+            var body = $(this.contentWindow.document.body).text();
+            if (body.indexOf("{") == 0) {
+                var result = JSON.parse(body);
+                if (result && result.error > 0) {
+                    ajaxResult(result);
+                }
+            }else{
+                var path = $("#iframe-content").attr("data-path");
+                if (path) {
+                    //$(".breadcrumb .active").html(path);
+                    $("ol.breadcrumb .active", this.contentWindow.document.body).html(path);
+                }
+                
+            }
+        });
+        
+
+        $(function () {
+            if (window.top != window.self) {
+                window.top.location.href = location.href;
+            }
+
+            //二级菜单
+            $("#sidebar").delegate("dl>dt", "click", function () {
+                var dt = $(this);
+                if (!dt.hasClass("active")) {
+                    $("label.glyphicon-chevron-down", "#sidebar dt.active").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");
+                    $("#sidebar dt.active").removeClass("active").next("dd").hide();
+                    dt.addClass("active").next("dd").hide();
+                    $("label.glyphicon-chevron-right", dt).removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
+                    if ($("a", dt.next("dd")).size() == 0) {
+                        $.getJSON("/admin/home/loadjson?fatherid=" + dt.attr("data-id") + "&shortcat=" + dt.attr("data-shortcat"), function (result) {
+                            if (result.error == 0) {
+                                var menus = "";
+                                if (result.data.length > 0) {
+                                    $.each(result.data, function (i, n) {
+                                        menus += '<a data-area="' + n.Area + '" href="' + n.Controller + (n.Parm ? "?" + n.Parm : "") + '">' + (n.Icon ? '<i class="' + n.Icon + '"></i> ' : '') + '<span>' + n.MenuName + '</span></a>';
+                                    });
+                                } else {
+                                    menus = '<a>无管理项！</a>';
+                                }
+                                dt.next("dd").append(menus).slideDown();
+                            } else if (result.error == 9000) {
+                                layer.alert(result.message, function () {
+                                    location.href = "/admin/login/";
+                                });
+                            } else {
+                                layer.alert("加载出错！");
+                            };
+                        });
+                    }
+                    else {
+                        dt.next("dd").slideDown();
+                    }
+                }
+                return false;
+            });
+            var loadmenu = function (fid, shortcat) {
+                $.get("/admin/home/load?fatherid=" + fid + "&shortcat=" + shortcat, function (result) {
+                    if (typeof (result) == "object" && result.error > 0) {
+                        layer.alert(result.message, function () {
+                            location.href = "/admin/login/";
+                        });
+                    } else {
+                        $("#sidebar").html(result);
+                    }
+                });
+
+            }; loadmenu(0, 1);
+
+            //导航
+            $("#nav>li>a").click(function () {
+                var link = $(this);
+                if (!link.parent().hasClass("active")) {
+                    link.parent().addClass("active").siblings(".active").removeClass("active");
+                    $("#leftnav").addClass("active");
+                    loadmenu(link.attr("data-id"), link.attr("data-shortcat"));
+                    setTimeout(function () {
+                        $("#leftnav").removeClass("active");
+                    }, 2200);
+                }
+                if ($("#nav").parent().is(".in")) {
+                    $("#nav").parent().removeClass("in");
+                }
+            });
+
+
+
+            //修改密码
+            $(".shortcutmenu").click(function () {
+                var link = $(this);
+                var path = link.text();
+                $(".breadcrumb .active").html(path);
+
+                //加载
+                loadContent($(this).attr("data-area"), $(this).attr("data-href"));
+                if ($("#nav").parent().is(".in")) {
+                    $("#nav").parent().removeClass("in");
+                }
+                return true;
+            });
+
+
+            //三级菜单
+            $("#sidebar").delegate("dd>a", "click", function () {
+                var link = $(this);
+                if (link.is("[data-area]")) {
+
+                    link.siblings(".active").removeClass("active");
+                    link.addClass("active");
+
+                    //取链接和管理Id
+                    var href, path, area;
+                    href = link.attr("href");
+                    area = link.attr("data-area");
+                    path = link.text().trim();
+                    var faherenum = link.parent().prev().text().trim();
+                    path = faherenum + '&nbsp; /  &nbsp;' + path;
+                    //ajax加载
+                    loadContent(area, href, path);
+                }
+                return false;
+            });
+        });
+
+
+    </script>
+</body>
+</html>
+
+

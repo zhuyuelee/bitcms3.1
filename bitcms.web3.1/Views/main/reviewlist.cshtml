@@ -1,0 +1,86 @@
+﻿@{
+    Layout = null;
+    var manage = new bitcms.Data.CMSManage();
+    var did = bitcms.Common.Utils.strToInt(ViewBag.parms["did"]);
+    var page = new bitcms.Entity.PageInfo()
+    {
+        PageSize = 6,
+        PageNumber = Utils.strToInt(ViewBag.parms["page"]),
+    };
+    var list = manage.getReviewList(page, "news", did);
+}
+@if (list.Count > 0)
+{
+    foreach (UserReviewInfo info in list)
+    {
+        var avatar = "/images/noavatar_middle.gif";
+        if (!string.IsNullOrEmpty(info.Avatar))
+        {
+            avatar = "/tools/getavatar/" + info.UserId + "/66/66";
+        }
+    <dl>
+        <dt>
+            <img src="@avatar" class="img-circle" onerror="this.src='/images/noavatar_middle.gif'">
+        </dt>
+        <dd>
+            <p><a>@info.UserName</a> <small>@Utils.dateDiff(info.InDate, SiteConfig.getLocalTime())</small></p>
+            <p>
+                @{
+        var secrecy = false;
+        if (info.Secrecy == 1)
+        {
+            if (info.UserId != ViewBag.userOnline.UserId)
+            {
+                var roleinfo = manage.getRoleInfo(ViewBag.userOnline.UserInfo.RoleId);
+                if (roleinfo == null || roleinfo.RoleType != "admin")
+                {
+                    secrecy = true;
+                }
+            }
+        }
+        if (secrecy)
+        {
+                    <span class="label label-info">
+                        <i class="glyphicon glyphicon-warning-sign"></i>
+                        保密评论</span>
+        }
+        else
+        {
+                    @info.Content
+        }
+                }
+            </p>
+            <footer>
+                <a href="javascript:void(0);" class="reply" data-did="@did" data-rid="@info.ReviewId">回复</a>
+                @if (info.ReplyNum > 0)
+                {
+                    <a href="javascript:void(0);" class="getreply" data-url="/replylist/@info.ReviewId/1">
+                        <label>@info.ReplyNum</label>
+                        条回复<span class="caret"></span></a>
+                }
+                <span class="pull-right agreebox"  data-rid="@info.ReviewId">
+                    <label class="agree">
+                        <i class="glyphicon glyphicon-thumbs-up"></i>
+                        <small>@info.AgreeNum</small></label>
+                </span>
+            </footer>
+        </dd>
+    </dl>
+    }
+}
+else if (page.PageNumber == 1)
+{
+    <div class="more text-center">
+        暂无评论
+    </div>
+}
+@if (page.PageCount > page.PageNumber)
+{
+    <div class="more text-center">
+        <a href="javascript:void(0);" data-page="@(page.PageNumber + 1)">加载更多</a>
+    </div>
+}
+
+@{
+    manage.Dispose();
+    }

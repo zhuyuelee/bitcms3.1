@@ -1,0 +1,195 @@
+﻿@model bitcms.Entity.UploadConfigInfo
+<form method="post" id="form-submit" action="/admin/uploadconfig/update/" class="form-horizontal">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <i class="glyphicon glyphicon-cog"></i>
+            上传配置
+        </div>
+        <div class="panel-body">
+            <div class="form-group">
+                <label for="AttachPath" class="col-xs-2 control-label">
+                    附件保存路径
+                            <i class="text-danger">*</i>
+                </label>
+                <div class="col-xs-10">
+                    <input type="text" class="form-control" name="AttachPath" id="AttachPath" value="@Model.AttachPath" placeholder="附件保存路径" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="AttachMaxSize" class="col-xs-2 control-label">
+                    上传大小限制
+                    <i class="text-danger">*</i>
+                </label>
+                <div class="col-xs-10">
+                    <input type="text" class="form-control" required="required" name="AttachMaxSize" id="AttachMaxSize" value="@(Model.AttachMaxSize / 1024 / 1024)" placeholder="上传大小限制">
+                    <span class="help-block">M,单位为兆</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="AttachExtension" class="col-xs-2 control-label">
+                    附件类型
+                <i class="text-danger">*</i>
+                </label>
+                <div class="col-xs-10">
+                    <input type="text" class="form-control" required="required" name="AttachExtension" id="AttachExtension" value="@Model.AttachExtension" placeholder="附件后缀">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="CookieDomain" class="col-xs-2 control-label">
+                    多媒体类型
+                </label>
+                <div class="col-xs-10">
+                    <input type="text" class="form-control" name="MultimediaExtension" id="MultimediaExtension" value="@Model.MultimediaExtension" placeholder="多媒体类型">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="AttachImgMaxWidth" class="col-xs-2 control-label">图片限制尺寸（宽&times;高）</label>
+                <div class="col-xs-5">
+                    <input type="tel" class="form-control" name="AttachImgMaxWidth" id="AttachImgMaxWidth" value="@Model.AttachImgMaxWidth" placeholder="宽" />
+                    <span class="help-block">宽度设置；0为不限制，单位为像素。</span>
+                </div>
+                <div class="col-xs-5">
+                    <input type="tel" class="form-control" name="AttachImgMaxHeight" id="AttachImgMaxHeight" value="@Model.AttachImgMaxHeight" placeholder="高" />
+                    <span class="help-block">高度设置；0为不限制，单位为像素。</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-xs-2 control-label">水印设置</label>
+                <div class="col-xs-10">
+                    <label class="radio-inline">
+                        <input type="radio" name="WatermarkType" value="0" @if (Model.WatermarkType == 0)
+                                                                                  {<text>checked="checked"</text>} />
+                        不加水印
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="WatermarkType" value="1" @if (Model.WatermarkType == 1)
+                                                                                  {<text>checked="checked"</text>}  />
+                        文字水印
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="WatermarkType" value="2" @if (Model.WatermarkType == 2)
+                                                                                  {<text>checked="checked"</text>}  />
+                        图片水印
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-xs-2 control-label">水印位置</label>
+                <div class="col-xs-10">
+                    <div class="radio">
+                        <label class="radio-inline">
+                            <input type="radio" name="WatermarkStatus" value="0" @if (Model.WatermarkStatus == 0)
+                                                                                  {<text>checked="checked"</text>}/>
+                            左上
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="WatermarkStatus" value="1" @if (Model.WatermarkStatus == 1)
+                                                                                  {<text>checked="checked"</text>} />
+                            上中
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="WatermarkStatus" value="2" @if (Model.WatermarkStatus == 2)
+                                                                                   {<text>checked="checked"</text>}/>
+                            右上
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label class="radio-inline">
+                            <input type="radio" name="WatermarkStatus" value="3" @if (Model.WatermarkStatus == 3)
+                                                                                  {<text>checked="checked"</text>}/>
+                            左中
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="WatermarkStatus" value="4" @if (Model.WatermarkStatus == 4)
+                                                                                   {<text>checked="checked"</text>}/>
+                            中部
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="WatermarkStatus" value="5" @if (Model.WatermarkStatus == 5)
+                                                                                   {<text>checked="checked"</text>}/>
+                            右中
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label class="radio-inline">
+                            <input type="radio" name="WatermarkStatus" value="6" @if (Model.WatermarkStatus == 6)
+                                                                                   {<text>checked="checked"</text>}/>
+                            左下
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="WatermarkStatus" value="7" @if (Model.WatermarkStatus == 7)
+                                                                                   {<text>checked="checked"</text>}/>
+                            下中
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="WatermarkStatus" value="8" @if (Model.WatermarkStatus == 8)
+                                                                                    {<text>checked="checked"</text>}/>
+                            右下
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="WatermarkPic" class="col-xs-2 control-label">图片水印</label>
+                <div class="col-xs-10">
+                    <input type="text" class="form-control" value="@Model.WatermarkPic" name="WatermarkPic" id="WatermarkPic" placeholder="图片水印" />
+                        <span class="help-block">默认路径为根目录下images文件夹</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="WatermarkTransparency" class="col-xs-2 control-label">透明度</label>
+                <div class="col-xs-10">
+                    <input type="number" max="10" min="0" class="form-control" value="@Model.WatermarkTransparency" name="WatermarkTransparency" id="WatermarkTransparency" placeholder="透明度" />
+                    <span class="help-block">值越大，透明度越小。10不透明</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="WatermarkText" class="col-xs-2 control-label">文字水印</label>
+                <div class="col-xs-10">
+                    <input type="text" class="form-control" value="@Model.WatermarkText" name="WatermarkText" id="WatermarkText" placeholder="文字水印"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="WatermarkFont" class="col-xs-2 control-label">文字水印字体</label>
+                <div class="col-xs-10">
+                    @Html.DropDownListFor(m => m.WatermarkFont, ViewData["WatermarkFont"] as List<SelectListItem>, new { @class="form-control"})
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="WatermarkFont" class="col-xs-2 control-label">文字水印字号</label>
+                <div class="col-xs-10">
+                    <input type="number" max="30" min="10" class="form-control" value="@Model.WatermarkFontSize" name="WatermarkFontSize" id="WatermarkFontSize" placeholder="透明度" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-xs-offset-2 col-xs-10">
+
+                    <button type="submit" id="submit" class="btn btn-primary">提交</button>
+                    <button type="reset" class="btn">重置</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+@section Script{
+
+<script>
+    $(function () {
+        //验证表单
+        formValidate("#form-submit", {
+            submitHandler: function (form) {
+                setSubmit($("#submit", form));
+                $.post("/admin/uploadconfig/update/", $(form).serialize(), function (result) {
+                    setSubmit($("#submit", form));
+                    ajaxResult(result);
+                }, "JSON");
+                return false;
+            }
+        });
+
+
+    });
+</script>
+    }

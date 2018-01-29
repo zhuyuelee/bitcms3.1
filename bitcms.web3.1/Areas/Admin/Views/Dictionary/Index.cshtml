@@ -1,0 +1,487 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<div class="row">
+    <div class="left main_nav">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="glyphicon glyphicon-th-list"></i>
+                字典管理
+               <div class="pull-right">
+                   <button type="button" id="btn_del" class="btn btn-xs btn-danger">删除</button>
+               </div>
+            </div>
+            <div id="treeview" data-id="" class="tree ajax">
+            </div>
+        </div>
+    </div>
+    <div class="right main-context">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="glyphicon glyphicon-edit"></i>
+                字典操作
+                 <div class="pull-right">
+                     <button id="btn_add" class="btn btn-xs btn-success">添加字典</button>
+                     <button id="btn_addkey" class="btn btn-xs btn-primary">添加字典Key</button>
+                 </div>
+            </div>
+            <div class="panel-body" id="dictionary">
+                <form method="post" id="form-submit" action="#" class="form-horizontal validate">
+                    <div class="form-group">
+                        <label for="Name" class="col-xs-2 control-label">
+                            名称
+                            <i class="text-danger">*</i>
+                        </label>
+                        <div class="col-xs-10">
+                            <input  class="form-control" required="required" name="Name" id="Name" placeholder="名称" />
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <label for="DictionaryCode" class="col-xs-2 control-label">编码</label>
+                        <div class="col-xs-10">
+                            <input type="text" class="form-control" required="required" maxlength="32" name="DictionaryCode" id="DictionaryCode" placeholder="编码" />
+                            <span class="help-block">32位以内，包含字母，数字和下划线。</span>
+                        </div>
+                    </div>
+                    <div class="keys">
+                        <div class="form-group">
+                            <label for="Key1" class="col-xs-2 control-label">Key1</label>
+                            <div class="col-xs-10">
+                                <input type="text" class="form-control" required="required" maxlength="32" name="Key" id="Key" value="值" placeholder="值" />
+                                <span class="help-block">
+                                    <button type="button" class="btn btn-xs btn-info">
+                                        <i class="glyphicon glyphicon-plus"></i>
+                                        添加key</button>
+                                    <button type="button" class="btn btn-xs" style="display: none;">
+                                        <i class="glyphicon glyphicon-minus"></i>
+                                        删除key</button>
+                                </span>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="Explain" class="col-xs-2 control-label">
+                            介绍
+                        </label>
+                        <div class="col-xs-10">
+                            <textarea class="form-control" name="Explain" id="Explain" placeholder="介绍"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-offset-2 col-xs-10">
+                            <input type="text" id="DictionaryId" name="DictionaryId" value="0" style="display: none;" />
+                            <button type="submit" id="submit" class="btn btn-primary">提交</button>
+                            <button type="reset" class="btn">重置</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="panel-body" id="dictionarykey" style="display: none;">
+                <form method="post" id="form-dictionarykey" action="#" class="form-horizontal validate">
+                    <div class="form-group">
+                        <label for="Name" class="col-xs-2 control-label">
+                            标题
+                            <i class="text-danger">*</i>
+                        </label>
+                        <div class="col-xs-8">
+                            <input type="text" class="form-control" required="required" name="Title" id="Title" placeholder="标题" />
+                        </div>
+                        <div class="col-xs-2 checkbox">
+                            <label>
+                                <input type="checkbox" value="1" name="SystemSetting" id="SystemSetting" />
+                                系统内置</label>
+                        </div>
+                    </div>
+                    <div class="form-group value">
+                        <label for="Value" class="col-xs-2 control-label">
+                            值
+                            <i class="text-danger">*</i>
+                        </label>
+                        <div class="col-xs-10 ">
+                            <input type="text" class="form-control" required="required" name="Value" id="Value" placeholder="值" />
+                        </div>
+                    </div>
+                    <div class="form-group" id="dictionary-box">
+                        <label for="DictionaryKey" class="col-xs-2 control-label">
+                            字典
+                            <i class="text-danger">*</i>
+                        </label>
+                        <div class="col-xs-10">
+                            <select class="form-control" name="DictionaryId" id="DictionarysId">
+                            </select>
+                            <span class="help-block" id="dictionary-help"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="OrderNo" class="col-xs-2 control-label">
+                            排序
+                        </label>
+                        <div class="col-xs-10">
+                            <input type="number" min="0" class="form-control" name="OrderNo" value="200" id="OrderNo" placeholder="排序" />
+                            <span class="help-block">数字，越小越靠前。</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-offset-2 col-xs-10">
+                            <input type="text" id="KeyId" name="KeyId" value="0" style="display: none;" />
+                            <input type="text" id="DictionaryKey" name="DictionaryCode" value="" style="display: none;" />
+                            <button type="submit" id="submit-key" class="btn btn-primary">提交</button>
+                            <button type="reset" class="btn">重置</button>
+        <input type="file" class="form-control" id="file" style="display: none;" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script type="text/html" id="selectbox">
+    <div class="col-xs-3">
+        <select class="form-control">
+            <option value="text">文本</option>
+            <option value="number">数字</option>
+            <option value="onoff">开关</option>
+            <option value="pic">图片</option>
+        </select>
+    </div>
+</script>
+<script type="text/html" id="uploadbox">
+    <div class="col-xs-2">
+        <button type="button" class="btn btn-primary btn-block fileupload">上传</button>
+    </div>
+</script>
+@section Script{
+
+<script>
+    $(function () {
+        var tags = $(".keys").setTags({
+            "btnbox": ".help-block", maxsize: 4, addkey: function (i, box) {
+                $("label.control-label", box).text("Key" + i);
+                $("label.control-label", box).attr("for", "Key" + i);
+
+                var keybox = $(".col-xs-10", box);
+                keybox.removeClass("col-xs-10").addClass("col-xs-7");
+                keybox.after($("#selectbox").html());
+
+                $(":text", box).val("");
+                $(":text", box).attr("id", "Key" + i);
+                $(":text", box).attr("name", "Key" + i);
+                $("select", box).attr("id", "Key" + i + "Type");
+                $("select", box).attr("name", "Key" + i + "Type");
+            }
+        });
+        //重置字典form
+        var resetdictionaryForm = function () {
+            if ($("#dictionary").is(":hidden")) {
+                $("#dictionary").fadeIn();
+                $("#dictionarykey").hide();
+            }
+            tags.reset(1);
+
+        };
+
+        $("#SystemSetting").click(function () {
+            if ($("#KeyId").val() > 0) {
+                $("#Value").prop("readonly", $(this).prop("checked"));
+            }
+        });
+        //树形菜单
+        $("#treeview").tree({
+            deep: 1, ajax: "/admin/dictionary/loadjson/", click: function (li) {
+                if (li.attr("data-id")) {
+                    if ($(".main-context").is(":hidden") == 1) {
+                        $(".main-context:hidden").show();
+                    }
+                    var type = li.children("a:first").attr("href");
+                    $.getJSON("/admin/dictionary/loadmodel/", { id: li.attr("data-id"), type: type }, function (result) {
+                        if (result.error == 0) {
+                            if (type == "#dictionary") {//字典
+                                resetdictionaryForm();
+                                $("#DictionaryId").val(result.data.DictionaryId);
+                                $("#Name").val(result.data.Name);
+                                $("#DictionaryCode").val(result.data.DictionaryCode);
+                                $("#DictionaryCode").prop("readonly", true);
+
+                                var size = 1;
+                                if (result.data.Key4)
+                                    size = 4;
+                                else if (result.data.Key3)
+                                    size = 3;
+                                else if (result.data.Key2)
+                                    size = 2;
+
+                                tags.reset(size, function (boxs) {
+                                    $(":text", boxs[0]).val(result.data.Key);
+                                    if (result.data.Key2) {
+                                        $(":text", boxs[1]).val(result.data.Key2);
+                                        $("select", boxs[1]).val(result.data.Key2Type);
+                                    }
+                                    if (result.data.Key3) {
+                                        $(":text", boxs[2]).val(result.data.Key3);
+                                        $("select", boxs[2]).val(result.data.Key3Type);
+                                    }
+                                    if (result.data.Key4) {
+                                        $(":text", boxs[3]).val(result.data.Key4);
+                                        $("select", boxs[3]).val(result.data.Key4Type);
+                                    }
+                                });
+
+                                $("#Explain").val(result.data.Explain);
+
+                            } else {//字典Key
+                                if ($("#dictionarykey").is(":hidden")) {
+                                    $("#dictionary").hide();
+                                    $("#dictionarykey").fadeIn();
+                                }
+                                $("#DictionaryKey").val(result.data.dictionary.DictionaryCode);
+
+                                $("#DictionarysId").empty().append("<option value='" + result.data.dictionarykey.DictionaryId + "'>" + result.data.dictionary.Name + "</option>");
+                                var help = result.data.dictionary.Explain;
+                                if (help) {
+                                    $("#dictionary-help").text(help);
+                                } else {
+                                    $("#dictionary-help").text("");
+                                }
+                                $("#Title").val(result.data.dictionarykey.Title);
+                                $("#Value").val(result.data.dictionarykey.Value);
+                                $("#Explain").val(result.data.dictionarykey.Explain);
+                                $("#KeyId").val(result.data.dictionarykey.KeyId);
+
+                                $("#SystemSetting").prop("checked", result.data.dictionarykey.SystemSetting == 1);
+                                $("#Value").prop("readonly", result.data.dictionarykey.SystemSetting == 1);
+
+                                $(".value label.control-label").html(result.data.dictionary.Key + " <i class='text-danger'>*</i>");
+
+                                var vals = [];
+                                if (result.data.dictionary.Key2) {
+                                    vals.push({ key: result.data.dictionary.Key2, value: result.data.dictionarykey.Value2, type: result.data.dictionary.Key2Type });
+                                }
+                                if (result.data.dictionary.Key3) {
+                                    vals.push({ key: result.data.dictionary.Key3, value: result.data.dictionarykey.Value3, type: result.data.dictionary.Key3Type });
+                                }
+                                if (result.data.dictionary.Key4) {
+                                    vals.push({ key: result.data.dictionary.Key4, value: result.data.dictionarykey.Value4, type: result.data.dictionary.Key4Type });
+                                }
+                                if (vals.length > 0) {
+                                    resetDictionaryKeysFrom(vals);
+                                } else {
+                                    resetDictionaryKeysFrom(undefined);
+                                }
+                            }
+                        } else {
+                            ajaxResult(result);
+                        }
+                    });
+                }
+                $("body").scrollTo("#main", 800);
+                return false;
+            }
+        });
+
+        $("#btn_add").click(function () {
+            resetdictionaryForm();
+            $("#DictionaryCode").prop("readonly", false);
+        });
+
+        //重置value表单
+        var addValue = function (key, val, type) {
+            var index = $(".values", "#form-dictionarykey").size();
+            var box = $(".value:first", "#form-dictionarykey").clone();
+            box.addClass("values");
+            if (type) {
+                switch (type) {
+                    case "onoff":
+                        $(".col-xs-10", box).addClass("radio");
+                        $(":input", box).replaceWith("<label><input type='radio' value='1' checked='checked'/>是</label>&nbsp;&nbsp;<label><input type='radio' value='0'/>否</label>");
+                        break;
+                    case "pic":
+                        var valbox = $(".col-xs-10", box);
+                        valbox.removeClass("col-xs-10").addClass("col-xs-8");
+                        valbox.after($("#uploadbox").html());
+                        break;
+                    case "number":
+                        var valbox = $(".col-xs-10", box);
+                        $(":input", box).attr("type", "number");
+                        break;
+                }
+            }
+            if (type == "onoff") {
+                $(":radio[value=" + val + "]", box).prop("checked", true);
+                $(":radio", box).attr("name", "value" + (index + 2));
+                $(":radio", box).attr("id", "value" + (index + 2));
+            } else {
+                $(":input", box).val(val);
+                $(":input", box).attr("name", "value" + (index + 2));
+                $(":input", box).attr("id", "value" + (index + 2));
+                $(":input", box).prop("readonly", false);
+            }
+            $(".control-label", box).attr("for", "value" + (index + 2));
+            $(".control-label", box).html(key + ' <i class="text-danger">*</i>');
+            box.insertBefore($("#dictionary-box", "#form-dictionarykey"));
+        };
+        //上传
+        $("#form-dictionarykey").delegate(".fileupload", "click", function () {
+            var box = $(this).closest(".value");
+            $(".picupload", ".value").removeClass("picupload");
+            $(":text", box).addClass("picupload");
+            $("#file").click();
+        });
+        //图片上传
+        $("#file").h5_upload({
+            folder: "dict", cut: 0, maxheight: 1000, maxwidth: 1000, watermark: 0, change: function () {
+            }, success: function (result) {
+                if (result.error == 0) {
+                    $(".picupload").val(result.data);
+                } else {
+                    layer.alert("上传失败！", { icon: 5 });
+                }
+            }
+        });
+
+        //设置字典key的值
+        var resetDictionaryKeysFrom = function (vals) {
+            $(".values", "#form-dictionarykey").remove();
+            if (typeof (vals) == "object") {
+                $(vals).each(function (i, n) {
+                    addValue(n.key, n.value, n.type);
+                });
+            }
+        };
+        //添加key
+        $("#btn_addkey").click(function () {
+            if ($("a.active", "#treeview").size() == 0) {
+                layer.msg("添加字典key前请先选择字典树！", { icon: 1 });
+            } else {
+                if ($("#dictionarykey").is(":hidden")) {
+                    $("#dictionary").hide();
+                    $("#dictionarykey").fadeIn();
+                }
+
+                $("#Value").prop("readonly", false);
+                var dictionary = "";
+
+                var link = $("a.active", "#treeview");
+                if (link.attr("href") == "#key") {
+                    var li = link.parentsUntil("li[data-level=0]").parent();
+                    dictionary += "<option value='" + li.attr("data-id") + "'>" + $.trim(li.children("a:first").text()) + "</option>";
+                } else {
+                    dictionary += "<option value='" + link.parent().attr("data-id") + "'>" + $.trim(link.text()) + "</option>";
+                }
+
+                $("#DictionarysId").empty().append(dictionary);
+                document.getElementById("form-dictionarykey").reset();
+                $.getJSON("/admin/dictionary/loadmodel/", { id: $("#DictionarysId").val(), type: "#dictionary" }, function (result) {
+                    $(".value label.control-label").html(result.data.Key + " <i class='text-danger'>*</i>");
+                    var vals = [];
+                    if (result.data.Key2) {
+                        vals.push({ key: result.data.Key2, value: "", type: result.data.Key2Type });
+                    }
+                    if (result.data.Key3) {
+                        vals.push({ key: result.data.Key3, value: "", type: result.data.Key3Type });
+                    }
+                    if (result.data.Key4) {
+                        vals.push({ key: result.data.Key4, value: "", type: result.data.Key4Type });
+                    }
+                    if (vals.length > 0) {
+                        resetDictionaryKeysFrom(vals);
+                    } else {
+                        resetDictionaryKeysFrom(undefined);
+                    }
+                });
+
+            }
+
+
+        });
+        //删除菜单
+        $("#btn_del").click(function () {
+            if ($("a.active", "#treeview").size() == 0) {
+                layer.alert("请选择要删除的数据！", { icon: 5 });
+            } else {
+                var li = $("a.active:first", "#treeview").parent("li");
+                if (li.is("[data-id]")) {
+                    layer.confirm('确认删除该条数据（如该数据下有子菜单，将一起删除）！',
+                       {
+                           title: '删除确认？'
+                       }, function () {
+                           $.post("/admin/dictionary/delete", { "id": li.attr("data-id"), "type": li.children("a:first").attr("href") }, function (result) {
+                               if (result.error == 0) {
+                                   layer.alert("删除成功！", { icon: 5 });
+                                   refreshContent();//刷新加载
+                               } else {
+                                   layer.alert(result.message, { icon: 5 });
+                               }
+                           });
+                       });
+                } else {
+                    layer.alert("选择要删除的数据不完整！");
+                }
+            }
+        });
+
+        //验证字典表单
+        formValidate("#form-submit", {
+            rules: {
+                "DictionaryCode": {
+                    key: true,
+                    remote: {
+                        url: "/admin/dictionary/checkcode/",     //后台处理程序
+                        type: "get",               //数据发送方式
+                        data: {                     //要传递的数据
+                            did: function () { return $("#DictionaryId").val() }
+                        }
+                    }
+                }
+            },
+            messages: {
+                "DictionaryCode": {
+                    remote: "编码已经存在",
+                },
+            },
+            submitHandler: function (form) {
+                setSubmit($("#submit", form));
+                $.post("/admin/dictionary/update/", $(form).serialize(), function (result) {
+                    setSubmit($("#submit", form));
+                    ajaxResult(result);
+                }, "JSON");
+                return false;
+            }
+        });
+
+        //验证字典表单
+        formValidate("#form-dictionarykey", {
+            rules: {
+                "Value": {
+                    remote: {
+                        url: "/admin/dictionary/checkkey/",     //后台处理程序
+                        type: "get",               //数据发送方式
+                        data: {                     //要传递的数据
+                            code: function () { return $("#DictionaryKey").val() },
+                            keyid: function () { return $("#KeyId").val() }
+                        }
+                    }
+                }
+            },
+            messages: {
+                "Value": {
+                    remote: "已存在",
+                },
+            },
+            submitHandler: function (form) {
+                setSubmit($("#submit-key", form));
+                $.post("/admin/dictionary/updatekey/", $(form).serialize(), function (result) {
+                    setSubmit($("#submit-key", form));
+                    ajaxResult(result);
+                }, "JSON");
+                return false;
+            }
+        });
+
+    });
+
+</script>
+    }

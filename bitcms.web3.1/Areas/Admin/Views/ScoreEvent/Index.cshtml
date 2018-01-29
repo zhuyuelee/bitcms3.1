@@ -1,0 +1,258 @@
+﻿<div class="row">
+    <div class="left main_nav">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="glyphicon glyphicon-th-list"></i>
+                积分事件管理
+               <div class="pull-right">
+                  <button type="button" id="btn_del" class="btn btn-xs btn-danger">删除</button>
+              </div>
+            </div>
+            <table id="list-table" class="table table-hover">
+            </table>
+        </div>
+    </div>
+    <div class="right main-context">
+        <div class="table-responsive">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="glyphicon glyphicon-edit"></i>
+                    积分事件操作
+                <div class="pull-right">
+                    <button type="button" id="btn_add" class="btn btn-xs btn-success">添加</button>
+                </div>
+                </div>
+                <div class="panel-body">
+                    <form method="post" id="form-submit" action="#" class="form-horizontal" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="EventName" class="col-xs-2 control-label">
+                                事件名
+                            <i class="text-danger">*</i>
+                            </label>
+                            <div class="col-xs-8">
+                                <input type="text" class="form-control" required="required" name="EventName" id="EventName" placeholder="事件名" />
+                            </div>
+                            <div class="col-xs-2 checkbox">
+                                <label>
+                                    <input type="checkbox" value="1" id="Enabled" name="Enabled" checked="checked" />
+                                    启用
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="EventCode" class="col-xs-2 control-label">
+                                编码
+                            </label>
+                            <div class="col-xs-10">
+                                <input type="text" class="form-control" required="required" name="EventCode" id="EventCode" placeholder="编码" />
+                                <span class="help-block">32位以内，包含字母，数字和下划线。</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="Score" class="col-xs-2 control-label">
+                                积分
+                            </label>
+                            <div class="col-xs-10">
+                                <input type="number" min="0" class="form-control" required="required" name="Score" id="Score" placeholder="积分" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="Direction" class="col-xs-2 control-label">
+                                方向
+                            <i class="text-danger">*</i>
+                            </label>
+                            <div class="col-xs-10 radio">
+                                <label>
+                                    <input type="radio" name="Direction" id="Direction" value="0" checked="checked" />
+                                    奖励积分
+                                </label>
+                                <label>
+                                    <input type="radio" name="Direction" value="1" />
+                                    扣除积分
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="EventType" class="col-xs-2 control-label">
+                                事件类型
+                            <i class="text-danger">*</i>
+                            </label>
+                            <div class="col-xs-10 radio">
+                                <label>
+                                    <input type="radio" name="EventType" id="EventType" value="0" checked="checked" />
+                                    系统事件（集成系统开发中，不能删除）
+                                </label>
+                                <label>
+                                    <input type="radio" name="EventType" value="1" />
+                                    人工操作(后台积分奖励或惩罚)
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="EventCode" class="col-xs-2 control-label">
+                                次数
+                            </label>
+                            <div class="col-xs-10">
+                                <input type="number" min="0" class="form-control" value="0" required="required" name="Times" id="Times" placeholder="加分减分次数 0为不限制次数" />
+                                <span class="help-block">加分减分次数 0为不限制次数</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="EventCode" class="col-xs-2 control-label">
+                                期限
+                            </label>
+                            <div class="col-xs-10">
+                                <input type="number" class="form-control" value="0" required="required" name="Period" id="Period" placeholder="加分期限（单位为天），0为不限制" />
+                                <span class="help-block">加分期限（单位为天），0为不限制</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="Explan" class="col-xs-2 control-label">
+                                说明
+                            </label>
+                            <div class="col-xs-10">
+                                <textarea class="form-control" name="Explan" id="Explan" placeholder="说明" ></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-xs-offset-2 col-xs-10">
+                                <input type="text" name="EventId" id="EventId" style="display: none;" />
+                                <button type="submit" id="submit" class="btn btn-primary">提交</button>
+                                <button type="reset" class="btn">重置</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+@section Script{
+
+<script>
+    $(function () {
+        $("#btn_add").click(function () {
+            $("#EventCode").prop("readonly", false);
+            $(":radio[name=EventType]").prop("disabled", false);
+
+        });
+        //事件
+        var table = $("#list-table");
+        table = initBootstrapTable(table, {
+            url: "/admin/scoreevent/loadjson",
+            columns: [
+                {
+                    field: 'state',
+                    checkbox: true,
+                    align: 'center',
+                    valign: 'middle'
+                },
+                    {
+                        title: '名称',
+                        field: 'EventName',
+                        valign: 'middle'
+                    },
+                    {
+                        title: '积分',
+                        field: 'Score',
+                        valign: 'middle',
+                        formatter: function (val, row, index) {
+                            if (row.Direction == 0) {
+                                return val + "(+)";
+                            } else {
+                                return val + "(-)";
+                            }
+                        }
+                    }
+                    ,
+                    {
+                        title: '类型',
+                        field: 'EventType',
+                        valign: 'middle',
+                        formatter: function (val, row, index) {
+                            if (val == 0) {
+                                return "系统";
+                            } else {
+                                return "人工";
+                            }
+                        }
+                    }
+            ],
+            onCheck: function (row) {
+
+                $("#EventName").val(row.EventName);
+                $("#EventCode").val(row.EventCode);
+                $("#EventCode").prop("readonly", true);
+                if (row.Enabled == 1) {
+                    $("#Enabled").prop("checked", true);
+                } else {
+                    $("#Enabled").prop("checked", false);
+                }
+                $(":radio[name=Direction][value=" + row.Direction + "]").prop("checked", true);
+                $(":radio[name=EventType][value=" + row.EventType + "]").prop("checked", true);
+                $(":radio[name=EventType]").prop("disabled", true);
+                $("#Explan").val(row.Explan);
+                $("#EventId").val(row.EventId);
+                $("#Score").val(row.Score);
+                $("#Times").val(row.Times);
+                $("#Period").val(row.Period);
+            }
+        });
+
+        //删除菜单
+        $("#btn_del").click(function () {
+            var delrows = table.bootstrapTable('getSelections');
+            if (delrows.length == 0) {
+                layer.alert("请选择要删除的数据！", { icon: 5 });
+            } else {
+                var row = delrows[0];
+                if (row.EventType == 0) {
+                    layer.alert("系统积分事件不可删除！", { icon: 5 });
+                } else {
+                    layer.confirm('确认删除该条积分事件（如该事件已启用或有积分记录值，将删除失败）！', {
+                        title: '删除确认？'
+                    }, function () {
+                        $.post("/admin/scoreevent/delete", { "id": row.EventId }, function (result) {
+                            ajaxResult(result);
+                        });
+                    });
+                }
+            }
+        });
+
+
+        //验证表单
+        formValidate("#form-submit", {
+            rules: {
+                EventCode: {
+                    key: true,
+                    remote: {
+                        url: "/admin/scoreevent/checkcode/",     //后台处理程序
+                        type: "get",               //数据发送方式
+                        data: {                     //要传递的数据
+                            eventid: function () { return $("#EventId").val() }
+                        }
+                    }
+                }
+            },
+            messages: {
+                EventCode: {
+                    remote: "编码已存在"
+                }
+            },
+            submitHandler: function (form) {
+                setSubmit($("#submit", form));
+                $.post("/admin/scoreevent/update/", $(form).serialize(), function (result) {
+                    setSubmit($("#submit", form));
+                    ajaxResult(result);
+                }, "JSON");
+                return false;
+            }
+        });
+
+    });
+</script>
+
+}

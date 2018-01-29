@@ -1,0 +1,272 @@
+﻿@{
+    var channelInfo = ViewBag.channel as bitcms.Entity.DetailChannelInfo;
+}
+<div class="row">
+    <div class="left main_nav">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="glyphicon glyphicon-th-list"></i>
+                内容列表
+            </div>
+            <table id="list-table" class="table table-hover">
+            </table>
+        </div>
+    </div>
+    <div class="right main-context">
+        <div class="table-responsive">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="glyphicon glyphicon-edit"></i>
+                    评论管理
+
+                </div>
+                <div class="panel-body">
+                    <table id="list-review" class="table table-hover">
+                    </table>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/html" id="replybox">
+    <form method="post" id="form-submit" action="#" class="form-horizontal">
+        <div class="form-group">
+            <div class="col-xs-12">
+                <textarea class="form-control" required="required" id="Content" name="Content"></textarea>
+            </div>
+        </div>
+    </form>
+</script>
+@section Script{
+
+<script>
+    $(function () {
+        //初始化子表格
+        var initSubTable = function (index, row, $detail) {
+            var cur_table = $detail.html('<table class="table table-striped"></table>').find('table');
+            initBootstrapTable(cur_table, {
+                url: '/admin/review/loadjson?channel=@channelInfo.ChannelCode',
+                search: false,
+                queryParams: function (params) {
+                    return {
+                        detailid: row.DetailId, reviewid: row.ReviewId, pagesize: params.pageSize,
+                        pagenumber: params.pageNumber,
+                        totalcount: cur_table.attr("data-totalRows") || 0
+                    };
+                },
+                columns: [
+                        {
+                            field: 'state',
+                            checkbox: true,
+                            align: 'center',
+                            valign: 'middle'
+                        },
+                        {
+                            title: '会员',
+                            field: 'UserName',
+                            valign: 'middle'
+                        },
+                            {
+                                title: '内容',
+                                field: 'Content',
+                                valign: 'middle'
+                            },
+                            {
+                                title: '时间',
+                                field: 'InDate',
+                                valign: 'middle'
+                            },
+                            {
+                                title: '管理',
+                                field: 'ReviewId',
+                                align: "center",
+                                valign: 'middle',
+                                formatter: function (val, row, index) {
+                                    var buttons = "";
+                                    if (row.Verify == 0) {
+                                        buttons += "<button type='button' data-id='" + row.ReviewId + "' class='btn btn-default btn-xs btn-verify'>审核</button>";
+                                    }
+                                    buttons += " <button type='button' data-id='" + row.ReviewId + "' class='btn btn-default btn-xs  btn-del'>删除</button>";
+                                    return buttons;
+                                }
+                            }
+                ]
+            });
+        };
+        //回复
+        var reply = function (reviewid) {
+            var html = $("#replybox").html();
+            layer.open({
+                title: '回复',
+                content: html,
+                area: ['330px'],
+                btn: ['提交', '关闭'],
+                yes: function (index, layero) {
+                    var validator = $("#form-submit", layero).validate();
+                    if (validator.form()) {
+                        $.post("/admin/review/reply?channel=@channelInfo.ChannelCode", { id: reviewid, content: $("#Content", layero).val() }, function (result) {
+                            ajaxResult(result);
+                            if (result.error == 0) {
+                                layer.close(index);
+                            }
+                        });
+                    }
+                }, btn2: function (index) {
+                    layer.close(index);
+                }
+            });
+        };
+        //删除
+        var delreview = function (reviewid) {
+            layer.confirm('确认删除该条数据！', {
+                title: '删除确认？'
+            }, function () {
+                $.post("/admin/review/delete?channel=@channelInfo.ChannelCode", { "id": reviewid }, function (result) {
+                    ajaxResult(result);
+                });
+            });
+        };
+
+        //审核
+        var verifyreview = function (reviewid) {
+            $.post("/admin/review/verify?channel=@channelInfo.ChannelCode", { "id": reviewid }, function (result) {
+                ajaxResult(result);
+            });
+        };
+        //管理操作
+        $(".main-context").undelegate().delegate(".btn.btn-reply,.btn.btn-verify,.btn.btn-del", "click", function () {
+            var btn = $(this);
+            if (btn.is(".btn.btn-reply")) {
+                reply(btn.attr("data-id"));
+            } else if (btn.is(".btn.btn-del")) {
+                delreview(btn.attr("data-id"));
+            } else if (btn.is(".btn.btn-verify")) {
+                verifyreview(btn.attr("data-id"));
+            }
+
+        });
+
+        //评论表
+        var reviewtable = null;
+        var getreview = function (detailid) {
+            if (reviewtable == null) {
+                reviewtable = $("#list-review");
+                reviewtable.attr("id", detailid);
+                initBootstrapTable(reviewtable, {
+                    url: "/admin/review/loadjson?channel=@channelInfo.ChannelCode",
+                    search: false,
+                    detailView: true,
+                    showColumns: false,
+                    queryParams: function (params) {
+                        return {
+                            detailid: reviewtable.attr("id") || -1,
+                            pagesize: params.pageSize,
+                            pagenumber: params.pageNumber,
+                            totalcount: reviewtable.attr("data-totalRows") || 0
+                        };
+                    },
+                    columns: [
+                        {
+                            field: 'state',
+                            checkbox: true,
+                            align: 'center',
+                            valign: 'middle'
+                        },
+                        {
+                            title: '会员',
+                            field: 'UserName',
+                            valign: 'middle'
+                        },
+                            {
+                                title: '内容',
+                                field: 'Content',
+                                valign: 'middle',
+                                formatter: function (val, row, index) {
+                                    var content = val;
+                                    if (row.Secrecy == 1) {
+                                        content = '<span class="badge">保密</span>' + content;
+                                    }
+                                    return content;
+                                }
+                            },
+                            {
+                                title: '时间',
+                                field: 'InDate',
+                                valign: 'middle'
+                            }
+                            ,
+                            {
+                                title: '管理',
+                                field: 'ReviewId',
+                                align: "center",
+                                valign: 'middle',
+                                formatter: function (val, row, index) {
+                                    var buttons = "<button type='button' data-id='" + row.ReviewId + "' class='btn btn-default btn-xs btn-reply'>回复</button>";
+                                    if (row.Verify == 0) {
+                                        buttons += " <button type='button' data-id='" + row.ReviewId + "' class='btn btn-default btn-xs btn-verify'>审核</button>";
+                                    }
+                                    buttons += " <button type='button' data-id='" + row.ReviewId + "' class='btn btn-default btn-xs  btn-del'>删除</button>";
+                                    return buttons;
+                                }
+                            }
+                    ],
+                    //注册加载子表的事件。注意下这里的三个参数！
+                    onExpandRow: function (index, row, $detail) {
+                        initSubTable(index, row, $detail);
+                    }
+                });
+            } else {
+                reviewtable.attr("id", detailid);
+                reviewtable.attr("data-totalRows", "0");
+                reviewtable.bootstrapTable("refresh");
+            }
+        };
+
+        //内容
+        var table = $("#list-table");
+        initBootstrapTable(table, {
+            url: "/admin/review/loadnews?channel=@channelInfo.ChannelCode",
+            queryParams: function (params) {
+                var key = table.bootstrapTable("getOptions").searchText;
+                var total = table.attr("data-totalRows") || 0;
+                var dataKey = table.attr("data-key");
+                if (key != dataKey) {
+                    table.attr("data-key", key);
+                    total = 0;
+                }
+                return {
+                    pagesize: params.pageSize,
+                    pagenumber: params.pageNumber,
+                    totalcount: total,
+                    key: key
+                };
+            },
+            columns: [
+                {
+                    field: 'state',
+                    checkbox: true,
+                    align: 'center',
+                    valign: 'middle'
+                },
+                    {
+                        title: '标题',
+                        field: 'Title',
+                        valign: 'middle'
+                    }
+            ],
+            onCheck: function (row) {
+                //重置权限表
+
+                if ($(".main-context").is(":hidden") == 1) {
+                    $(".main-context:hidden").show();
+                }
+                getreview(row.DetailId);
+            }
+        });
+        getreview(0);
+
+    });
+</script>
+    }

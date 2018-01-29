@@ -1,0 +1,457 @@
+﻿<div class="row">
+    <div class="left main_nav">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="glyphicon glyphicon-th-list"></i>
+                会员管理
+              <div class="pull-right">
+                  <button type="button" id="btn_del" class="btn btn-xs btn-danger">删除</button>
+              </div>
+            </div>
+            <table id="list-table" class="table table-hover">
+            </table>
+        </div>
+    </div>
+    <div class="right main-context">
+        <div class="table-responsive">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="glyphicon glyphicon-edit"></i>
+                    会员操作
+                 <div class="pull-right">
+                     <button type="button" id="btn_add" class="btn btn-xs btn-success">添加</button>
+                 </div>
+                </div>
+                <div class="panel-body">
+                    <form method="post" id="form-submit" action="/admin/user/update/" class="form-horizontal" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="UserName" class="col-xs-2 control-label">
+                                会员名
+                            <i class="text-danger">*</i>
+                            </label>
+                            <div class="col-xs-6">
+                                <input type="text" class="form-control" required="required" name="UserName" id="UserName" placeholder="会员名" />
+                            </div>
+                            <div class="col-xs-4 checkbox">
+                                <label>
+                                    <input type="checkbox" value="1" name="LockUser" id="LockUser" />
+                                    锁定会员</label>
+                                <label>
+                                    <input type="checkbox" checked="checked" value="1" name="VerifyMember" id="VerifyMember" />
+                                    审核会员</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="UserName" class="col-xs-2 control-label">
+                                密码
+                            <i class="text-danger">*</i>
+                            </label>
+                            <div class="col-xs-10">
+                                <input type="text" class="form-control" name="Password" id="Password" placeholder="会员密码" />
+                                <span class="help-block">添加新会员必填；修改资料时不更改密码，请留空！</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="Show" class="col-xs-2 control-label">
+                                推荐
+                            </label>
+                            <div class="col-xs-10 checkbox">
+                                <label>
+                                    <input type="checkbox" name="shows" value="2" />
+                                    推荐
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="fileupload" class="col-sm-2 control-label">
+                                头像
+                            </label>
+                            <div class="col-xs-10">
+                                <input type="text" class="form-control" id="Avatar" name="Avatar" style="display: none;" placeholder="头像上传" />
+                                <label>
+                                    <input type="file" id="avatarupload" style="display: none;" />
+                                    <img src="/images/noavatar_middle.gif" onerror="this.src='/images/noavatar_middle.gif'" class="img-thumbnail" style="max-width: 180px;"></label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="RoleId" class="col-xs-2 control-label">
+                                性别
+                            </label>
+                            <div class="col-xs-10">
+                                <div class="radio">
+                                    <label class="radio-inline">
+                                        <input type="radio" name="Gender" value="0" checked="checked" />
+                                        保密
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="Gender" value="1" />
+                                        男
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="Gender" value="2" />
+                                        女
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="BirthDay" class="col-xs-2 control-label">
+                                生日
+                            </label>
+                            <div class="col-xs-10">
+                                <div class="input-group  date form_date">
+                                    <input type="datetime" class="form-control" name="BirthDay" id="BirthDay" placeholder="生日" />
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" id="roletypeset">
+                            <label for="RoleId" class="col-xs-2 control-label">
+                                角色
+                            <i class="text-danger">*</i>
+                            </label>
+                            <div class="col-xs-10">
+                                <div class="radio">
+                                    <select id="RoleId" name="RoleId" class="form-control" required="required">
+                                        <option value="">=选择角色=</option>
+                                        @{
+                                            var rolelist = ViewBag.Role as List<bitcms.Entity.RoleInfo>;
+                                            foreach (bitcms.Entity.DictionaryKeyInfo keyinfo in ViewBag.RoleType)
+                                            {
+                                            <optgroup label="@keyinfo.Title" data-id="@keyinfo.Value">
+                                                @{
+                                                var role = rolelist.FindAll(g => g.RoleType.Equals(keyinfo.Value));
+                                                foreach (var roleinfo in role)
+                                                { 
+                                                    <option value="@roleinfo.RoleId">@roleinfo.RoleName</option>
+                                                }
+                                                }
+                                            </optgroup>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group hidden" id="deadlinebox">
+                            <label for="Deadline" class="col-xs-2 control-label">
+                                会员过期时间
+                            </label>
+                            <div class="col-xs-10">
+                                <div class="input-group date form_date">
+                                    <input type="datetime" class="form-control" name="Deadline" id="Deadline" placeholder="会员过期时间" />
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                </div>
+                                <span class="help-block">为空是长期有效！</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="Email" class="col-xs-2 control-label">
+                                城市
+                            </label>
+                            <div class="col-xs-5">
+                                <select class="form-control" name="Province" id="Province">
+                                    <option value="0">=选择省份=</option>
+                                    @foreach (var city in Model)
+                                    {
+                                        <option value="@city.CityId">@city.CityName</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-xs-5">
+                                <select class="form-control" name="CityId" id="CityId">
+                                    <option value="">=选择城市=</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="Email" class="col-xs-2 control-label">
+                                地址
+                            </label>
+                            <div class="col-xs-10">
+                                <input type="text" class="form-control" name="Location" id="Location" placeholder="详细地址" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="Email" class="col-xs-2 control-label">
+                                积分
+                            </label>
+                            <div class="col-xs-10">
+                                <input type="number" class="form-control" name="Score" id="Score" placeholder="积分" />
+                                <span class="help-block">添加用户初始积分，修改用户资料时，该积分只是查看，不能修改！</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="Email" class="col-xs-2 control-label">
+                                个人介绍
+                            </label>
+                            <div class="col-xs-10">
+                                <textarea class="form-control" name="Introduce" id="Introduce" placeholder="个人介绍"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="Email" class="col-xs-2 control-label">
+                                注册来源
+                            </label>
+                            <div class="col-xs-10">
+                                <input class="form-control" value="后台添加" name="ComeFrom" id="ComeFrom" placeholder="注册来源" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-xs-offset-2 col-xs-10">
+                                <input type="text" name="UserId" id="UserId" style="display: none;" />
+                                <button type="submit" id="submit" class="btn btn-primary">提交</button>
+                                <button type="reset" class="btn">重置</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+@section Script{
+    <script>
+        $(function () {
+            //日历
+            $('#Deadline').datetimepicker({
+                language: 'zh-CN',
+                weekStart: 1,
+                todayBtn: 1,
+                autoclose: 1,
+                todayHighlight: 1,
+                startView: 0,
+                minView: 0,
+                format: 'yyyy-mm-dd hh:ii'
+            });
+            //日历
+            $('#BirthDay').datetimepicker({
+                language: 'zh-CN',
+                weekStart: 1,
+                todayBtn: 1,
+                autoclose: 1,
+                todayHighlight: 1,
+                startView: 2,
+                minView: 2,
+                format: 'yyyy-mm-dd'
+            });
+
+            var setdeadlinebox = function () {
+                var option = $("option:selected", "#RoleId");
+                if (option.closest("optgroup").size() == 1 && option.closest("optgroup").attr("data-id") != "score") {
+                    $("#deadlinebox").removeClass("hidden");
+                } else {
+                    $("#deadlinebox").addClass("hidden");
+                }
+            };
+
+            $("#RoleId").change(function () {
+                setdeadlinebox();
+            });
+
+            var setCity = function (provinceid, cityid) {
+                var option = '<option value="">=选择城市=</option>';
+                if (provinceid > 0) {
+                    $.get("/tools/getcity", { cityid: provinceid }, function (result) {
+                        if (result.error == 0) {
+                            $(result.data).each(function (i, n) {
+                                option += '<option value="' + n.CityId + ' " ' + (n.CityId == cityid ? "selected='selected'" : "") + '>' + n.CityName + '</option>';
+                            });
+                        }
+                        $("#CityId").empty().append(option);
+                    })
+                } else {
+                    $("#CityId").empty().append(option);
+                };
+            };
+
+            //省份下拉事件
+            $("#Province").change(function () {
+                var provinceid = $(this).val();
+                setCity(provinceid, "");
+            });
+
+            //图片上传
+            $("#avatarupload").h5_upload({
+                preview: ".img-thumbnail", folder: "avatar", cut: 1, maxheight: 320, maxwidth: 320, watermark: 0, change: function () {
+                }, success: function (result) {
+                    if (result.error == 0) {
+                        $(".img-thumbnail").attr("src", result.data);
+                        $("#Avatar").val(result.data);
+                    } else {
+                        layer.alert("上传失败！", { icon: 5 });
+                    }
+                }
+            });
+
+            $("#btn_add").click(function () {
+                $("#Province").val("0");
+                $(".img-thumbnail").attr("src", "/images/noavatar_middle.gif");
+                setCity("0", "");
+                if (!$("#deadlinebox").is(".hidden")) {
+                    $("#deadlinebox").addClass("hidden");
+                }
+
+            });
+            //管理员
+            var table = $("#list-table");
+            table = initBootstrapTable(table, {
+                url: "/admin/user/loadjson",
+                columns: [
+                    {
+                        field: 'state',
+                        checkbox: true,
+                        align: 'center',
+                        valign: 'middle'
+                    },
+                        {
+                            title: '会员',
+                            field: 'UserName',
+                            valign: 'middle'
+                        },
+                        {
+                            title: '角色',
+                            field: 'RoleName',
+                            valign: 'middle'
+                        }
+                ],
+
+                onCheck: function (row) {
+
+                    $("#UserName").val(row.UserName);
+                    $("#NickName").val(row.NickName);
+                    $("#LockUser").prop("checked", row.LockUser == 1);
+                    $("#VerifyMember").prop("checked", row.VerifyMember == 1);
+                    $(":radio[name=Gender][value=" + row.Gender + "]").prop("checked", true);
+                    $("#RoleId").val(row.RoleId);
+                    $(":checkbox[name=shows]").each(function () {
+                        var val = parseInt($(this).val());
+                        $(this).prop("checked", (row.Show & val) == val);
+                    });
+                    var deadline = "";
+                    if (row.Deadline) {
+                        deadline = jsonDateFormat(row.Deadline, "yyyy-MM-dd hh:mm");
+                    }
+                    $("#Deadline").val(deadline);
+                    setdeadlinebox();
+
+                    $("#UserId").val(row.UserId);
+                    if (row.CityId > 0) {
+                        var provinceid = (row.CityId + "").substring(0, 2) + "0000";
+                        $("#Province").val(provinceid);
+                        setCity(provinceid, row.CityId);
+
+                    } else {
+                        $("#Province").val("0");
+                        setCity(0, "");
+                    }
+
+                    $("#Location").val(row.Location);
+                    $("#BirthDay").val(row.BirthDay);
+
+                    $("#Introduce").val(row.Introduce);
+                    $("#Score").val(row.Score);
+                    $("#ComeFrom").val(row.ComeFrom);
+
+                    if (row.Avatar && row.Avatar.length > 0) {
+                        $("#Avatar").val(row.Avatar);
+                        $(".img-thumbnail").attr("src", row.Avatar);
+                    } else {
+                        $("#Avatar").val("");
+                        $(".img-thumbnail").attr("src", "/images/noavatar_middle.gif");
+                    }
+                }
+            });
+
+            //删除菜单
+            $("#btn_del").click(function () {
+                var delrows = table.bootstrapTable('getSelections');
+                if (delrows.length == 0) {
+                    layer.alert("请选择要删除的数据！", { icon: 5 });
+                } else {
+                    layer.confirm('确认删除该条数据！', {
+                        title: '删除确认？', // <-- If you didn't specify it, dialog type will be used,
+                    }, function () {
+                        var ids = "";
+                        $(delrows).each(function (i, n) {
+                            if (ids.length > 0)
+                                ids += ",";
+                            ids += n.UserId;
+                        });
+                        if (ids.length > 0) {
+                            $.post("/admin/user/delete", { "ids": ids }, function (result) {
+                                ajaxResult(result);
+                            });
+                        };
+                    });
+                }
+            });
+
+            //验证表单
+            formValidate("#form-submit", {
+                rules: {
+                    "Password": {
+                        required: function () {
+                            return $("#UserId").val() == "";
+                        }
+                    },
+                    UserName: {
+                        remote: {
+                            url: "/admin/user/checkname/",     //后台处理程序
+                            type: "get",               //数据发送方式
+                            data: {                     //要传递的数据
+                                field: function () { return $("#UserName").val() },
+                                userid: function () { return $("#UserId").val() }
+                            },
+                            dataFilter: function (data, type) {
+                                var valid = false;
+                                var result = JSON.parse(data);
+                                if (result.error == 0) {
+                                    if (result.data.Count <= 0) {
+                                        valid = true;
+                                    }
+                                }
+                                return valid;
+                            }
+                        }
+                    },
+
+                },
+                messages: {
+                    UserName: {
+                        remote: "用户名已存在"
+                    },
+                },
+                submitHandler: function (form) {
+                    setSubmit($("#submit", form));
+                    var pwd = $("#Password", form).val();
+                    if (pwd.length > 0) {
+                        pwd = $.md5(pwd);
+                    }
+                    var city = "";
+                    if ($("#CityId").val().length > 0) {
+                        city = $("option:selected", "#Province").text() + $("option:selected", "#CityId").text();
+                    }
+                    var shows = "";
+                    $(":checkbox[name=shows]:checked").each(function () {
+                        if (shows.length > 0) {
+                            shows += ",";
+                        }
+                        shows += $(this).val();
+                    });
+
+                    $.post("/admin/user/update/", { "UserName": $("#UserName").val(), "NickName": $("#NickName").val(), "BirthDay": $("#BirthDay").val(), "RoleId": $("#RoleId").val(), "Password": pwd, "UserId": $("#UserId").val(), "Score": $("#Score").val(), "LockUser": $("#LockUser").is(":checked") ? 1 : 0, "VerifyMobile": $("#VerifyMobile").is(":checked") ? 1 : 0, "VerifyEmail": $("#VerifyEmail").is(":checked") ? 1 : 0, "VerifyMember": $("#VerifyMember").is(":checked") ? 1 : 0, shows: shows, "Avatar": $("#Avatar").val(), "Gender": $(":radio[name=Gender]:checked").val(), Deadline: $("#Deadline").val(), city: city, CityId: $("#CityId").val(), Location: $("#Location").val(), Introduce: $("#Introduce").val(), ComeFrom: $("#ComeFrom").val() }, function (result) {
+                        setSubmit($("#submit", form));
+                        ajaxResult(result);
+
+                    }, "JSON");
+                    return false;
+                }
+            });
+
+        });
+    </script>
+}

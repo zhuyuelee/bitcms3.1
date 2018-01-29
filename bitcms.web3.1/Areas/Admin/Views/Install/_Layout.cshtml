@@ -1,0 +1,27 @@
+﻿<html class="no-js" lang="zh-cn">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title  - bitcms内容系统系统</title>
+    <!-- 注意： 如果通过 file://  引入 Respond.js 文件，则该文件无法起效果 -->
+    <!--[if lt IE 9]>
+         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+         <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+      <![endif]-->
+    <link href="/js/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/bitcms_install.css" rel="stylesheet">
+    <script>var _hmt = _hmt || []; (function () { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?e04ce8fda77d008ac8591bf44b490262"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s) })();</script>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="/images/logo-big.png" />
+            @ViewBag.Title
+        </div>
+        @RenderBody()
+
+    </div>
+    <footer>
+        © 2017 - 2018 bitcms.net 河南今斗云品牌策划有限责任公司
+    </footer>
+</body>
+</html>

@@ -1,0 +1,18 @@
+﻿<div class="leftside">
+    <a href="/person">
+        <h3>会员中心</h3>
+    </a>
+    <ul>
+        <li @if (ViewBag.personNav == "info")
+            {<text> class="active"</text>}><a href="/person/info">基本资料</a></li>
+        <li @if (ViewBag.personNav == "scorelog")
+            {<text> class="active"</text>}><a href="/person/scorelog">积分记录</a></li>
+        <li @if (ViewBag.personNav == "follow")
+            {<text> class="active"</text>}><a href="/person/follow">我的粉丝</a></li>
+        <li @if (ViewBag.personNav == "newsadd")
+            {<text> class="active"</text>}><a href="/person/news/add">添加资讯</a></li>
+        <li @if (ViewBag.personNav == "news")
+            {<text> class="active"</text>}><a href="/person/news">资讯管理</a></li>
+        <li><a href="javascript:void(0);" class="signout">退出</a></li>
+    </ul>
+</div>

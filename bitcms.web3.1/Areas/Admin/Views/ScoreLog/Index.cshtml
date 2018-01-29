@@ -1,0 +1,124 @@
+﻿
+<div class="row">
+    <div class="left main_nav">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="glyphicon glyphicon-th-list"></i>
+                会员筛选
+            </div>
+            <table id="list-table" class="table table-hover">
+            </table>
+        </div>
+    </div>
+    <div class="right main-context">
+        <div class="table-responsive">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="glyphicon glyphicon-edit"></i>
+                    积分记录
+                </div>
+                <table id="list-scorelog" class="table table-hover">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+@section Script{
+
+<script>
+    $(function () {
+        //管理员
+        var table = $("#list-table");
+        table = initBootstrapTable(table, {
+            url: "/admin/scorelog/loadjson",
+            columns: [
+                {
+                    field: 'state',
+                    checkbox: true,
+                    align: 'center',
+                    valign: 'middle'
+                },
+                    {
+                        title: '会员',
+                        field: 'UserName',
+                        valign: 'middle'
+                    },
+                    {
+                        title: '角色',
+                        field: 'RoleName',
+                        valign: 'middle'
+                    }
+            ],
+            onCheck: function (row) {
+                getscorelog(row.UserId);
+
+            }
+        });
+
+        var scorelogtable = null;
+        var getscorelog = function (userid) {
+            if (scorelogtable == null) {
+                scorelogtable = $("#list-scorelog");
+                scorelogtable.attr("id", userid);
+                initBootstrapTable(scorelogtable, {
+                    url: "/admin/scorelog/loadscorelog",
+                    search: false,
+                    queryParams: function (params) {
+                        return {
+                            userid: scorelogtable.attr("id"),
+                            pagesize: params.pageSize,
+                            pagenumber: params.pageNumber,
+                            totalcount: scorelogtable.attr("data-totalRows") || 0
+                        };
+                    },
+                    columns: [
+                        {
+                            field: 'state',
+                            checkbox: true,
+                            align: 'center',
+                            valign: 'middle'
+                        },
+                        {
+                            title: '会员',
+                            field: 'UserName',
+                            valign: 'middle'
+                        },
+                        {
+                            title: '积分',
+                            field: 'Score',
+                            align: 'center',
+                            valign: 'middle',
+                            formatter: function (val, row, index) {
+                                if (row.IncomeOrExpenses == 0) {
+                                    return val + "(+)";
+                                } else {
+                                    return val + "(-)";
+                                }
+                            }
+                        },
+                            {
+                                title: '原因',
+                                field: 'Reason',
+                                valign: 'middle'
+                            },
+                            {
+                                title: '时间',
+                                field: 'InDate',
+                                valign: 'middle',
+                                formatter: function (val, row, index) {
+                                    return jsonDateFormat(val, "yyyy-MM-dd hh:mm");
+                                }
+                            }
+                    ]
+                });
+            } else {
+                scorelogtable.attr("id", userid);
+                scorelogtable.attr("data-totalRows", "0");
+                scorelogtable.bootstrapTable("refresh");
+            }
+        };
+        getscorelog(0);
+
+    });
+</script>
+}

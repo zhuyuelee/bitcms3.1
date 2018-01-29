@@ -1,0 +1,37 @@
+﻿<div class="hidden-xs">
+    <form action="/" method="get">
+        <div class="form-group">
+            <div class="input-group  input-group-lg">
+                <input type="text" class="form-control" name="key" placeholder="请输入要搜索的内容">
+                <div class="input-group-btn">
+                    <button class="btn btn-primary" type="submit">搜索</button>
+                </div>
+            </div>
+        </div>
+    </form>
+    @{
+        var manage = new CMSManage();
+
+        var hotnewslist = manage.getHotDetailList(10, "news", 7);
+
+        manage.Dispose();
+    }
+    @if (hotnewslist.Count > 0)
+    {
+        <div class="sidebox hotlist">
+            <h4>一周热榜</h4>
+            @foreach (var info in hotnewslist)
+            {
+                <dl>
+                    <dt>
+                        <a href="/info_@info.DetailId">
+                            <img src="/tools/getimg/@info.GalleryId/95/66" class="img-rounded"></a>
+                    </dt>
+                    <dd>
+                        <a href="/info_@info.DetailId">@info.Title</a>
+                    </dd>
+                </dl>
+            }
+        </div>
+    }
+</div>

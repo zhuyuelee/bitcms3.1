@@ -1,0 +1,69 @@
+﻿@model Dictionary<string, bool>
+
+@{
+    Layout = "_Layout.cshtml";
+    ViewBag.Title = "安装环境检测";
+}
+
+<div class="main">
+    <h3>环境检测</h3>
+    <div class="row">
+        <div class="col-sm-7">
+            <ul class="step">
+                @foreach (var power in @Model)
+                { 
+                    <li class="@if (power.Value)
+                               {<text>text-success</text>}
+                               else
+                               {<text>text-warning</text>}">
+                        <i class="glyphicon @if (power.Value)
+                                            {<text>glyphicon-ok</text>}
+                                            else
+                                            {<text>glyphicon-remove</text>}"></i>
+                        对 @power.Key @if (power.Value)
+                                     {
+                                         if (power.Key == "web.config")
+                                         {
+                            <text> 配置文件读写权限验证通过!</text>
+                                         }
+                                         else
+                                         {
+                            <text> 目录权限验证通过!</text>
+                                         }
+                                     }
+                                     else
+                                     {
+                                         if (power.Key == "web.config")
+                                         {
+                            <text> 配置文件不可写</text>
+                                         }
+                                         else
+                                         {
+                            <text> 目录没有写入和删除权限</text>
+                                         }
+                                     }
+                    </li>
+                }
+            </ul>
+        </div>
+        <div class="col-sm-5">
+            <p>
+                <span class="label label-info">
+                    <i class="glyphicon glyphicon-tag"></i>
+                    Tips</span>
+            </p>
+            <h4>
+                左侧目录或文件需要<span class="text-primary">IIS_IUSRS</span>的完全控制权限。
+            </h4>
+            <p>
+                如果出现目录或文件没有写入和删除权限情况,请选择该目录或<span class="text-primary">文件->右键属性->安全->添加</span>,
+						在"输入对象名称来选择"中输入"<span class="text-primary">IIS_IUSRS</span>",点击"确定".选择"组或用户名称"中"<span class="text-primary">IIS_IUSRS</span>"用户组,在下面
+						"<span class="text-primary">IIS_IUSRS</span>"的权限中勾选"修改"的"允许"复选框,点击"确定"后再次重新刷新本页面继续。
+            </p>
+        </div>
+    </div>
+</div>
+<div class="text-right">
+    <a class="btn btn-primary" href="step3">下一步：网站配置</a>
+</div>
+

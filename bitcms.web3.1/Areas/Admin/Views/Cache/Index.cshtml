@@ -1,0 +1,118 @@
+﻿<div class="table-responsive">
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <th colspan="4" style="text-align: left;">缓存管理
+                    <div class="pull-right">
+                        <button type="button" id="btn_del" class="btn btn-xs btn-danger">删除选定</button>
+                        <button type="button" id="btn_delall" class="btn btn-xs btn-danger">清空缓存</button>
+                    </div>
+                </th>
+            </tr>
+            <tr>
+                <th style="width: 10%; text-align: center;">
+                    <label>
+                        <input type="checkbox" id="checkall" />
+                        全选</label>
+                </th>
+                <th style="width: 60%;">缓存Key
+                </th>
+                <th style="width: 20%; text-align: center;">大小
+                </th>
+                <th style="width: 10%; text-align: center;">管理
+                </th>
+            </tr>
+
+        </tbody>
+    </table>
+</div>
+@section Script{
+
+<script>
+    $(function () {
+        //全选
+        $("#checkall").click(function () {
+            $(".table td>:checkbox").prop("checked", $(this).prop("checked"));
+        });
+        //设置icon
+        var getIcon = function (deep, key) {
+            var icon = "";
+            switch (key) {
+                case 0:
+                    icon = "&nbsp;<i class='glyphicon glyphicon-folder-close'></i>&nbsp;";
+                    break;
+                case 1:
+                    icon = "&nbsp;<i class='glyphicon glyphicon-file'></i>&nbsp;";
+                    break;
+                default:
+                    icon = "&nbsp;<i class='glyphicon glyphicon-open-file'></i>&nbsp;";
+                    break;
+            }
+            var line = "";
+            if (key > 0) {
+                line += "&nbsp;&nbsp;";
+            }
+            for (var i = 0; i < deep; i++) {
+                line += "　";
+            }
+            if (key > 0) {
+                line += "├─";
+            }
+            return line + icon;
+        }
+        //获取缓存
+        var getCache = function (deep, key) {
+            $.get("/admin/cache/getcache/", { key: key }, function (result) {
+                if (result.error == 0) {
+                    var trs = "";
+                    if (result.data) {
+                        $(result.data).each(function (i, n) {
+                            trs += '<tr data-key="' + ((n.CacheType < 2 && key && key.length > 0) ? key + '__' : '') + n.Cachekey + '" data-deep="' + deep + '" data-type="' + n.CacheType + '"><td align="center"><input type="checkbox" /> </td><td>' + getIcon(deep, n.CacheType) + n.Cachekey + '</td><td align="center">' + n.Size + '</td><td align="center"><button type="button" class="btn btn-danger  btn-xs">删除</button></td></tr>';
+                        });
+                        if (key && key.length > 0) {
+                            $(trs).insertAfter("tr[data-key=" + key + "]");
+                        } else {
+                            $(".table").append(trs);
+                        }
+                    }
+                } else {
+                    ajaxResult(result);
+                }
+            });
+        };
+        getCache(0,"");
+
+        $(".table").delegate("td>.btn", "click", function () {
+            $(":checkbox:checked", $(this).closest("tr").siblings()).prop("checked", false);
+            $(":checkbox", $(this).closest("tr")).prop("checked", true);
+            $("#btn_del").click();
+        });
+        //清除缓存
+        $("#btn_del,#btn_delall").click(function () {
+            var btn = $(this);
+            var key = "";
+            if (btn.is("#btn_del") && $(".table td>:checkbox:checked").size() == 0) {
+                layer.alert("请选择要删除的数据！");
+                return;
+            } else if (btn.is("#btn_del")) {
+                $(".table td>:checkbox:checked").each(function (i) {
+                    var tr = $(this).closest("tr");
+                    if (key.length > 0) {
+                        key += ";";
+                    }
+                    key += tr.attr("data-key") + ":" + tr.attr("data-type");
+                });
+            }
+            layer.confirm('确认删除该条缓存？', {
+                title: '删除确认？'
+            },
+                    function () {
+                        $.post("/admin/cache/delete", { "keys": key }, function (result) {
+                            ajaxResult(result);
+                        });
+                    });
+        });
+
+    });
+</script>
+}

@@ -1,0 +1,290 @@
+﻿<div class="row">
+    <div class="left main_nav">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="glyphicon glyphicon-th-list"></i>
+                内容回收站
+                <div class="pull-right btn-group">
+                    <button type="submit" id="btn_restore" class="btn btn-xs  btn-success">还原</button>
+                    <button type="button" id="btn_del" class="btn btn-xs btn-danger">删除</button>
+                </div>
+            </div>
+            <table id="list-table" class="table table-hover">
+            </table>
+        </div>
+    </div>
+    <div class="right main-context">
+        <div class="table-responsive">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="glyphicon glyphicon-edit"></i>
+                    资讯详情
+                    <div class="pull-right" style="display: none;" id="detailbox">
+                        <button type="submit" id="restore" class="btn btn-xs  btn-success">还原</button>
+                        <button type="submit" id="delete" class="btn btn-xs  btn-danger">删除</button>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <form method="post" id="form-submit" action="#" class="form-horizontal" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="UserName" class="col-xs-2 control-label">
+                                标题
+                            <i class="text-danger">*</i>
+                            </label>
+                            <div class="col-xs-10">
+                                <p class="form-control-static" id="Title">标题</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="SubTitle" class="col-xs-2 control-label">
+                                副标题
+                            </label>
+                            <div class="col-xs-10">
+                                <p class="form-control-static" id="SubTitle">副标题</p>
+                            </div>
+                        </div>
+                        <div class="form-group" id="roletypeset">
+                            <label for="ItemId" class="col-xs-2 control-label">
+                                栏目
+                            <i class="text-danger">*</i>
+                            </label>
+                            <div class="col-xs-10">
+                                <p class="form-control-static" id="Item">栏目</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="fileupload" class="col-xs-2 control-label">
+                                封面
+                            </label>
+                            <div class="col-xs-10">
+                                <label>
+                                    <img src="/images/pic.png" onerror="this.src='/images/pic.png'" class="img-thumbnail" style="max-width: 100%; max-height: 200px;"></label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="HitsNum" class="col-xs-2 control-label">
+                                点击次数
+                            </label>
+                            <div class="col-xs-10">
+                                <p class="form-control-static" id="HitsNum">点击次数</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="Author" class="col-xs-2 control-label">
+                                编辑
+                            </label>
+                            <div class="col-xs-10">
+                                <p class="form-control-static" id="Author">编辑</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="Source" class="col-xs-2 control-label">
+                                出处
+                            </label>
+                            <div class="col-xs-10">
+                                <p class="form-control-static" id="Source">出处</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="InDate" class="col-xs-2 control-label">
+                                发布时间
+                            </label>
+                            <div class="col-xs-10">
+                                <div class="input-group date form_date">
+                                    <p class="form-control-static" id="InDate">发布时间</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="RecycleDate" class="col-xs-2 control-label">
+                                删除时间
+                            </label>
+                            <div class="col-xs-10">
+                                <div class="input-group">
+                                    <p class="form-control-static" id="RecycleDate">删除时间</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="Resume" class="col-xs-2 control-label">
+                                简要说明
+                            </label>
+                            <div class="col-xs-10">
+                                <p class="form-control-static" id="Resume">简要说明</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="Content" class="col-xs-2 control-label">
+                                内容
+                            </label>
+                            <div class="col-xs-10">
+                                <div class="form-control-static" id="Content">内容</div>
+                                <input type="text" name="DetailId" id="DetailId" style="display: none;" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Script{
+
+<script>
+    $(function () {
+
+        //内容
+        var table = $("#list-table");
+        initBootstrapTable(table, {
+            url: "/admin/recycle/loadjson",
+            singleSelect: false,
+            columns: [
+                {
+                    field: 'state',
+                    checkbox: true,
+                    align: 'center',
+                    valign: 'middle'
+                },
+                    {
+                        title: '标题',
+                        field: 'Title',
+                        valign: 'middle'
+                    },
+            {
+                title: '频道',
+                field: 'ChannelCode',
+                align: 'center',
+                valign: 'middle'
+            },
+            ],
+            onCheck: function (row) {
+                if ($("#detailbox").is(":hidden")) {
+                    $("#detailbox").show();
+                }
+
+                //
+                $.get("/admin/recycle/loadcontent/", { detailid: row.DetailId }, function (result) {
+                    if (result.error == 0) {
+                        //详情
+                        var content = "";
+                        if (result.data) {
+                            $(result.data).each(function (i,n) {
+                                content += n.Content;
+                            });
+                        }
+                        $("#Content").html(content);
+                    } else {
+                        ajaxResult(result);
+                    }
+                });
+                $("#DetailId").val(row.DetailId);
+                $("#Title").text(row.Title);
+                $("#SubTitle").text(row.SubTitle || "");
+                if (row.GalleryId > 0) {
+                    $(".img-thumbnail").attr("src", "/tools/getimg/" + row.GalleryId);
+                } else {
+                    $(".img-thumbnail").attr("src", "/images/pic.png");
+                }
+                if (row.Items && row.Items.indexOf("||||") > -1) {
+                    "".split
+                    $("#Item").text(row.Items.split("||||")[1]);
+                } else {
+                    $("#Item").text("");
+
+                }
+
+                $("#HitsNum").text(row.HitsNum);
+                $("#Author").text(row.Author || "");
+                $("#Source").text(row.Source || "");
+                var InDate = jsonDateFormat(row.InDate, "yyyy-MM-dd hh:mm");
+                $("#InDate").text(InDate);
+                var RecycleDate = jsonDateFormat(row.RecycleDate, "yyyy-MM-dd hh:mm");
+                $("#RecycleDate").text(RecycleDate);
+                $("#Resume").text(row.Resume || "");
+            }
+        });
+        //还原
+        var restore = function (ids) {
+            layer.confirm('确认还原选中数据！', { title: '还原确认？' },
+                function () {
+                    $.post("/admin/recycle/restore", { "ids": ids }, function (result) {
+                        ajaxResult(result);
+                    });
+                });
+        };
+        //删除
+        var del = function (ids) {
+            layer.confirm('确认删除选中数据！', { title: '删除确认？' },
+                function () {
+                    $.post("/admin/recycle/delete", { "ids": ids }, function (result) {
+                        ajaxResult(result);
+                    });
+                });
+        };
+
+        //删除菜单
+        $("#btn_del").click(function () {
+            var delrows = table.bootstrapTable('getSelections');
+            if (delrows.length == 0) {
+                layer.alert("请选择要删除的数据！", { icon: 5 });
+            } else {
+                var ids = "";
+                $(delrows).each(function (i, n) {
+                    if (ids.length > 0)
+                        ids += ",";
+                    ids += n.DetailId;
+                });
+                del(ids);
+            }
+        });
+        //还原菜单
+        $("#btn_restore").click(function () {
+            var delrows = table.bootstrapTable('getSelections');
+            if (delrows.length == 0) {
+                layer.alert("请选择要还原的数据！", { icon: 5 });
+            } else {
+                var ids = "";
+                $(delrows).each(function (i, n) {
+                    if (ids.length > 0)
+                        ids += ",";
+                    ids += n.DetailId;
+                });
+                restore(ids);
+            }
+        });
+        //还原
+        $("#btn_del").click(function () {
+            var delrows = table.bootstrapTable('getSelections');
+            if (delrows.length == 0) {
+                layer.alert("请选择要删除的数据！", { icon: 5 });
+            } else {
+                var ids = "";
+                $(delrows).each(function (i, n) {
+                    if (ids.length > 0)
+                        ids += ",";
+                    ids += n.DetailId;
+                });
+                del(ids);
+            }
+        });
+
+        $("#delete").click(function () {
+            var id = $("#DetailId").val();
+            if (id.length > 0) {
+                del(id);
+            } else {
+                layer.alert("请选择要删除的数据！", { icon: 5 });
+            }
+        });
+        //还原
+        $("#restore").click(function () {
+            var id = $("#DetailId").val();
+            if (id.length > 0) {
+                restore(id);
+            } else {
+                layer.alert("请选择要还原的数据！", { icon: 5 });
+            }
+        });
+    });
+</script>
+}

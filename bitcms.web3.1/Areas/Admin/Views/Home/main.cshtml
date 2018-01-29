@@ -1,0 +1,101 @@
+﻿<h2>欢迎使用bitcms内容管理系统</h2>
+<!-- block -->
+<div class="table-responsive">
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <th colspan="4" style="text-align: left;">基本信息
+                </th>
+            </tr>
+            <tr>
+                <th style="width: 15%;">网站名
+                </th>
+                <td style="width: 35%">
+                    @ViewBag.config.SiteName
+                </td>
+                <th style="width: 15%;">bitcms版本
+                </th>
+                <td style="width: 35%;">
+                    @ViewBag.config.AssemblyProduct  @ViewBag.config.Version  @ViewBag.config.VersionName
+                </td>
+            </tr>
+            <tr>
+                <th>系统域名
+                </th>
+                <td>
+                    @ViewBag.config.SiteDomain
+                </td>
+                <th>服务器IP
+                </th>
+                <td>
+                    @bitcms.Common.Fetch.getClientIP()
+                </td>
+            </tr>
+            <tr>
+                <th>数据库类型
+                </th>
+                <td>mysql
+                </td>
+                <th>服务器目录
+                </th>
+                <td>
+                    @bitcms.Common.Fetch.getMapPath("/")
+                </td>
+            </tr>
+            <tr>
+                <th>ASP.NET版本信息
+                </th>
+                <td>ASP.NET CLR
+                    @Environment.Version
+                </td>
+                <th>服务器运行时间
+                </th>
+                <td>
+                    @(((Double)System.Environment.TickCount / 3600000).ToString("N2")) 小时
+                </td>
+            </tr>
+            <tr>
+                <th>服务器名
+                </th>
+                <td>
+                    @System.Environment.MachineName
+                </td>
+                <th>操作系统类型
+                </th>
+                <td>
+                    @System.Environment.OSVersion.ToString()
+                </td>
+            </tr>
+            <tr>
+                <th>CPU类型
+                </th>
+                <td>
+                    @Environment.GetEnvironmentVariable("PROCESSOR_IDENTIFIER")
+                </td>
+                <th>CPU个数
+                </th>
+                <td>
+                    @Environment.GetEnvironmentVariable("NUMBER_OF_PROCESSORS")个
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<table class="table table-bordered table-striped">
+    <tbody>
+        <tr>
+            <th style="text-align: left;">版权信息
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <ul>
+                    <li>bitcms内容管理系统，系〖河南今斗云品牌策划有限公司〗独立开发完成，依法享有该程序版权和知识产权，并受中华人民共和国法律保护。</li>
+                    <li>不得将本程序用于国家不允许开设的网站（包括色情、反动、含有病毒、赌博类等网站）。</li>
+                    <li>未尽事宜以bitcms内容管理系统官网（<a href="http://www.bitcms.net" target="_blank"> www.bitcms.net</a>）最新公告和相关法律为准。</li>
+                </ul>
+            </td>
+        </tr>
+
+    </tbody>
+</table>

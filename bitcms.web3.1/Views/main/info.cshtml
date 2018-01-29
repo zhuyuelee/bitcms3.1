@@ -1,0 +1,298 @@
+﻿@{
+    var manage = new bitcms.Data.CMSManage();
+    var did = bitcms.Common.Utils.strToInt(ViewBag.parms["did"]);
+    DetailInfo info = manage.getDetailInfo("news", did);
+    if (info == null)
+    {
+        Html.RenderPartial("_404");
+        return;
+    }
+    ViewBag.navIndex = "item_" + info.ItemId;
+    ViewBag.Title = info.Title;
+
+    UserInfo userinfo = null;
+    if (info.UserId > 0)
+    {
+        userinfo = manage.getUserInfo(info.UserId);
+    }
+}
+<div class="pull-right rightbox">
+    @if (userinfo != null)
+    {
+        <div class="user">
+            <dl>
+                <dt>
+                    <img class="img-circle" src="/tools/getavatar/@userinfo.UserId/66/66" onerror="this.src='/images/noavatar_middle.gif'">
+                </dt>
+                <dd>
+                    <h4>@userinfo.UserName
+                        @if (userinfo.FollowNum > 0)
+                        { <small>粉丝<span>@userinfo.FollowNum</span></small>}
+                        <button class="btn btn-primary  btn-xs pull-right follow"><i class="glyphicon glyphicon-plus"></i>关注</button>
+                    </h4>
+                    <p class="text-muted">
+                        @userinfo.Introduce
+                    </p>
+                </dd>
+            </dl>
+            @{
+                        var newslist = manage.getDetailList(5, "news", 0, userinfo.UserId, 0, null);
+                        if (newslist.Count > 0)
+                        {
+                <ul class="hidden-xs hidden-sm">
+                    @foreach (var newsinfo in newslist)
+                    {
+                        <li><a href="/info_@newsinfo.DetailId">@newsinfo.Title</a></li>
+                    }
+                </ul>
+                        }
+                        else
+                        {
+                <div>&nbsp;</div>
+                        }
+            }
+        </div>
+
+    }
+    @Html.Partial("_rightside")
+</div>
+<div class="pull-left leftbox">
+    <div class="articlebox">
+        <h1>
+            @info.Title
+        </h1>
+        <sub>
+            <span>@info.Author</span> <span>@info.InDate.ToString("yyyy-MM-dd HH:mm")</span>
+        </sub>
+        <article>
+            @{
+                var contentlist = manage.getDetailContentList(info.DetailId);
+                foreach (var contentinfo in contentlist)
+                {
+                <div>
+                    @Html.Raw(contentinfo.Content)
+                </div>
+                }
+            }
+        </article>
+        @if (info.CloseReview == 0)
+        {
+            <div class="reviewlist">
+                <h3>
+                    <label class="text-danger">@info.ReviewNum</label>
+                    条评论
+                </h3>
+                <form class="form-review" action="#" method="post">
+                    <div class="form-group">
+                        <textarea class="form-control" name="content" required="required" rows="2" placeholder="写下您的评论..."></textarea>
+                    </div>
+
+                    <div class="form-group form-inline clearfix">
+                        @if (ViewBag.config.EnabledReviewVerifykey)
+                        {
+                            <div class="input-group pull-left verifykey">
+                                <input type="text" class="form-control" name="verifykey" id="verifykey" autocomplete="off" required="required" placeholder="验证码">
+                                <label class="input-group-addon" for="verifykey" id="refreshverifykey" style="padding: 0;">
+                                    <img src="/tools/verifyKey/review/80/32" />
+                                </label>
+                            </div>
+                        }
+                        <div class="checkbox pull-right">
+                            <label>
+                                <input type="checkbox" name="secrecy" value="1">
+                                保密
+                            </label>
+                            <input type="text" name="key" value="review" class="hidden" />
+                            <input type="text" name="detailid" value="@did" class="hidden" />
+                            <input type="text" name="replyid" value="0" class="hidden" />
+                            <button class="btn btn-primary" type="submit">提交评论</button>
+                        </div>
+
+                    </div>
+                </form>
+                <div class="more text-center">
+                    <a data-page="1">
+                        <img src="/images/loading.gif" /></a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+@if (info.CloseReview == 0)
+{
+    <script type="text/html" id="replybox">
+        <form class="form-reply" action="#" method="post">
+            <div class="form-group">
+                <input class="form-control" name="content" required="required" placeholder="写下您的回复...">
+            </div>
+
+            <div class="form-group form-inline clearfix">
+                @if (ViewBag.config.EnabledReviewVerifykey)
+                {
+                    <div class="input-group pull-left replyverifykey">
+                        <input type="text" class="form-control" name="verifykey" id="replyverifykey" autocomplete="off" required="required" placeholder="验证码">
+                        <label class="input-group-addon" for="replyverifykey" id="refreshreplyverifykey" style="padding: 0;">
+                            <img src="/tools/verifyKey/reply/80/32" />
+                        </label>
+                    </div>
+                }
+                <div class="checkbox pull-right">
+                    <label>
+                        <input type="checkbox" name="secrecy" value="1">
+                        保密
+                    </label>
+                    <input type="text" name="key" value="reply" class="hidden" />
+                    <input type="text" name="detailid" value="@did" class="hidden" />
+                    <input type="text" name="replyid" value="0" class="hidden" />
+                    <button class="btn btn-primary" type="submit">提交回复</button>
+                </div>
+
+            </div>
+        </form>
+    </script>
+}
+@section Script{
+    <script src="/js/jquery.validate.min.js" charset="utf-8"></script>
+    <script src="/js/jquery.validate.methods.min.js" charset="utf-8"></script>
+    <script>
+        $(function () {
+            var cookehits = $.cookie('detail_hitsnum_@did');
+            if (!cookehits) {
+                $.cookie('detail_hitsnum_@did', "@did");
+                $.post("/cmsaction/updatedetailhitsnum", { "id": "@did" });
+            }
+        });
+        $(function () {
+            $(".follow").setFollow({ userid: "@ViewBag.userOnline.UserId", followuserid: "@info.UserId", "link": location.href });
+        });
+    </script>
+    @if (info.CloseReview == 0)
+    {
+        <script>
+            $(function () {
+                var getlist = function (page) {
+                    jQuery.get("/reviewlist/@did/" + page + "?t=" + new Date().getMilliseconds(), function (result) {
+                    var list = $(result);
+                    $(".reviewlist>.more").replaceWith(list);
+                    $(".agreebox", list).setAgree({ lab: "small" });
+                });
+            };
+            getlist(1);
+            $(".reviewlist").delegate(".more>a", "click", function () {
+                var link = $(this);
+                link.html('<img src="/images/loading.gif" />');
+                getlist(link.attr("data-page"));
+            });
+
+            $(".reviewlist").delegate(".verifykey>:input,.replyverifykey>:input", "focus", function () {
+                var input = $(this);
+                input.val("");
+                var key = $(":input[name=key]", input.closest(".form-group")).val();
+                $("img", input.parent()).attr("src", "/tools/verifyKey/" + key + "/80/32?t=" + new Date().getMilliseconds());
+            });
+
+            formValidate('.form-review', {
+                rules: {
+                    content: {
+                        zhLength: [4, 500],
+                    }
+                },
+                messages: {
+                    content: {
+                        required: "请写下评论内容...",
+                    },
+                    verifykey: {
+                        required: "请输入验证码"
+                    }
+                },
+                submitHandler: function (form) {
+                    var loadindex = layer.load();
+                    $.post("/cmsaction/updatereview", $(form).serialize(), function (result) {
+                        layer.close(loadindex);
+                        if (result.error == 0) {
+                            layer.msg(result.message || '提交成功', { icon: 1 }, function (index) {
+                                $("textarea", form).val("");
+                                $("#verifykey", form).val("");
+                            });
+                            var num = parseInt($(".reviewlist h3>.text-danger").text());
+                            if (num > 0) {
+                                $(".reviewlist h3>.text-danger").text(num + 1);
+                            }
+                            if ($(".reviewlist .more").size() == 0) {
+                                $(".reviewlist").append('<div class="more text-center"><a data-page="1"><img src="/images/loading.gif" /></a></div>');
+                            }
+                            $(".reviewlist dl").remove();
+                            getlist(1);
+                        } else {
+                            ajaxResult(result);
+                        }
+                    }, "JSON");
+                    return false;
+                }
+            });
+            //加载回复
+            var loadreplylist = function (url, replybox) {
+                if ($(".replylist", replybox).size() == 0) {
+                    replybox.append("<div class='replylist'></div>");
+                }
+                $(".replylist", replybox).empty();
+                $(".replylist", replybox).append('<div class="more text-center"><img src="/images/loading.gif" /></div>');
+                $.get(url + "?t=" + new Date().getMilliseconds(), function (result) {
+                    $(".more", replybox).replaceWith(result);
+                });
+            };
+            //回复
+            $(".reviewlist").delegate(".page>a", "click", function () {
+                var link = $(this);
+                loadreplylist(link.attr("href"), link.closest("dd"));
+                return false;
+            });
+            //回复
+            $(".reviewlist").delegate(".getreply", "click", function () {
+                var btn = $(this);
+                loadreplylist(btn.attr("data-url"), btn.closest("dd"));
+            });
+            //回复
+            $(".reviewlist").delegate(".reply", "click", function () {
+                var btn = $(this);
+                $(".form-reply", btn.closest("dl").siblings()).remove();
+                var replybox = btn.siblings(".form-reply");
+                if (replybox.size() == 0) {
+                    replybox = btn.parent().append($("#replybox").html());
+                    $(":input[name=replyid]", replybox).val(btn.attr("data-rid"));
+                    var formid = "form-" + getRandom(8);
+                    $("form", replybox).attr("id", formid);
+                    //验证
+                    formValidate('#' + formid, {
+                        messages: {
+                            content: {
+                                required: "请输入回复内容"
+                            },
+                            verifykey: {
+                                required: "请输入验证码"
+                            }
+                        },
+                        submitHandler: function (form) {
+                            var loadindex = layer.load();
+                            $.post("/cmsaction/updatereview", $(form).serialize(), function (result) {
+                                layer.close(loadindex);
+                                if (result.error == 0) {
+                                    $(form).remove();
+                                    layer.msg(result.message || '提交成功', { icon: 1 }, function (index) {
+                                        loadreplylist("/replylist/" + btn.attr("data-rid") + "/1", btn.closest("dd"));
+                                    });
+                                } else {
+                                    ajaxResult(result);
+                                }
+                            }, "JSON");
+                            return false;
+                        }
+                    });
+                } else {
+                    replybox.remove();
+                }
+            });
+        });
+        </script>
+    }
+}

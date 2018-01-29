@@ -1,0 +1,331 @@
+﻿@model List<bitcms.Entity.AdminMenuInfo>
+
+<div class="row">
+    <div class="left main_nav">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="glyphicon glyphicon-th-list"></i>
+                模块管理
+               <div class="pull-right">
+                   <button type="button" id="btn_del" class="btn btn-xs btn-danger">删除</button>
+               </div>
+            </div>
+            <table id="list-table" class="table table-hover">
+            </table>
+        </div>
+    </div>
+    <div class="right main-context">
+        <div class="table-responsive">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="glyphicon glyphicon-edit"></i>
+                    模块管理操作
+                <div class="pull-right">
+                    <button type="button" id="btn_add" class="btn btn-xs btn-success">添加</button>
+                </div>
+                </div>
+                <div class="panel-body">
+                    <form method="post" id="form-submit" action="/admin/role/update/" class="form-horizontal">
+                        <div class="form-group">
+                            <label for="ModuleName" class="col-xs-2 control-label">
+                                模块名
+                            <i class="text-danger">*</i>
+                            </label>
+                            <div class="col-xs-8">
+                                <input type="text" class="form-control" required="required" name="ModuleName" id="ModuleName" placeholder="模块名" />
+                            </div>
+                            <div class="col-xs-2 checkbox">
+                                <label>
+                                    <input type="checkbox" value="1" checked="checked" name="Enabled" id="Enabled" />
+                                    启用</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="ModuleCode" class="col-xs-2 control-label">
+                                编码
+                            <i class="text-danger">*</i>
+                            </label>
+                            <div class="col-xs-10">
+                                <input type="text" class="form-control" required="required" name="ModuleCode" id="ModuleCode" placeholder="模块编码" />
+                                <span class="help-block">32位以内，包含字母，数字和下划线。</span>
+                            </div>
+                        </div>
+                        <div class="form-group ModuleType">
+                            <label for="ModuleType" class="col-xs-2 control-label">
+                                模块类型
+                            <i class="text-danger">*</i>
+                            </label>
+                            <div class="col-xs-10 radio ModuleType">
+                                <label>
+                                    <input type="radio" value="0" checked="checked" name="ModuleType" id="ModuleType" />
+                                    OAuth授权
+                                </label>
+                                <label>
+                                    <input type="radio" value="10" name="ModuleType" />
+                                    API调用
+                                </label>
+                                <label>
+                                    <input type="radio" value="20" name="ModuleType" />
+                                    账号绑定
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group TimestampExpired hidden">
+                            <label for="TimestampExpired" class="col-xs-2 control-label">
+                                时间戳过期
+                            </label>
+                            <div class="col-xs-10 radio">
+                                <label>
+                                    <input type="radio" value="0" name="TimestampExpired" id="TimestampExpired" />不过期
+                                </label>
+                                <label>
+                                    <input type="radio" value="5" name="TimestampExpired" checked="checked" />5秒
+                                </label>
+                                <label>
+                                    <input type="radio" value="15" name="TimestampExpired" checked="checked" />15秒
+                                </label>
+                                <label>
+                                    <input type="radio" value="30" name="TimestampExpired" />30秒
+                                </label>
+                                <label>
+                                    <input type="radio" value="60" name="TimestampExpired" />1分钟
+                                </label>
+                                <label>
+                                    <input type="radio" value="300" name="TimestampExpired" />5分钟
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="AppId" class="col-xs-2 control-label">
+                                AppId
+                            </label>
+                            <div class="col-xs-10">
+                                <input type="text" class="form-control" name="AppId" id="AppId" placeholder="AppId,如不填写，后台会自动生成" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="AppSecret" class="col-xs-2 control-label">
+                                AppSecret
+                            </label>
+                            <div class="col-xs-10">
+                                <input type="text" class="form-control"   name="AppSecret" id="AppSecret" placeholder="AppSecret,如不填写，后台会自动生成" />
+                            </div>
+                        </div>
+                        <div class="tags">
+                            <div class="form-group keys">
+                                <div class="col-xs-2">
+                                    <input type="text" class="form-control text-right name" id="ExtendName1" placeholder="扩展字段1" value="字段1" />
+                                </div>
+                                <div class="col-xs-10">
+                                    <input type="text" class="form-control extend" name="Extend1" id="Extend1" placeholder="值" />
+                                    <span class="help-block" id="btn-box">
+                                        <button type="button" class="btn btn-xs  btn-info">
+                                            <i class="glyphicon glyphicon-plus"></i>
+                                            添加字段</button>
+                                        <button type="button" class="btn btn-xs" style="display: none;">
+                                            <i class="glyphicon glyphicon-minus"></i>
+                                            删除字段</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="Explain" class="col-xs-2 control-label">
+                                说明
+                            </label>
+                            <div class="col-xs-10">
+                                <textarea class="form-control " name="Explain" id="Explain" placeholder="说明"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-xs-offset-2 col-xs-10">
+                                <input type="text" name="ExtendName" id="ExtendName" style="display: none;" />
+                                <input type="text" name="ModuleId" id="ModuleId" style="display: none;" />
+
+                                <button type="submit" id="submit" class="btn btn-primary">提交</button>
+                                <button type="reset" class="btn">重置</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+@section Script{
+
+    <script>
+        $(function () {
+            $(".ModuleType :radio").click(function () {
+                var type = $(this);
+                if (type.val() == 10) {
+                    $(".TimestampExpired").removeClass("hidden");
+                } else {
+                    $(".TimestampExpired").addClass("hidden");
+                }
+            });
+            //添加菜单
+            var tags = $(".tags").setTags({
+                "btnbox": ".help-block", maxsize: 4, addkey: function (i, box) {
+                    $(".name", box).attr("id", "ExtendName" + i);
+                    $(".name", box).attr("placeholder", "扩展字段" + i);
+                    $(".name", box).val("字段" + i);
+                    $(".extend", box).attr("id", "Extend" + i);
+                    $(".extend", box).attr("name", "Extend" + i);
+                    $(".extend", box).val("");
+                }
+            });
+            //列表
+            var table = $("#list-table")
+            table = initBootstrapTable(table, {
+                url: "/admin/module/loadjson",
+                dataType: "json",
+                pagination: false, //分页
+                clickToSelect: true,
+                search: false,
+                columns: [
+                    {
+                        field: 'state',
+                        checkbox: true,
+                        align: 'center',
+                        valign: 'middle'
+                    },
+                        {
+                            title: '模块名',
+                            field: 'ModuleName',
+                            valign: 'middle'
+                        },
+                        {
+                            title: '模块编码',
+                            field: 'ModuleCode',
+                            valign: 'middle',
+                        }
+                ],
+                onCheck: function (row) {
+                    $("#ModuleId").val(row.ModuleId);
+
+                    $("#ModuleCode").val(row.ModuleCode);
+                    $("#ModuleCode").prop("readonly", true);
+
+                    $("#ModuleName").val(row.ModuleName);
+                    $("#Enabled").prop("checked", row.Enabled == 1);
+                    $(":radio[name=ModuleType][value=" + row.ModuleType + "]").prop("checked", true);
+                    $(":radio[name=TimestampExpired][value=" + row.TimestampExpired + "]").prop("checked", true);
+                    if (row.ModuleType == 10) {
+                        $(".TimestampExpired").removeClass("hidden");
+                    } else {
+                        $(".TimestampExpired").addClass("hidden");
+                    }
+                    $("#AppId").val(row.AppId);
+                    $("#AppSecret").val(row.AppSecret);
+                    tags.reset(1);
+
+                    if (row.ExtendName != null && row.ExtendName.length > 0) {
+                        var names = row.ExtendName.split(";");
+                        tags.reset(names.length, function (boxs) {
+                            boxs.each(function (i) {
+                                var extend = "";
+                                switch (i) {
+                                    case 0:
+                                        extend = row.Extend1;
+                                        break;
+                                    case 1:
+                                        extend = row.Extend2;
+                                        break;
+                                    case 2:
+                                        extend = row.Extend3;
+                                        break;
+                                    case 3:
+                                        extend = row.Extend4;
+                                        break;
+                                }
+
+                                $(".name", this).val(names[i]);
+                                $(".extend", this).val(extend);
+                            });
+                        });
+                    }
+
+                    $("#Explain").val(row.Explain);
+                }
+            });
+
+            //删除菜单
+            $("#btn_del").click(function () {
+                var delrows = table.bootstrapTable('getSelections');
+                if (delrows.length == 0) {
+                    layer.alert("请选择要删除的数据！");
+                } else {
+
+                    layer.confirm('确认删除该条数据！', {
+                        title: '删除确认？'
+                    },
+                        function () {
+                            var ids = "";
+                            $(delrows).each(function (i, n) {
+                                if (ids.length > 0)
+                                    ids += ",";
+                                ids += n.ModuleId;
+                            });
+                            if (ids.length > 0) {
+                                $.post("/admin/module/delete", { "ids": ids }, function (result) {
+                                    ajaxResult(result);
+                                });
+                            }
+                        });
+                }
+            });
+
+            //验证表单
+            formValidate("#form-submit", {
+                rules: {
+                    "ModuleCode": {
+                        key: true,
+                        remote: {
+                            url: "/admin/module/checkcode/",     //后台处理程序
+                            type: "get",               //数据发送方式
+                            data: {                     //要传递的数据
+                                moduleid: function () { return $("#ModuleId").val() },
+                            }
+                        }
+                    },
+                    "AppId": {
+                        key: true,
+                        remote: {
+                            url: "/admin/module/checkappid/",     //后台处理程序
+                            type: "get",               //数据发送方式
+                            data: {                     //要传递的数据
+                                moduleid: function () { return $("#ModuleId").val() },
+                            }
+                        }
+                    }
+                },
+                messages: {
+                    "ModuleCode": {
+                        remote: "编码已存在",
+                    },
+                },
+                submitHandler: function (form) {
+                    setSubmit($("#submit", form));
+                    var extendname = "";
+                    $(".tags .name").each(function (i) {
+                        if (i > 0) {
+                            extendname += ";";
+                        }
+                        extendname += $(this).val().replace(";", "；");
+                    });
+                    $("#ExtendName").val(extendname);
+                    $.post("/admin/module/update/", $(form).serialize(), function (result) {
+                        setSubmit($("#submit", form));
+                        ajaxResult(result);
+
+                    }, "JSON");
+                    return false;
+                }
+            });
+        });
+
+    </script>
+}

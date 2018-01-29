@@ -1,0 +1,396 @@
+﻿@model bitcms.Entity.SiteConfigInfo
+
+<form method="post" id="form-submit" action="#" class="form-horizontal">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <i class="glyphicon glyphicon-cog"></i>
+            系统设置
+        </div>
+        <div class="panel-body">
+
+            <div class="form-group">
+                <label for="SiteName" class="col-xs-2 control-label">
+                    网站名称
+                            <i class="text-danger">*</i>
+                </label>
+                <div class="col-xs-10">
+                    <input type="text" class="form-control" value="@Model.SiteName" required="required" name="SiteName" id="SiteName" placeholder="网站名称">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="SiteDomain" class="col-xs-2 control-label">
+                    站点域名
+                    <i class="text-danger">*</i>
+                </label>
+                <div class="col-xs-10">
+                    <input type="text" class="form-control"  required="required" value="@Model.SiteDomain" name="SiteDomain" id="SiteDomain" aria-describedby="icon-sitedomain" placeholder="站点域名">
+                    <span class="help-block">请以/为结尾</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="SitePath" class="col-xs-2 control-label">
+                    网站目录
+                <i class="text-danger">*</i>
+                </label>
+                <div class="col-xs-10">
+                    <input type="text" class="form-control" required="required" value="@Model.SitePath" name="SitePath" id="SitePath" placeholder="网站目录">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="Home" class="col-xs-2 control-label">
+                    首页地址
+                <i class="text-danger">*</i>
+                </label>
+                <div class="col-xs-10">
+                    <input type="text" class="form-control" required="required" value="@Model.Home" name="Home" id="Home" placeholder="首页地址" />
+                    <span class="help-block">即首页控制器，页面模板目录。</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-xs-2 control-label"></label>
+                <div class="col-xs-10 checkbox">
+                    <label>
+                        <input type="checkbox" id="EnabledWap" name="EnabledWap" value="true"  @if (Model.EnabledWap)
+                                                                                               {<text>checked="checked"</text>}/>
+                        启用Wap站
+                    </label>
+                    <label>
+                        <input type="checkbox" id="DuplicationUserName" name="DuplicationUserName" value="true"  @if (Model.DuplicationUserName)
+                                                                                                                 {<text>checked="checked"</text>}/>
+                        允许会员重名
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="NameSpace" class="col-xs-2 control-label">
+                    前台控制器命名空间
+                <i class="text-danger">*</i>
+                </label>
+                <div class="col-xs-10">
+                    <textarea class="form-control" required="required" name="NameSpace" id="NameSpace" placeholder="NameSpace">@Model.NameSpace</textarea>
+                    <span class="help-block">前台控制器命名空间，每个命名空间占一行；该设置需要重启IIS生效。</span>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label for="TimeZone" class="col-xs-2 control-label">
+                    时区
+                <i class="text-danger">*</i>
+                </label>
+                <div class="col-xs-10">
+                    @Html.DropDownListFor(m => m.TimeZone, ViewData["TimeZone"] as List<SelectListItem>, new { @class = "form-control" })
+                    <span class="help-block">时区设置不正确，您将无法登陆系统。</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="Icp" class="col-xs-2 control-label">ICP备案</label>
+                <div class="col-xs-10">
+                    <input type="text" class="form-control" value="@Model.Icp" name="Icp" id="Icp" placeholder="ICP备案" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="StatisticsCode" class="col-xs-2 control-label">统计代码</label>
+                <div class="col-xs-10">
+                    <textarea class="form-control" name="StatisticsCode" id="StatisticsCode" placeholder="统计代码">@Model.StatisticsCode</textarea>
+                </div>
+            </div>
+            <fieldset>
+                <legend>联系方式</legend>
+                <div class="form-group">
+                    <label for="Phone" class="col-xs-2 control-label">电话</label>
+                    <div class="col-xs-10">
+                        <input type="tel" class="form-control" value="@Model.Phone" name="Phone" id="Phone" placeholder="电话" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="Fax" class="col-xs-2 control-label">传真</label>
+                    <div class="col-xs-10">
+                        <input type="tel" class="form-control" value="@Model.Fax" name="Fax" id="Fax" placeholder="传真" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="Email" class="col-xs-2 control-label">Email</label>
+                    <div class="col-xs-10">
+                        <div class="input-group">
+                            <span class="input-group-addon" id="icon-email">@@</span>
+                            <input type="email" class="form-control" value="@Model.Email" name="Email" id="Email" placeholder="Email" aria-describedby="icon-email" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="Address" class="col-xs-2 control-label">地址</label>
+                    <div class="col-xs-10">
+                        <input type="text" class="form-control" value="@Model.Address" name="Address" id="Address" placeholder="地址" />
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>安全设置</legend>
+                <div class="form-group">
+                    <label for="CookieDomain" class="col-xs-2 control-label">
+                        匿名Post提交页面
+                    </label>
+                    <div class="col-xs-10">
+                        <textarea class="form-control" name="VerifyPost" id="VerifyPost" placeholder="匿名Post提交页面">@Model.VerifyPost</textarea>
+                        <span class="help-block">每个地址占一行，不包含网站目录地址</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="CookieDomain" class="col-xs-2 control-label">
+                        cookie域
+                    </label>
+                    <div class="col-xs-10">
+                        <input type="text" class="form-control" value="@Model.CookieDomain" name="CookieDomain" id="CookieDomain" placeholder="cookie域">
+                        <span class="help-block">请在主域名前面加英文“点”.</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-2 control-label">登录验证码</label>
+                    <div class="col-xs-10 radio">
+                        <label>
+                            <input type="radio"" name="EnabledLoginVerifykey" value="0"  @if (Model.EnabledLoginVerifykey == 0)
+                                                                                         {<text>checked="checked"</text>}/>
+                            不启用
+                        </label>
+                        <label>
+                            <input type="radio" name="EnabledLoginVerifykey" value="1"  @if (Model.EnabledLoginVerifykey == 1)
+                                                                                        {<text>checked="checked"</text>}/>
+                            启用登录验证码
+                        </label>
+                        <label>
+                            <input type="radio"" name="EnabledLoginVerifykey" value="2"  @if (Model.EnabledLoginVerifykey == 2)
+                                                                                         {<text>checked="checked"</text>}/>
+                            智能登录验证码
+                        </label>
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-2 control-label">其它验证码</label>
+                    <div class="col-xs-10 checkbox">
+
+                        <label>
+                            <input type="checkbox" id="EnabledRegisterVerifykey" name="EnabledRegisterVerifykey" value="true"  @if (Model.EnabledRegisterVerifykey)
+                                                                                                                          {<text>checked="checked"</text>}/>
+                            注册验证码
+                        </label>
+                        <label>
+                            <input type="checkbox" id="EnabledDetailVerifykey" name="EnabledDetailVerifykey" value="true"  @if (Model.EnabledDetailVerifykey)
+                                                                                                                           {<text>checked="checked"</text>}/>
+                            资讯发表验证码
+                        </label>
+                        <label>
+                            <input type="checkbox" id="EnabledReviewVerifykey" name="EnabledReviewVerifykey" value="true"  @if (Model.EnabledReviewVerifykey)
+                                                                                                                           {<text>checked="checked"</text>}/>
+                            评论验证码
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="Path" class="col-xs-2 control-label">
+                        验证码背景
+                    </label>
+                    <div class="col-xs-10">
+                        <div class="input-group">
+                            <input type="text" class="form-control" value="@Model.VerifykeyBackGround" id="VerifykeyBackGround" name="VerifykeyBackGround" placeholder="验证码背景图片" />
+                            <input type="file" class="form-control" id="file" style="display: none;" />
+                            <span class="input-group-btn">
+                                <button type="button" id="fileupload" class="btn btn-default"><i class="glyphicon glyphicon-upload"></i></button>
+                            </span>
+                        </div>
+
+
+                        <span class="help-block">选择背景复杂的图片，默认路径为根目录下images文件夹</span>
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <label for="IpDenyAccess" class="col-xs-2 control-label">
+                        IP禁止访问列表
+                    </label>
+                    <div class="col-xs-10">
+                        <textarea class="form-control" name="IpDenyAccess" id="IpDenyAccess" placeholder="IP禁止访问列表">@Model.IpDenyAccess</textarea>
+                        <span class="help-block">每个IP占一行,支持IP段。如：192.168.0.1-192.168.0.255</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="AdminIpAccess" class="col-xs-2 control-label">
+                        后台IP访问列表
+                    </label>
+                    <div class="col-xs-10">
+                        <textarea class="form-control" name="AdminIpAccess" id="AdminIpAccess" placeholder="后台IP访问列表">@Model.AdminIpAccess</textarea>
+                        <span class="help-block">每个IP占一行,支持IP段。如：192.168.0.1-192.168.0.255</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="AdminIpAccess" class="col-xs-2 control-label">
+                        错误日志
+                    </label>
+                    <div class="col-xs-10">
+                        <label class="radio-inline">
+                            <input type="radio" id="DebugLevel_error" name="DebugLevel" value="1" @if (Model.DebugLevel == 1)
+                                                                                                  {<text>checked="checked"</text>} />
+                            出错信息
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" id="DebugLevel_debug" name="DebugLevel" value="2" @if (Model.DebugLevel == 2)
+                                                                                                  {<text>checked="checked"</text>} />
+                            运行信息
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" id="DebugLevel_info" name="DebugLevel" value="3" @if (Model.DebugLevel == 3)
+                                                                                                 {<text>checked="checked"</text>} />
+                            调试信息
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-2 control-label">
+                    </label>
+                    <div class="col-xs-10">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" name="Closed" id="Closed" value="true"  @if (Model.Closed)
+                                                                                               {<text>checked="checked"</text>}>
+                                关闭网站
+                            </label>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="ClosedMessage" class="col-xs-2 control-label">
+                        提示信息
+                    </label>
+                    <div class="col-xs-10">
+                        <textarea class="form-control" name="ClosedMessage" id="ClosedMessage" placeholder="关闭网站提示信息">@Model.ClosedMessage</textarea>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>内容设置</legend>
+                <div class="form-group">
+                    <label class="col-xs-2 control-label">
+                    </label>
+
+                    <div class="col-xs-10 checkbox">
+                        <label>
+                            <input type="checkbox" name="VerifyUserDetail" id="VerifyUserDetail" value="true"  @if (Model.VerifyUserDetail)
+                                                                                                               {<text>checked="checked"</text>}>
+                            审核会员文章
+                        </label>
+                        <label>
+                            <input type="checkbox" name="VerifyReview" id="VerifyReview" value="true"  @if (Model.VerifyReview)
+                                                                                                       {<text>checked="checked"</text>}>
+                            评论人工审核
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="ClosedMessage" class="col-xs-2 control-label">
+                        评论间隔时间限制
+                    </label>
+                    <div class="col-xs-10">
+                        <input type="number" min="0" class="form-control" name="ReviewIntervalTime" id="ReviewIntervalTime"  value="@Model.ReviewIntervalTime" placeholder="评论间隔时间限制"/>
+                        <span class="help-block">单位为分钟，0为不限制，12小时为720分钟，24小时为1440分钟。</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-2 control-label" for="AutoPage">
+                        点赞时间间隔
+                    </label>
+                    <div class="col-xs-8">
+                        <input type="number" step="1" min="0" class="form-control" value="@Model.AgreeIntervalTime" name="AgreeIntervalTime" id="AgreeIntervalTime" placeholder="点赞时间间隔" />
+
+                    </div>
+                    <div class="col-xs-2 checkbox">
+                        <label>
+                            <input type="checkbox" name="RepeatAgree" id="RepeatAgree" value="true"  @if (Model.RepeatAgree)
+                                                                                                     {<text>checked="checked"</text>}>
+                            允许重复点赞
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="ClosedMessage" class="col-xs-2 control-label">
+                        标题附加字
+                    </label>
+                    <div class="col-xs-10">
+                        <input class="form-control" name="SeoTitle" id="SeoTitle"  value="@Model.SeoTitle" placeholder="标题附加字"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="ClosedMessage" class="col-xs-2 control-label">
+                        SEO关键字
+                    </label>
+                    <div class="col-xs-10">
+                        <input class="form-control" name="SeoKeywords" id="SeoKeywords"  value="@Model.SeoKeywords" placeholder="SEO关键字"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="ClosedMessage" class="col-xs-2 control-label">
+                        首页描述
+                    </label>
+                    <div class="col-xs-10">
+                        <textarea class="form-control" name="SeoDescription" id="SeoDescription" placeholder="首页描述">@Model.SeoDescription</textarea>
+                    </div>
+                </div>
+            </fieldset>
+
+            <div class="form-group">
+                <div class="col-xs-offset-2 col-xs-10">
+
+                    <button type="submit" id="submit" class="btn btn-primary">提交</button>
+                    <button type="reset" class="btn">重置</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+@section Script{
+
+    <script>
+        $(function () {
+            $("#fileupload").click(function () {
+                $("#file").click();
+            });
+            //图片上传
+            $("#file").h5_upload({
+                folder: "ads", cut: 0, maxheight: 1000, maxwidth: 1200, watermark: 0, change: function () {
+                }, success: function (result) {
+                    if (result.error == 0) {
+                        $("#VerifykeyBackGround").val(result.data);
+                    } else {
+                        layer.alert("上传失败！", { icon: 5 });
+                    }
+                }
+            });
+
+            //验证表单
+            formValidate("#form-submit", {
+                rules: {
+                    "ClosedMessage": {
+                        required: function () {
+                            return $("#Closed").is(":checked");
+                        }
+                    }
+                },
+                submitHandler: function (form) {
+                    setSubmit($("#submit", form));
+                    $.post("/admin/config/update/", $(form).serialize(), function (result) {
+                        setSubmit($("#submit", form));
+                        ajaxResult(result);
+                    }, "JSON");
+                    return false;
+                }
+            });
+
+            $("#SiteDomain").completer({
+                separator: ".",
+                source: ["com/", "net/", "org/", "co/", "io/", "me/", "cn/", "com.cn/", "cc/"]
+            });
+        });
+    </script>
+}

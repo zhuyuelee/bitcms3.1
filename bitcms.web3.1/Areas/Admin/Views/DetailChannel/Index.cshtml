@@ -1,0 +1,462 @@
+﻿@model List<bitcms.Entity.AdminMenuInfo>
+<div class="row">
+    <div class="left main_nav">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="glyphicon glyphicon-th-list"></i>
+                内容频道
+            </div>
+            <table id="list-table" class="table table-hover">
+            </table>
+        </div>
+    </div>
+    <div class="right main-context">
+        <div class="table-responsive">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="glyphicon glyphicon-edit"></i>
+                    内容频道操作
+                 <div class="pull-right">
+                     <button type="button" id="btn_add" class="btn btn-xs btn-success">添加新频道</button>
+                 </div>
+                </div>
+                <div class="panel-body">
+                    <form method="post" id="form-submit" action="#" class="form-horizontal">
+                        <div class="form-group">
+                            <label for="ChannelName" class="col-xs-2 control-label">
+                                频道名
+                            <i class="text-danger">*</i>
+                            </label>
+                            <div class="col-xs-8">
+                                <input type="text" class="form-control" required="required" name="ChannelName" id="ChannelName" placeholder="频道名" />
+                            </div>
+                            <div class="col-xs-2 checkbox">
+                                <label>
+                                    <input type="checkbox" value="1" checked="checked" name="Enabled" id="Enabled" />
+                                    启用</label>
+
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="ChannelCode" class="col-xs-2 control-label">
+                                编码
+                            <i class="text-danger">*</i>
+                            </label>
+                            <div class="col-xs-10">
+                                <input type="text" class="form-control" required="required" maxlength="32" name="ChannelCode" id="ChannelCode" placeholder="编码" />
+                                <span class="help-block">32位以内，包含字母，数字和下划线。</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="Path" class="col-xs-2 control-label">访问路径</label>
+                            <div class="col-xs-10">
+                                <input type="text" class="form-control" name="Path" id="Path" placeholder="访问路径" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="DetailPath" class="col-xs-2 control-label">页面路径模板</label>
+                            <div class="col-xs-10">
+                                <input type="text" class="form-control" name="DetailPath" id="DetailPath" placeholder="页面路径模板" />
+                                <span class="help-block">页面地址模板使用{cid}为栏目id,{channelcode}为频道code,{id}为内容id,{code}为内容code</span>
+                            </div>
+                        </div>
+                        <div class="form-group" id="CoverSets">
+                            <label class="col-xs-2 control-label" for="CoverSet">&nbsp;</label>
+                            <div class="col-xs-10 checkbox">
+                                <label>
+                                    <input type="checkbox" id="CoverSet" name="CoverSet" value="1" checked="checked" />启用封面</label>
+                                <label>
+                                    <input type="checkbox" id="AudioSet" name="AudioSet" value="1" />启用音频</label>
+                                <label>
+                                    <input type="checkbox" id="VideoSet" name="VideoSet" value="1" />启用视频</label>
+                                <label>
+                                    <input type="checkbox" id="AttachmentSet" name="AttachmentSet" value="1" />启用附件</label>
+                            </div>
+                        </div>
+                        <div class="form-group" id="GallerySet">
+                            <label class="col-xs-2 control-label">图库设置</label>
+                            <div class="col-xs-10 radio">
+                                <label>
+                                    <input type="radio" name="GallerySet" value="0" checked="checked" />不启用图库</label>
+                                <label>
+                                    <input type="radio" name="GallerySet" value="1" />自定义图库标签</label>
+                                <label>
+                                    <input type="radio" name="GallerySet" value="2" />统一图库标签</label>
+                            </div>
+                        </div>
+                        <div class="tags" style="display: none;">
+                            <div class="form-group">
+                                <label for="Tags1" class="col-xs-2 control-label">图库标签</label>
+                                <div class="col-xs-10">
+                                    <input type="text" class="form-control" maxlength="32" required="required" name="Tags1" id="Tags1" value="" placeholder="Tag" />
+                                    <span class="help-block tagbtn-box">
+                                        <button type="button" class="btn btn-xs  btn-info">
+                                            <i class="glyphicon glyphicon-plus"></i>
+                                            添加标签</button>
+                                        <button type="button" class="btn btn-xs" style="display: none;">
+                                            <i class="glyphicon glyphicon-minus"></i>
+                                            删除标签</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" id="size-box" style="display: none;">
+                            <label for="Width" class="col-xs-2 control-label">
+                                图库尺寸限制
+                            <i class="text-danger">*</i>
+                            </label>
+                            <div class="col-xs-5">
+                                <input type="number" min="1" value="800" required="required" class="form-control" name="Width" id="Width" placeholder="宽" />
+                                <span class="help-block">宽，只能输入数字</span>
+                            </div>
+                            <div class="col-xs-5">
+                                <input type="number" min="1" value="600" required="required" class="form-control" name="Height" id="Height" placeholder="高" />
+                                <span class="help-block">高，只能输入数字</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="ItemDeep" class="col-xs-2 control-label">
+                                栏目深度
+                            </label>
+                            <div class="col-xs-10">
+                                <input type="number" min="1" max="3" value="2" class="form-control" required="required" name="ItemDeep" id="ItemDeep" placeholder="栏目深度" />
+                                <span class="help-block">1-3之间的数字，推荐1至2级</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="EnabledPaging" class="col-xs-2 control-label">
+                                内容设置
+                            </label>
+                            <div class="col-xs-10 checkbox">
+                                <label>
+                                    <input type="checkbox" name="EnabledPaging" id="EnabledPaging" value="1" checked="checked" />
+                                    启用内容分页</label>
+                                <label>
+                                    <input type="checkbox" value="1" checked="checked" name="EnabledDetailCode" id="EnabledDetailCode" />
+                                    内容编码</label>
+                                <label>
+                                    <input type="checkbox" value="1" name="EnabledReadPower" id="EnabledReadPower" />
+                                    阅读权限</label>
+                            </div>
+                        </div>
+                        <div class="shows">
+                            <div class="form-group">
+                                <label for="Shows1" class="col-xs-2 control-label">推荐设置</label>
+                                <div class="col-xs-10">
+                                    <input type="text" class="form-control" maxlength="32" required="required" name="Shows1" id="Shows1" value="" placeholder="推荐" />
+                                    <span class="help-block btn-box">
+                                        <button type="button" class="btn btn-xs  btn-info">
+                                            <i class="glyphicon glyphicon-plus"></i>
+                                            添加推荐</button>
+                                        <button type="button" class="btn btn-xs" style="display: none;">
+                                            <i class="glyphicon glyphicon-minus"></i>
+                                            删除推荐</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="menumanage">
+                            <div class="form-group">
+                                <label for="Icon" class="col-xs-2 control-label">
+                                    管理目录
+                                </label>
+                                <div class="col-xs-10">
+                                    <select class="form-control" name="AdminMenuId" id="AdminMenuId">
+                                        <option value="">=管理目录=</option>
+                                        @foreach (var menuInfo in Model)
+                                        { 
+                                            <option value="@menuInfo.AdminMenuId">@menuInfo.MenuName</option>
+                                        }
+                                    </select>
+                                </div>
+
+                            </div>
+                            <div class="form-group">
+                                <label for="Icon" class="col-xs-2 control-label">
+                                    管理图标
+                                </label>
+                                <div class="col-xs-8">
+                                    <input type="text" class="form-control" name="Icon" id="Icon" placeholder="图标" />
+                                </div>
+                                <div class="col-xs-2">
+                                    <input type="button" class="btn btn-primary  btn-block" id="choseicon" value="图标" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="OrderNo" class="col-xs-2 control-label">
+                                排序
+                            </label>
+                            <div class="col-xs-10">
+                                <input type="number" min="0" class="form-control " value="200" name="OrderNo" id="OrderNo" placeholder="最小积分" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="Keywords" class="col-xs-2 control-label">
+                                关键字
+                            </label>
+                            <div class="col-xs-10">
+                                <input type="text" class="form-control" name="Keywords" id="Keywords" placeholder="关键字" />
+                                <span class="help-block">多个关键字请用英文逗号分开</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="Resume" class="col-xs-2 control-label">
+                                简要说明
+                            </label>
+                            <div class="col-xs-10">
+                                <textarea class="form-control" id="Resume" name="Resume" placeholder="简要说明"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-xs-offset-2 col-xs-10">
+                                <input type="text" id="GalleryTags" name="GalleryTags" style="display: none;" />
+                                <input type="text" id="Shows" name="Shows" style="display: none;" />
+
+                                <button type="submit" id="submit" class="btn btn-primary">提交</button>
+                                <button type="reset" class="btn">重置</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/html" id="iconlist">
+    <div class="container-fluid">
+        <div class='row show-grid'>
+            @{
+                var iconlist = ViewBag.icon as List<bitcms.Entity.DictionaryKeyInfo>;
+                foreach (var icon in iconlist)
+                {
+                <div class="col-xs-1">
+                    <span class="@icon.Value"></span>
+                </div>
+                }
+            
+            }
+        </div>
+    </div>
+</script>
+@section Script{
+
+    <script>
+        $(function () {
+            //关键字
+            $("#Keywords").tagsinput();
+            //选择图标
+            $("#choseicon").click(function () {
+                layer.open({
+                    title: "选择图标",
+                    type: 1,
+                    skin: 'layui-layer-rim', //加上边框
+                    area: ['620px', '320px'], //宽高
+                    content: $("#iconlist").html(),
+                    success: function (layero, index) {
+                        $(".col-xs-1", layero).click(function () {
+                            $("#Icon").val($(this).children("span").attr("class"));
+                            layer.close(index); //如果设定了yes回调，需进行手工关闭
+                        });
+                    }
+                });
+            });
+
+            $(":radio", "#GallerySet").click(function () {
+                var radio = $(this);
+                if (radio.val() == 2) {
+                    $(".tags").show();
+                } else {
+                    $(".tags").hide();
+                }
+                if (radio.val() != 0) {
+                    $("#size-box").show();
+                } else {
+                    $("#size-box").hide();
+                }
+            });
+
+            //标签
+            var tags = $(".tags").setTags({
+                "btnbox": ".tagbtn-box", maxsize: 10, addkey: function (i, box) {
+                    $("label.control-label", box).attr("for", "Tags" + i);
+                    $(":input", box).val("");
+                    $(":input", box).attr("id", "Tags" + i);
+                    $(":input", box).attr("name", "Tags" + i);
+                }
+            });
+
+            //推荐
+            var shows = $(".shows").setTags({
+                "btnbox": ".btn-box", maxsize: 5, addkey: function (i, box) {
+                    $("label.control-label", box).attr("for", "Tags" + i);
+                    $(":input", box).val("");
+                    $(":input", box).attr("id", "Shows1" + i);
+                    $(":input", box).attr("name", "Shows1" + i);
+                }
+            });
+
+            //重置表单
+            $("#btn_add").click(function () {
+                if ($("#ChannelCode").prop("readonly")) {
+                    $("#ChannelCode").prop("readonly", false);
+                }
+                $("#menumanage").show();
+                $(".tags").hide();
+                $("#size-box").hide();
+                tags.reset(1, function (row) {
+                    $(":input", row).val("");
+                });
+                shows.reset(1, function (row) {
+                    $(":input", row).val("");
+                });
+            });
+
+            //列表
+            var table = $("#list-table");
+            table = initBootstrapTable(table, {
+                url: "/admin/detailchannel/loadjson",
+                search: false,
+                pagination: false, //分页
+                columns: [
+                    {
+                        field: 'state',
+                        checkbox: true,
+                        align: 'center',
+                        valign: 'middle'
+                    },
+                        {
+                            title: '频道名',
+                            field: 'ChannelName',
+                            valign: 'middle'
+                        },
+                        {
+                            title: '编码',
+                            field: 'ChannelCode',
+                            valign: 'middle'
+                        },
+                        {
+                            title: '启用',
+                            field: 'Enabled',
+                            valign: 'middle',
+                            formatter: function (val, row, index) {
+                                if (val == 1) {
+                                    return '<span class="text-success">启用</span>';
+                                }
+                                else {
+                                    return "禁用";
+                                }
+                            }
+                        }
+                ],
+                onCheck: function (row) {
+                    $("#menumanage").hide();
+                    $("#ChannelName").val(row.ChannelName);
+                    $("#Enabled").prop("checked", row.Enabled == 1);
+                    $("#EnabledDetailCode").prop("checked", row.EnabledDetailCode == 1);
+                    $("#EnabledReadPower").prop("checked", row.EnabledReadPower == 1);
+                    $("#ChannelCode").val(row.ChannelCode);
+                    $("#ChannelCode").prop("readonly", true);
+                    $("#Path").val(row.Path);
+                    $("#DetailPath").val(row.DetailPath);
+                    $("#ItemDeep").val(row.ItemDeep);
+                    $("#OrderNo").val(row.OrderNo);
+                    $("#Width").val(row.Width);
+                    $("#Height").val(row.Height);
+
+                    $("#Keywords").tagsinput('removeAll');
+                    if (row.Keywords)
+                        $("#Keywords").tagsinput('add', row.Keywords);
+                    $("#Resume").val(row.Resume);
+
+                    $("#CoverSet").prop("checked", row.CoverSet == 1);
+                    $("#AudioSet").prop("checked", row.AudioSet == 1);
+                    $("#VideoSet").prop("checked", row.VideoSet == 1);
+                    $("#AttachmentSet").prop("checked", row.AttachmentSet == 1);
+                    $(":radio[value=" + row.GallerySet + "]", "#GallerySet").prop("checked", true).click();
+
+                    if (row.GallerySet == 2 && row.GalleryTags != null && row.GalleryTags.length > 0) {
+                        var tag = row.GalleryTags.split(",");
+                        tags.reset(tag.length, function (b) {
+                            b.each(function (i) {
+                                $(":input", this).val(tag[i]);
+                            });
+                        });
+                    } else {
+                        tags.reset(1, function (r) {
+                            $(":input", r).val("");
+                        });
+                    }
+
+                    $("#EnabledPaging").prop("checked", row.EnabledPaging == 1);
+                    if (row.Shows != null && row.Shows.length > 0) {
+                        var show = row.Shows.split(",");
+                        shows.reset(show.length, function (b) {
+                            b.each(function (i) {
+                                $(":input", this).val(show[i]);
+                            });
+                        });
+                    } else {
+                        shows.reset(1, function (r) {
+                            $(":input", r).val("");
+                        });
+                    }
+
+                }
+            });
+
+            //验证表单
+            formValidate("#form-submit", {
+                rules: {
+                    "ChannelCode": {
+                        key: true,
+                        remote: {
+                            url: "/admin/detailchannel/checkcode/",     //后台处理程序
+                            type: "get",               //数据发送方式
+                            data: {                     //要传递的数据
+                                type: function () { return $("#ChannelCode").prop("readonly") ? 1 : 0; }
+                            }
+                        }
+                    }
+                },
+                messages: {
+                    "ChannelCode": {
+                        remote: "编码已经存在",
+                    },
+                },
+                submitHandler: function (form) {
+                    setSubmit($("#submit", form));
+                    var tags = "";
+                    $(":text", ".tags").each(function (i) {
+                        var val = $(this).val();
+                        if (val.length > 0) {
+                            if (tags.length > 0) {
+                                tags += ",";
+                            }
+                            tags += val;
+                        }
+                    });
+                    $("#GalleryTags").val(tags);
+                    var shows = "";
+                    $(":text", ".shows").each(function (i) {
+                        var val = $(this).val();
+                        if (val.length > 0) {
+                            if (shows.length > 0) {
+                                shows += ",";
+                            }
+                            shows += val;
+                        }
+                    });
+                    $("#Shows").val(shows);
+                    $.post("/admin/detailchannel/update/", $(form).serialize(), function (result) {
+                        setSubmit($("#submit", form));
+                        ajaxResult(result);
+                    }, "JSON");
+                    return false;
+                }
+            });
+        });
+
+    </script>
+}

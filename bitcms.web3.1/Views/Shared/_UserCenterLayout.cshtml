@@ -1,0 +1,76 @@
+﻿@{
+
+}
+<!DOCTYPE html>
+<html class="no-js" lang="zh-cn">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title | 
+        @ViewBag.config.SiteName
+    </title>
+    <!-- 注意： 如果通过 file://  引入 Respond.js 文件，则该文件无法起效果 -->
+    <!--[if lt IE 9]>
+         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+         <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+      <![endif]-->
+    <meta name="keywords" content="@ViewBag.keywords" />
+    <meta name="description" content="@ViewBag.description" />
+    <link href="/js/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/usercenter.css" rel="stylesheet">
+    @RenderSection("Style", false)
+    <script src="/js/jquery-1.10.2.min.js"></script>
+    @if (!string.IsNullOrEmpty(@ViewBag.config.StatisticsCode))
+    {
+        @Html.Raw(ViewBag.config.StatisticsCode)
+    }
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="pull-left clearfix">
+                <div class="logo">
+                    <a href="/" title="@ViewBag.config.SiteName">
+                        <img src="/images/logo-big.png" alt="@ViewBag.config.SiteName"></a>
+                </div>
+            </div>
+            <div class="pull-right user">
+                <span>
+                    <a href="/login">登录</a>
+                    <a href="/register">注册</a></span>
+                <span class="hidden">
+                    <a href="/person" class="avatar">
+                        <img src="/images/noavatar_small.gif">
+                        <label>
+                            游客</label>
+                    </a>
+                    <a href="javascript:void(0);" class="signout">退出</a>
+                </span>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <div class="person-nav">
+            <i class="person-btn glyphicon glyphicon-th-large"></i>
+            @RenderBody()
+        </div>
+    </div>
+    <footer>
+        <p class="copyright">
+            @if (!string.IsNullOrEmpty(@ViewBag.config.Icp))
+            {
+                <span>@Html.Raw(ViewBag.config.Icp)</span>
+            }
+            <span>Copyright &copy 2017 <a href="http://www.bitcms.net" target="_blank">bitcms.net</a></span>
+        </p>
+    </footer>
+
+    <script src="/js/bootstrap/js/bootstrap.min.js" charset="utf-8"></script>
+    <script src="/js/jquery.cookie.js" charset="utf-8"></script>
+    <script src="/js/jquery.md5.js" charset="utf-8"></script>
+    <script src="/js/layer/layer.js" charset="utf-8"></script>
+    <script src="/js/fun.js" charset="utf-8"></script>
+    @Html.Partial("_loginJS")
+
+    @RenderSection("Script", false)
+</body>
+</html>

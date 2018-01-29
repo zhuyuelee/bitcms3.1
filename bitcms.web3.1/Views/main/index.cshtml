@@ -1,0 +1,162 @@
+﻿@{
+    ViewBag.navIndex = "index";
+    ViewBag.Title = ViewBag.config.SiteName;
+    var cid = Utils.strToInt(ViewBag.parms["cid"]);
+    var uid = Utils.strToInt(ViewBag.parms["uid"]);
+    var manage = new CMSManage();
+    ItemInfo iteminfo = null;
+    UserInfo userinfo = null;
+    var key = ViewBag.parms["key"];
+    if (cid > 0)
+    {
+        iteminfo = manage.getItemInfo(cid);
+        if (iteminfo != null)
+        {
+            ViewBag.navIndex = "item_" + cid;
+            ViewBag.Title = iteminfo.ItemName;
+        }
+    }
+    else if (uid > 0)
+    {
+        ViewBag.navIndex = "";
+        userinfo = manage.getUserInfo(uid);
+        if (userinfo != null)
+        {
+            ViewBag.Title = userinfo.UserName + "主页";
+        }
+    }
+    else if (!string.IsNullOrEmpty(key))
+    {
+        ViewBag.navIndex = "";
+        ViewBag.Title = key + "-关键字搜索";
+
+    }
+    ViewBag.keywords = ViewBag.config.SeoKeywords;
+    ViewBag.description = ViewBag.config.SeoDescription;
+}
+<div class="pull-right rightbox">
+    @Html.Partial("_rightside")
+</div>
+
+<div class="pull-left leftbox">
+    @if (userinfo != null)
+    {
+        <div class="user">
+            <dl>
+                <dt>
+                    <img class="img-circle" src="/tools/getavatar/@userinfo.UserId/66/66" onerror="this.src='/images/noavatar_middle.gif'">
+                </dt>
+                <dd>
+                    <h4>@userinfo.UserName
+                        @if (userinfo.FollowNum > 0)
+                        { <small>粉丝<span>@userinfo.FollowNum</span></small>}
+                        <button class="btn btn-primary  btn-xs pull-right follow"><i class="glyphicon glyphicon-plus"></i>关注</button>
+                    </h4>
+                    <p class="text-muted">
+                        @userinfo.Introduce
+                    </p>
+                </dd>
+            </dl>
+
+        </div>
+    }
+    else if (cid > 0 || !string.IsNullOrEmpty(key))
+    {
+        <ol class="breadcrumb">
+            <li><a href="/"><i class="glyphicon glyphicon-home"></i>
+                首页</a></li>
+            @if (iteminfo != null)
+            {
+                <li><a href="/@iteminfo.ItemId">@iteminfo.ItemName</a></li>
+            }
+            @if (!string.IsNullOrEmpty(key))
+            {
+                <li class="active"><a>关键字：@key</a></li>
+            }
+        </ol>
+    }
+    else if (ViewBag.navIndex == "index")
+    {
+        List<bitcms.Entity.AdsDetailInfo> bannerlist = manage.getAdsDetailList("index");
+        
+        <div class="slider">
+            <div class="bd">
+                <ul>
+                    @foreach (var adinfo in bannerlist)
+                    {
+                        <li style=" background-image:url('@adinfo.Path');">
+                            <a href="@adinfo.Link" target="_blank"></a>
+                        </li>
+                    }
+                </ul>
+            </div>
+            <div class="hd">
+                <ul>
+                    @foreach (var adinfo in bannerlist)
+                    {
+                        <li>
+                            @adinfo.Title
+                        </li>
+                    }
+                </ul>
+            </div>
+            <div class="timer" style="width: 51.056%; display: block; overflow: hidden;"></div>
+        </div>
+        <script src="/js/jquery.SuperSlide.2.1.1.js"></script>
+        <script>
+            $(function () {
+                jQuery(".slider").slide({
+                    titCell: ".hd ul", mainCell: ".bd ul", effect: "fold", autoPlay: true, autoPage: true, interTime: 6000, trigger: "click",
+                    mouseOverStop: false,
+                    startFun: function () {
+                        var timer = jQuery(".slider .timer");
+                        timer.stop(true, true).animate({ "width": "0%" }, 0).animate({ "width": "100%" }, 6000);
+                    }
+                });
+            });
+        </script>
+    }
+    <div class="newslist">
+        <div class="more text-center">
+            <a data-cid="0" data-uid="0" data-page="1">
+                <img src="/images/loading.gif" /></a>
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Style{
+
+}
+@section Script{
+    @if (userinfo != null)
+    {
+        <script>
+            $(function () {
+                $(".follow").setFollow({ userid: "@ViewBag.userOnline.UserId", followuserid: "@userinfo.UserId", "link": location.href });
+            });
+        </script>
+    }
+
+    <script>
+        $(function () {
+            var getlist = function (cid, uid, page, key) {
+                jQuery.get("/list/" + cid + "/" + uid + "/" + page, { uid: uid, key: key }, function (result) {
+                    $(".newslist .more").replaceWith(result);
+                });
+            };
+            getlist("@cid", "@uid", 1, "@key");
+            $(".newslist").delegate(".more>a", "click", function () {
+                var link = $(this);
+                link.html('<img src="/images/loading.gif" />');
+                var key = $.getQueryString("key");
+                getlist(link.attr("data-cid"), link.attr("data-uid"), link.attr("data-page"), key);
+            });
+        });
+    </script>
+}
+@{
+    manage.Dispose();
+}

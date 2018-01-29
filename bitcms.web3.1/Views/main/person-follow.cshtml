@@ -1,0 +1,59 @@
+﻿@{
+    if (ViewBag.userOnline.UserId <= 0)
+    {
+        Response.Redirect("/login?url=" + Utils.urlEncode(Fetch.getUrl()));
+    }
+    ViewBag.personNav = "follow";
+    Layout = "~/Views/Shared/_UserCenterLayout.cshtml";
+    ViewBag.Title = "我的粉丝";
+    var manage = new bitcms.Data.CMSManage();
+    var key = ViewBag.parms["key"];
+
+    bitcms.Entity.PageInfo page = new bitcms.Entity.PageInfo()
+    {
+        PageNumber = bitcms.Common.Utils.strToInt(ViewBag.parms["page"]),
+        PageSize = 12,
+        Key = key
+    };
+    List<bitcms.Entity.UserInfo> followList = manage.getFansList(page, ViewBag.userOnline.UserId);
+}
+@section Style{
+}
+<div class="mainbox">
+    @Html.Partial("_person-nav")
+    <div class="rightside row followbox">
+        @if (followList.Count > 0)
+        {
+            foreach (var info in followList)
+            {
+                var avatar = "/images/noavatar_big.gif";
+                if (!string.IsNullOrEmpty(avatar))
+                {
+                    avatar = "/tools/getavatar/" + info .UserId+ "/210/210";
+                }
+            <div class="col-md-3 col-sm-4 col-xs-6">
+                <a href="/user/@info.UserId">
+                    <img src="@avatar" class="img-rounded"  onerror="this.src='/images/noavatar_big.gif'"/>
+                    <p>@info.UserName</p>
+                </a>
+            </div>
+            }
+            if (page.PageCount > 1)
+            { 
+            <div class="page">
+                @Html.Raw(Utils.getPages(page.PageNumber, page.PageCount, "/person/follow/{0}", 5))
+            </div>
+            }
+        }
+        else
+        {
+            ViewBag.message = "暂无粉丝";
+            <div class="col-md-12">
+                @Html.Partial("_404")
+            </div>
+        }
+    </div>
+</div>
+@{
+    manage.Dispose();
+}

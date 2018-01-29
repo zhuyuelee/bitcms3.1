@@ -1,0 +1,67 @@
+﻿
+<form method="post" id="form-submit" action="/admin/changepassword/update/" class="form-horizontal">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <i class="glyphicon glyphicon-cog"></i>
+            更新密码
+        </div>
+        <div class="panel-body">
+            <div class="form-group">
+                <label for="password" class="col-xs-2 control-label">
+                    原密码
+                            <i class="text-danger">*</i>
+                </label>
+                <div class="col-xs-10">
+                    <input type="password" class="form-control" value="" required="required" name="password" id="password" placeholder="原密码">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="newpassword" class="col-xs-2 control-label">
+                    新密码
+                    <i class="text-danger">*</i>
+                </label>
+                <div class="col-xs-10">
+                    <input type="password" class="form-control"  required="required" value="" name="newpassword" id="newpassword"  placeholder="新密码">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="confirmpassword" class="col-xs-2 control-label">
+                    确认密码
+                <i class="text-danger">*</i>
+                </label>
+                <div class="col-xs-10">
+                    <input type="password" class="form-control"  value="" name="confirmpassword" id="confirmpassword" placeholder="确认密码">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-xs-offset-2 col-xs-10">
+                    <button type="submit" id="submit" class="btn btn-primary">提交</button>
+                    <button type="reset" class="btn">重置</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+@section Script{
+
+<script>
+    $(function () {
+        //验证表单
+        formValidate("#form-submit", {
+            rules: {
+                "confirmpassword": {
+                    equalTo: "#newpassword"
+                }
+            },
+            submitHandler: function (form) {
+                setSubmit($("#submit", form));
+                $.post("/admin/changepassword/update/", { password: $.md5($("#password").val()), newpassword: $.md5($("#newpassword").val()) }, function (result) {
+                    setSubmit($("#submit", form));
+                    ajaxResult(result);
+                }, "JSON");
+                return false;
+            }
+        });
+    });
+</script>
+}

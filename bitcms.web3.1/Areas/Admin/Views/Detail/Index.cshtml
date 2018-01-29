@@ -1,0 +1,1293 @@
+﻿@model List<bitcms.Entity.ItemInfo>
+@{
+    var channelInfo = ViewBag.channel as bitcms.Entity.DetailChannelInfo;
+}
+<div class="row">
+    <div class="left main_nav">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="glyphicon glyphicon-th-list"></i>
+                资讯管理
+                <div class="pull-right">
+                    <button type="button" id="btn_del" class="btn btn-xs btn-danger">删除</button>
+                </div>
+            </div>
+            <table id="list-table" class="table table-hover">
+            </table>
+        </div>
+    </div>
+    <div class="right main-context">
+        <div class="table-responsive">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="glyphicon glyphicon-edit"></i>
+                    资讯操作
+                <div class="pull-right">
+                    <button type="button" id="btn_add" class="btn btn-xs btn-success">添加</button>
+                </div>
+                </div>
+                <div class="panel-body">
+                    <form method="post" id="form-submit" action="#" class="form-horizontal" enctype="multipart/form-data">
+                        @if (channelInfo.GallerySet != bitcms.Entity.GallerySet.Disabled || channelInfo.AudioSet == 1 || channelInfo.VideoSet == 1 || channelInfo.AttachmentSet == 1)
+                        {
+                            <ul class="nav nav-tabs" style="margin-bottom: 20px;">
+                                <li role="presentation" class="active"><a href="#basemessage" aria-controls="basemessage" role="tab" data-toggle="tab">基本信息</a></li>
+                                @if (channelInfo.GallerySet != bitcms.Entity.GallerySet.Disabled)
+                                {
+                                    <li role="presentation"><a href="#gallerybox" aria-controls="gallerybox" role="tab" data-toggle="tab">图库</a></li>
+                                }
+                                @if (channelInfo.AudioSet == 1)
+                                {
+                                    <li role="presentation"><a href="#audiobox" aria-controls="audiobox" role="tab" data-toggle="tab">音频</a></li>
+                                }
+                                @if (channelInfo.VideoSet == 1)
+                                {
+                                    <li role="presentation"><a href="#videobox" aria-controls="videobox" role="tab" data-toggle="tab">视频</a></li>
+                                }
+                                @if (channelInfo.AttachmentSet == 1)
+                                {
+                                    <li role="presentation"><a href="#attachmentbox" aria-controls="attachmentbox" role="tab" data-toggle="tab">附件</a></li>
+                                }
+                            </ul>
+                        }
+                        <div class="tab-content">
+                            <div role="tabpanel" id="basemessage" class="tab-pane fade in active">
+                                <div class="form-group">
+                                    <label for="UserName" class="col-xs-2 control-label">
+                                        标题
+                            <i class="text-danger">*</i>
+                                    </label>
+                                    <div class="col-xs-8">
+                                        <input type="text" class="form-control" required="required" name="Title" id="Title" placeholder="标题(128个字符以内)" />
+                                    </div>
+                                    <div class="col-xs-2 checkbox">
+                                        <label>
+                                            <input type="checkbox" value="1" name="CloseReview" id="CloseReview" />
+                                            关闭评论</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="SubTitle" class="col-xs-2 control-label">
+                                        副标题
+                                    </label>
+                                    <div class="col-xs-10">
+                                        <input type="text" class="form-control" name="SubTitle" id="SubTitle" placeholder="副标题" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-xs-2 control-label" for="DisplayTime">上线时间</label>
+                                    <div class="col-xs-8">
+                                        <div class="input-group date form_date">
+                                            <input type="datetime" class="form-control" required="required" name="DisplayTime" id="DisplayTime" value="@bitcms.Config.SiteConfig.getLocalTime().ToString("yyyy-MM-dd HH:mm")" />
+                                            <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-2 checkbox">
+                                        <label>
+                                            <input type="checkbox" value="1" name="Display" id="Display" checked="checked" />
+                                            前台展示</label>
+                                    </div>
+                                </div>
+                                @if (channelInfo.EnabledDetailCode == 1)
+                                {
+                                    <div class="form-group">
+                                        <label for="DetailCode" class="col-xs-2 control-label">
+                                            编码
+                            <i class="text-danger">*</i>
+                                        </label>
+                                        <div class="col-xs-10">
+                                            <input type="text" class="form-control" required="required" placeholder="编码" name="DetailCode" id="DetailCode" />
+                                        </div>
+                                    </div>
+                                }
+                                @if (channelInfo.EnabledReadPower == 1)
+                                {
+                                    <div class="form-group">
+                                        <label for="ReadPower" class="col-xs-2 control-label">阅读权限</label>
+                                        <div class="col-xs-10">
+                                            <input type="number" min="0" max="100" value="0" class="form-control" name="ReadPower" id="ReadPower" placeholder="阅读权限" />
+                                            <span class="help-block">0到100之间,0为继承上级权限或限制。</span>
+                                        </div>
+                                    </div>
+                                }
+                                <div class="form-group">
+                                    <label for="ItemId" class="col-xs-2 control-label">
+                                        栏目
+                            <i class="text-danger">*</i>
+                                    </label>
+                                    <div class="col-xs-10">
+                                        <input type="text" name="Items" id="Items" style="display: none;" />
+                                        <select id="ItemId" name="ItemId" required="required" class="form-control">
+                                            <option value="">选择栏目</option>
+                                            @{
+                                                var rootitemlist = Model.FindAll(g => g.FatherId == 0);
+                                                foreach (var info in rootitemlist)
+                                                {
+                                                    if (channelInfo.ItemDeep == 1)
+                                                    {
+                                                <option value="@info.ItemId">@info.ItemName</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        var childitemlist = Model.FindAll(g => g.FatherId == info.ItemId);
+                                                        if (childitemlist.Count == 0)
+                                                        { 
+                                                <option value="@info.ItemId">@info.ItemName</option>
+                                                        }
+                                                        else
+                                                        {
+                                                <optgroup label="@info.ItemName">
+                                                    @{
+                                                            foreach (var childinfo in childitemlist)
+                                                            {
+                                                                if (channelInfo.ItemDeep == 2)
+                                                                { 
+                                                        <option value="@childinfo.ItemId">@childinfo.ItemName</option>
+                                                                }
+                                                                else
+                                                                {
+                                                                    var smalliemList = Model.FindAll(g => g.FatherId == childinfo.ItemId);
+                                                        <option @if (smalliemList.Count > 0)
+                                                                {<text> disabled="disabled"</text>} value="@childinfo.ItemId">@childinfo.ItemName</option>
+                                                                foreach (var smallitemInfo in smalliemList)
+                                                                {
+                                                        <option value="@smallitemInfo.ItemId">&nbsp;&nbsp;@smallitemInfo.ItemName</option>
+                                                                }
+
+                                                                }
+                                                            }
+                                                    }
+                                                </optgroup>
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                                @if (!string.IsNullOrEmpty(channelInfo.Shows))
+                                {
+                                    var shows = channelInfo.Shows.Split(',');
+                                    if (shows.Length > 0)
+                                    {
+                                        var index = 1;
+                                    <div class="form-group">
+                                        <label for="Show" class="col-xs-2 control-label">
+                                            推荐
+                                        </label>
+                                        <div class="col-xs-10 checkbox">
+                                            @foreach (var show in shows)
+                                            {
+                                                if (!string.IsNullOrEmpty(show))
+                                                {
+                                                    var val = Math.Pow(2, index);
+                                                <label>
+                                                    <input type="checkbox" name="shows" value="@val" />
+                                                    @show
+                                                </label>
+                                                    index++;
+                                                }
+                                            }
+
+                                        </div>
+                                    </div>
+                                    }
+                                }
+
+                                <div class="form-group">
+                                    <label for="Keyword" class="col-xs-2 control-label">
+                                        关键字
+                            <i class="text-danger">*</i>
+                                    </label>
+                                    <div class="col-xs-10">
+                                        <input type="text" class="form-control" name="Keyword" id="Keyword" placeholder="关键字" />
+                                        <span class="help-block">多个关键字请用英文逗号分开</span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="HitsNum" class="col-xs-2 control-label">
+                                        评分
+                                    </label>
+                                    <div class="col-xs-10">
+                                        <input type="range" value="1" max="5" id="Stars" name="Stars" step="0.1" class="form-control" />
+                                        <span class="help-block">
+                                            <label id="labstars" class="text-danger">1</label>
+                                            分</span>
+                                    </div>
+
+                                </div>
+                                <div class="form-group">
+                                    <label for="HitsNum" class="col-xs-2 control-label">
+                                        点击次数
+                                    </label>
+                                    <div class="col-xs-10">
+                                        <input type="number" step="1" min="0" value="0" id="HitsNum" name="HitsNum" class="form-control" placeholder="点击次数" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="Author" class="col-xs-2 control-label">
+                                        编辑
+                                    </label>
+                                    <div class="col-xs-10">
+                                        <input type="text" id="Author" name="Author" value="@ViewBag.adminUserInfo.UserName" class="form-control" placeholder="编辑" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="Source" class="col-xs-2 control-label">
+                                        出处
+                                    </label>
+                                    <div class="col-xs-10">
+                                        <input type="text" id="Source" name="Source" value="@ViewBag.config.SiteName" class="form-control" placeholder="出处" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="InDate" class="col-xs-2 control-label">
+                                        发布时间
+                                    </label>
+                                    <div class="col-xs-10">
+                                        <div class="input-group date form_date">
+                                            <input type="datetime" class="form-control" required="required" name="InDate" id="InDate" value="@bitcms.Config.SiteConfig.getLocalTime().ToString("yyyy-MM-dd HH:mm")" />
+                                            <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="Resume" class="col-xs-2 control-label">
+                                        简要说明
+                                    </label>
+                                    <div class="col-xs-10">
+                                        <textarea class="form-control" id="Resume" name="Resume" placeholder="简要说明"></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="Link" class="col-xs-2 control-label">
+                                        外链
+                                    </label>
+                                    <div class="col-xs-8">
+                                        <input type="text" id="Link" required="required" readonly="readonly" name="Link" value="" class="form-control" placeholder="外链地址" />
+                                    </div>
+                                    <div class="col-xs-2 checkbox">
+                                        <label>
+                                            <input type="checkbox" value="1" name="EnabledLink" id="EnabledLink" />
+                                            启用外链</label>
+                                    </div>
+                                </div>
+                                @if (channelInfo.CoverSet == 1)
+                                {
+                                    <div class="form-group">
+                                        <label for="fileupload" class="col-xs-2 control-label">
+                                            封面
+                                        </label>
+                                        <div class="col-xs-10 ">
+                                            <div class="picbox">
+                                                <ul>
+                                                    <li class="upload">
+                                                        <input type="file" id="fileupload" multiple="multiple" accept="image/*" title="请选择要上传的图片" />
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                <div class="form-group" id="contentbox">
+                                    <label for="Content" class="col-xs-2 control-label">
+                                        内容
+                                                <input type="text" class="form-control" id="contents" name="contents" style="display: none;" />
+                                    </label>
+                                    <div class="col-xs-10">
+                                        @if (channelInfo.EnabledPaging == 1)
+                                        {
+                                            <div class="btn-toolbar" style="padding-bottom: 5px;">
+                                                <a class="btn btn-primary btn-xs">第1页</a>
+                                                <div id="contentbtnbox" class="btn-group btn-group-xs">
+                                                </div>
+                                                <a href="javascript:void(0);" id="addcontent" class="btn btn-xs btn-success"><i class="glyphicon glyphicon-plus"></i>新增</a>
+                                            </div>
+                                        }
+                                        <textarea class="form-control" id="Content"></textarea>
+                                        <div class="contentbox" style="display: none;">
+                                            <div class="content">
+                                                <input type="text" class="form-control" />
+                                                <textarea class="form-control"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @if (channelInfo.GallerySet != bitcms.Entity.GallerySet.Disabled)
+                            {
+                                <div role="tabpanel" id="gallerybox" class="tab-pane fade">
+                                    <div class="form-group">
+                                        <label for="fileupload" class="col-xs-2 control-label">
+                                            图库标签
+                                        </label>
+                                        <div class="col-xs-8">
+                                            @if (channelInfo.GallerySet == bitcms.Entity.GallerySet.Customs)
+                                            {
+                                                <input type="text" class="form-control" value="图库" id="gallerytag" placeholder="图库标签" />
+                                            }
+                                            else
+                                            {
+                                                var tags = channelInfo.GalleryTags.Split(',');
+                                                <select class="form-control" id="gallerytag">
+                                                    @foreach (var tag in tags)
+                                                    {
+                                                        <option value="@tag">@tag</option>
+                                                    }
+                                                </select>
+                                            }
+                                        </div>
+                                        <div class="col-xs-2 ">
+                                            <input type="file" multiple="multiple" id="galleryupload" style="display: none;" />
+                                            <button type="button" id="btn_galleryupload" class="btn btn-primary btn-block">添加</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            @if (channelInfo.AudioSet == 1)
+                            {
+                                <div role="tabpanel" id="audiobox" data-id="0" class="tab-pane fade">
+                                    <div class="audiopaths">
+                                        <div class="form-group">
+                                            <label class="col-xs-2 control-label" for="audiopath_1">
+                                                MP3格式
+                                            </label>
+                                            <div class="col-xs-10">
+                                                <input type="text" class="form-control" id="audiopath_1" placeholder="音频路径" />
+                                                <span class="help-block btn-box">
+                                                    <button type="button" class="btn btn-xs  btn-info">
+                                                        <i class="glyphicon glyphicon-plus"></i>
+                                                        添加</button>
+                                                    <button type="button" class="btn btn-xs" style="display: none;">
+                                                        <i class="glyphicon glyphicon-minus"></i>
+                                                        删除</button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="AudioTitle" class="col-xs-2 control-label">
+                                            标题
+                                        </label>
+                                        <div class="col-xs-10">
+                                            <input type="text" class="form-control" id="AudioTitle" placeholder="音频标题(128个字符以内)" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-xs-2 control-label">
+                                            说明
+                                        </label>
+                                        <div class="col-xs-10">
+                                            <textarea class="form-control" placeholder="音频介绍" id="AudioResume"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            @if (channelInfo.VideoSet == 1)
+                            {
+                                <div role="tabpanel" id="videobox" data-id="0" class="tab-pane fade">
+                                    <div class="videopaths">
+                                        <div class="form-group">
+                                            <label class="col-xs-2 control-label" for="videopath_1">
+                                                MP4格式
+                                            </label>
+                                            <div class="col-xs-10">
+                                                <input type="text" class="form-control" id="videopath_1" placeholder="视频路径" />
+                                                <span class="help-block btn-box">
+                                                    <button type="button" class="btn btn-xs  btn-info">
+                                                        <i class="glyphicon glyphicon-plus"></i>
+                                                        添加</button>
+                                                    <button type="button" class="btn btn-xs" style="display: none;">
+                                                        <i class="glyphicon glyphicon-minus"></i>
+                                                        删除</button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="VideoTitle" class="col-xs-2 control-label">
+                                            标题
+                                        </label>
+                                        <div class="col-xs-10">
+                                            <input type="text" class="form-control" id="VideoTitle" placeholder="视频标题(128个字符以内)" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-xs-2 control-label">
+                                            说明
+                                        </label>
+                                        <div class="col-xs-10">
+                                            <textarea class="form-control" id="VideoResume" placeholder="视频介绍"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            @if (channelInfo.AttachmentSet == 1)
+                            {
+                                <div role="tabpanel" id="attachmentbox" data-id="0" class="tab-pane fade">
+
+                                    <div class="attachmenttags">
+                                        <fieldset>
+                                            <legend>
+                                                <label>附件1</label>
+                                                <span class="pull-right btn-box">
+                                                    <button type="button" class="btn btn-xs  btn-info">
+                                                        <i class="glyphicon glyphicon-plus"></i>
+                                                        添加</button>
+                                                    <button type="button" class="btn btn-xs" style="display: none;">
+                                                        <i class="glyphicon glyphicon-minus"></i>
+                                                        删除</button>
+                                                </span>
+                                            </legend>
+
+                                            <div class="form-group attachmentpath">
+                                                <label class="col-xs-2 control-label" for="attachmentpath_1">
+                                                    附件路径
+                                                </label>
+                                                <div class="col-xs-10">
+                                                    <input type="text" class="form-control" id="attachmentpath_1" placeholder="附件路径" />
+                                                </div>
+                                            </div>
+                                            <div class="form-group attachmenttitle">
+                                                <label for="attachmenttitle_1" class="col-xs-2 control-label">
+                                                    标题
+                                                </label>
+                                                <div class="col-xs-10">
+                                                    <input type="text" class="form-control" id="attachmenttitle_1" placeholder="附件标题(128个字符以内)" />
+                                                </div>
+
+                                            </div>
+                                            @if (channelInfo.EnabledReadPower == 1)
+                                            {
+                                                <div class="form-group readpower">
+                                                    <label for="attachmentreadpower_1" class="col-xs-2 control-label">
+                                                        下载权限
+                                                    </label>
+                                                    <div class="col-xs-10">
+                                                        <input type="number" min="0" max="100" value="0" class="form-control" id="attachmentreadpower_1" placeholder="阅读权限(0到100之间)" />
+                                                        <span class="help-block">0到100之间,0为继承上级权限或限制。</span>
+                                                    </div>
+                                                </div>
+                                            }
+                                            <div class="form-group attachmentresume">
+                                                <label class="col-xs-2 control-label" for="attachmentresume_1">
+                                                    说明
+                                                </label>
+                                                <div class="col-xs-10">
+                                                    <textarea class="form-control" id="attachmentresume_1" placeholder="附件介绍"></textarea>
+
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <div class="form-group">
+                            <div class="col-xs-offset-2 col-xs-10">
+                                <input type="text" id="Gallery" name="Gallery" style="display: none;" />
+                                <input type="text" name="channelCode" id="channelCode" value="@channelInfo.ChannelCode" style="display: none;" />
+                                <input type="text" name="UserId" id="UserId" style="display: none;" />
+                                <input type="text" name="DetailId" id="DetailId" style="display: none;" value="0" />
+                                <button type="submit" id="submit" class="btn btn-primary">提交</button>
+                                <button type="reset" class="btn">重置</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+@if (channelInfo.GallerySet != bitcms.Entity.GallerySet.Disabled)
+{
+    <script type="text/html" id="fieldset_gallery">
+        <fieldset>
+            <legend data-tag="">
+                <label></label>
+                <small class="text-primary">（点击可增加图片）</small></legend>
+            <div class="form-group">
+            </div>
+        </fieldset>
+    </script>
+    <script type="text/html" id="gallery_img">
+        <div class="col-xs-12 gallery" data-id="0">
+            <dl>
+                <dt>
+                    <img style="max-height: 90px; max-width: 120px;" class="img-rounded">
+                    <label>
+                        <i class="glyphicon glyphicon-remove" title="移除"></i>
+                        <i class="glyphicon glyphicon-chevron-up" title="向上"></i>
+                        <i class="glyphicon glyphicon-chevron-down" title="向下"></i>
+                    </label>
+                </dt>
+                <dd>
+                    <input type="text" class="form-control" placeholder="图片标题" />
+                    <textarea class="form-control" placeholder="图片介绍（1000字以内）" />
+                </dd>
+            </dl>
+        </div>
+    </script>
+    
+}
+@section Script{
+    @if (channelInfo.GallerySet != bitcms.Entity.GallerySet.Disabled)
+    {
+        <script>
+            $(function () {
+                //图库移除，上移下移操作
+                $("#gallerybox").delegate("dt>label>i", "click", function () {
+                    var i = $(this);
+                    if (i.is(".glyphicon-remove")) {//移除
+                        if (i.closest(".gallery").siblings().size() == 0) {
+                            i.closest("fieldset").remove();
+                        } else {
+                            i.closest(".gallery").remove();
+                        }
+                    } else if (i.is(".glyphicon-chevron-up")) {
+                        i.closest(".gallery").insertBefore(i.closest(".gallery").prev());
+                    } else {
+                        i.closest(".gallery").insertAfter(i.closest(".gallery").next());
+                    }
+                });
+
+                //图库
+                $("#gallerybox").delegate("legend", "click", function () {
+                    var legend = $(this);
+                    $("#gallerytag").val(legend.attr("data-tag"));
+                    $("#btn_galleryupload").click();
+                });
+                $("#btn_galleryupload").click(function () {
+                    var tag = $("#gallerytag");
+                    if (tag.val().length == 0) {
+                        var msg = "请填写图库标签！";
+                        if (tag.is("select")) {
+                            msg = "请选择图库标签！";
+                        }
+                        layer.tips(msg, tag, {
+                            tips: 1
+                        });
+                        return false;
+                    }
+                    $("#galleryupload").click();
+                });
+
+                //图库上传
+                $("#galleryupload").h5_upload({
+                    preview: function (img, index) {
+                        var tag = $("#gallerytag").val();
+                        if ($("#gallerybox legend[data-tag=" + tag + "]").size() == 0) {
+                            var fieldset = $($("#fieldset_gallery").html());
+                            $("legend", fieldset).attr("data-tag", tag);
+                            $("legend>label", fieldset).text(tag);
+                            $("#gallerybox>.form-group").before(fieldset);
+                        }
+                        var picbox = $($("#gallery_img").html());
+                        $("img.img-rounded", picbox).attr("src", img);
+                        $(picbox).attr("data-index", index);
+                        $("#gallerybox legend[data-tag=" + tag + "] + .form-group").append(picbox);
+
+                    }, folder: "@channelInfo.ChannelCode", cut: 0, maxwidth: 1200, watermark: 1, change: function () {
+                        return true;
+                    }, success: function (result, file, index) {
+                        if (result.error == 0) {
+                            var picbox = $(".gallery[data-index=" + index + "]", "#gallerybox");
+                            $("img", picbox).attr("src", result.data);
+                            var filename = file.filename;
+                            if (filename.lastIndexOf('.') > -1) {
+                                filename = filename.substr(0, filename.lastIndexOf('.'));
+                            }
+                            $(":text", picbox).val(filename);
+                        } else {
+                            layer.alert("上传失败！", { icon: 5 });
+                        }
+                    }
+                });
+            });
+        </script>
+    }
+    <script>
+        $(function () {
+            var setStars = function (index) {
+                $("#Stars").val(index);
+                $("#labstars").text(index);
+            };
+
+
+            $("#Stars").change(function () {
+                var val = $(this).val();
+                setStars(val);
+            });
+
+            //预览
+            $("#list-table").delegate(".detailview", "click", function () {
+                var btn = $(this);
+
+                var url = btn.attr("href");
+                layer.open({
+                    title: "预览",
+                    area: ['85%', '85%'],
+                    type: 2,
+                    skin: 'layui-layer-rim', //加上边框
+                    content: url,
+                    success: function (layero, index) {
+                    }
+                });
+                return false;
+            });
+            //编辑器
+            var areatext = editor('Content');
+            @if (channelInfo.AudioSet == 1)
+            {
+         <text>
+            //推荐
+            var audiopaths = $(".audiopaths").setTags({
+                "btnbox": ".btn-box", maxsize: 3, addkey: function (i, box) {
+                    $("label.control-label", box).attr("for", "audiopath_" + i);
+                    var format = "";
+                    if (i == 2) {
+                        format = "Ogg格式";
+                    } else if (i == 3) {
+                        format = "Wav格式";
+                    }
+                    $("label.control-label", box).text(format);
+                    $(":text", box).val("");
+                    $(":text", box).attr("id", "audiopath_" + i);
+                }
+            });
+            </text>
+            }
+            @if (channelInfo.VideoSet == 1)
+            {
+         <text>
+            //推荐
+            var videopaths = $(".videopaths").setTags({
+                "btnbox": ".btn-box", maxsize: 3, addkey: function (i, box) {
+                    $("label.control-label", box).attr("for", "videopath_" + i);
+                    var format = "";
+                    if (i == 2) {
+                        format = "Ogg格式";
+                    } else if (i == 3) {
+                        format = "WebM格式";
+                    }
+                    $("label.control-label", box).text(format);
+                    $(":text", box).val("");
+                    $(":text", box).attr("id", "videopath_" + i);
+                }
+            });
+            </text>
+            }
+                        @if (channelInfo.AttachmentSet == 1)
+                        {
+         <text>
+            //推荐
+            var attachmenttags = $(".attachmenttags").setTags({
+                "btnbox": ".btn-box", maxsize: 2, addkey: function (i, box) {
+                    $("legend label", box).text("附件" + i);
+                    $("label.control-label", $(".attachmentpath", box)).attr("for", "attachmentpath_" + i);
+                    $(":text", $(".attachmentpath", box)).val("");
+                    $(":text", $(".attachmentpath", box)).attr("id", "attachmentpath_" + i);
+
+                    $("label.control-label", $(".attachmenttitle", box)).attr("for", "attachmenttitle_" + i);
+                    $(":text", $(".attachmenttitle", box)).val("");
+                    $(":text", $(".attachmenttitle", box)).attr("id", "attachmenttitle_" + i);
+
+                    if ($(".readpower", box).size() > 0) {
+                        $("label.control-label", $(".readpower", box)).attr("for", "attachmentreadpower_" + i);
+                        $(":input", $(".readpower", box)).val("");
+                        $(":input", $(".readpower", box)).attr("id", "attachmentreadpower_" + i);
+                    }
+                    $("label.control-label", $(".attachmentresume", box)).attr("for", "attachmentresume_" + i);
+                    $("textarea", $(".attachmentresume", box)).val("");
+                    $("textarea", $(".attachmentresume", box)).attr("id", "attachmentresume_" + i);
+                }
+            });
+            </text>
+                        }
+        @if (channelInfo.CoverSet == 1)
+        {
+         <text>
+            //缩略图上传
+            $("#fileupload").h5_upload({
+                preview: function (img, index) {
+                    var picbox = $('<li data-id="0"><img src="" /><i>&times;</i></li>');
+                    $("img", picbox).attr("src", img);
+                    $(picbox).attr("data-index", index);
+                    $(".upload").before(picbox);
+                }, folder: "@channelInfo.ChannelCode", cut: 0, maxheight: "@channelInfo.Height", maxwidth: "@channelInfo.Width", watermark: 0, change: function () {
+                }, success: function (result, file, index) {
+                    if (result.error == 0) {
+                        var picbox = $("li[data-index=" + index + "]", ".picbox");
+                        $("img", picbox).attr("src", result.data);
+                        var filename = file.filename;
+                        $("img", picbox).attr("alt", filename);
+                        $("img", picbox).attr("title", filename);
+                    } else {
+                        layer.alert("上传失败！", { icon: 5 });
+                    }
+                }
+            });
+            //移除封面
+            $(".picbox").delegate("li>i", "click", function () {
+                $(this).parent().remove();
+            });
+
+            areatext.ready(function () {
+                $(".picbox").delegate("img", "click", function () {
+                    var img = '<p>' + this.outerHTML + '</p>';
+                    areatext.execCommand('inserthtml', img);
+                });
+
+            });
+        </text>
+        }
+
+
+            var resetContent = function (contents) {
+                //重置为第一页
+                if ($("#contentbtnbox .btn-primary").size() > 0) {
+                    $("#contentbtnbox .btn-primary").removeClass("btn-primary");
+                    $(".btn-toolbar>a.btn:first").addClass("btn-primary");
+                }
+                $("#contentbtnbox").empty();
+                $(".contentbox .content:gt(0)").remove();
+
+                if (contents) {
+                    $(contents).each(function (i, n) {
+                        if (i == 0) {
+                            var contentbox = $(".contentbox .content:first");
+                            $(".contenttitle", areatext.container).val(n.Title);
+                            $(".contenttitle", areatext.container).change();
+                            areatext.setContent(n.Content || "");
+                        } else if (typeof (addContent) == "function") {
+                            addContent(n, false);
+                        }
+                    });
+                } else {
+                    $(".contenttitle", areatext.container).val("");
+                    areatext.setContent("");
+                }
+            };
+
+            //设置说明内容
+            var setContent = function () {
+                var index = $("#contentbtnbox .btn-primary").index() + 1;
+                var contentbox = $(".contentbox .content:eq(" + index + ")");
+                $(":text", contentbox).val($(".contenttitle", areatext.container).val());
+                $("textarea", contentbox).val(areatext.getContent());
+            };
+
+        @if (channelInfo.EnabledPaging == 1)
+        {
+            <text>
+            areatext.addListener('ready', function () {
+                $('<input type="text" class="form-control contenttitle" placeholder="内容标题"/>').insertBefore(".edui-editor-iframeholder", areatext.container);
+                $(".contenttitle", areatext.container).on("change", function () {
+                    setContent();
+                });
+
+            });
+
+            var addContent = function (data, active) {
+                var btnbox = $("#contentbtnbox");
+                var btn = $('<a class="btn btn-xs"></a>');
+                if (active) {
+                    setContent();
+                    $(".btn-toolbar .btn-primary").removeClass("btn-primary");
+                    btn.addClass("btn-primary");
+                }
+                btn.html('第' + (btnbox.children().size() + 2) + '页 <i class="glyphicon glyphicon-remove"></i>');
+                btn.appendTo(btnbox);
+                var contentbox = $('<div class="content"><input type="text" class="form-control text" /><textarea class="form-control textarea"></textarea></div>');
+                contentbox.appendTo(".contentbox");
+                if (data) {
+                    $(":text", contentbox).val(data.Title);
+                    $("textarea", contentbox).val(data.Content);
+                }
+                if (active) {
+                    $(":text", areatext.container).val("");
+                    areatext.setContent("");
+                }
+            }
+
+            //获取说明内容
+            var getContent = function (index) {
+                var contentbox = $(".contentbox").children().eq(index);
+                $(":text", areatext.container).val($(":text", contentbox).val());
+                areatext.setContent($("textarea", contentbox).val());
+            };
+
+            areatext.addListener('contentChange', function () {
+                setContent();
+            });
+
+            //添加分页内容
+            $("#addcontent").click(function () {
+                addContent(undefined, true);
+
+            });
+            //删除分页
+            $("#contentbtnbox").delegate(".glyphicon-remove", "click", function () {
+                var btn = $(this).parent();
+                var index = btn.index();
+                layer.msg('移除成功', { icon: 1 }, function (i) {
+                    if (btn.is(".btn-primary")) {
+                        $(".btn-toolbar>a.btn:first").addClass("btn-primary");
+                        getContent(0);
+                    }
+                    btn.remove();
+                    $(".contentbox .content:eq(" + (index + 1) + ")").remove();
+                    $("#contentbtnbox .btn").each(function (j, n) {
+                        $(n).html('第' + (j + 2) + '页 <i class="glyphicon glyphicon-remove"></i>');
+                    });
+                    layer.close(i);
+                });
+                return false;
+            });
+            //分页按钮事件
+            $(".btn-toolbar").delegate("a.btn", "click", function () {
+                var btn = $(this);
+                if (!(btn.is(".btn-primary") || btn.is(".btn-success"))) {
+                    setContent();
+                    $(".btn-toolbar a.btn-primary").removeClass("btn-primary");
+                    btn.addClass("btn-primary");
+                    var index = btn.index();
+                    if (btn.parent().is(".btn-group")) {
+                        index++;
+                    }
+                    getContent(index);
+                }
+                return false;
+            });
+        </text>
+        }
+            $("#btn_add").click(function () {
+                $(".img-thumbnail").attr("src", "/images/pic.png");
+                $("#link").prop("readonly", true);
+                $("#Keyword").tagsinput('removeAll');
+                $("#contentbox").show();
+                setStars(1);
+                resetContent(undefined);
+            });
+
+            //日历
+            $('.form_date').datetimepicker({
+                language: 'zh-CN',
+                weekStart: 1,
+                todayBtn: 1,
+                autoclose: 1,
+                todayHighlight: 1,
+                startView: 0,
+                minView: 0,
+                format: 'yyyy-mm-dd HH:ii'
+            });
+
+
+            //关键字
+            $("#Keyword").tagsinput();
+
+            $("#EnabledLink").click(function () {
+                var check = $(this);
+                if (check.is(":checked")) {
+                    $("#Link").prop("readonly", false);
+                    $("#contentbox").hide();
+                } else {
+                    $("#Link").prop("readonly", true);
+                    $("#contentbox").show();
+                }
+            });
+
+            //内容
+            var table = $("#list-table");
+            initBootstrapTable(table, {
+                url: "/admin/detail/loadjson?channel=@channelInfo.ChannelCode",
+                singleSelect: false,
+                columns: [
+                    {
+                        field: 'state',
+                        checkbox: true,
+                        align: 'center',
+                        valign: 'middle'
+                    },
+                    {
+                        title: 'Id',
+                        field: 'DetailId',
+                        align: 'center',
+                        valign: 'middle'
+                    },
+                        {
+                            title: '标题',
+                            field: 'Title',
+                            valign: 'middle'
+                        },
+                {
+                    title: '预览',
+                    field: 'DetailId',
+                    align: 'center',
+                    valign: 'middle',
+                    formatter: function (val, row, index) {
+                        var detailpath = "@channelInfo.DetailPath";
+                        if (detailpath.length > 0) {
+                            var url = detailpath.replace("{cid}", row.ItemId).replace("{id}", row.DetailId).replace("{channelcode}", row.ChannelCode).replace("{code}", row.DetailCode);
+                            return '<a  href="' + url + '"  class="detailview btn btn-primary btn-xs">预览</a>';
+                        }
+                        else {
+                            return null;
+                        }
+                    }
+                },
+                ],
+                onCheck: function (row) {
+                    //
+                    if (row.EnabledLink == 1) {
+                        $("#Link").prop("readonly", false);
+                        $("#contentbox").hide();
+                    } else {
+                        $("#Link").prop("readonly", true);
+                        $("#contentbox").show();
+                        $.get("/admin/detail/loadotherjson/?channel=@channelInfo.ChannelCode", { detailid: row.DetailId }, function (result) {
+                            if (result.error == 0) {
+                                //详情
+                                resetContent(result.data.content);
+                                //封面
+                                $(".picbox li[class!=upload]").remove();
+                                //图库
+                                $("#gallerybox fieldset").remove();
+                                @if (channelInfo.AudioSet == 1)
+                                {
+                                <text>
+                                audiopaths.reset(1, function (b) {
+                                    $(":input", b).val("");
+                                });
+                                </text>
+                                }
+                                @if (channelInfo.VideoSet == 1)
+                                {
+                                <text>
+                                videopaths.reset(1, function (b) {
+                                    $(":input", b).val("");
+                                });
+                                </text>
+                                }
+                                @if (channelInfo.AttachmentSet == 1)
+                                {
+                                <text>
+                                var attachments = new Array();
+                                attachmenttags.reset(1, function (b) {
+                                    var box = $(b);
+                                    box.attr("data-id", 0);
+                                    $(":text", $(".attachmentpath", box)).val("");
+                                    $(":text", $(".attachmenttitle", box)).val("");
+                                    $("textarea", $(".attachmentresume", box)).val("");
+                                    if ($(".readpower", box).size() > 0) {
+                                        $(":input", $(".readpower", box)).val("");
+                                    }
+                                });
+                                </text>
+                                }
+                                if (result.data.gallery) {
+                                    $(result.data.gallery).each(function (i, n) {
+                                        if (n.Cover == 1) {
+                                            var picbox = $('<li data-id="0"><img src="" /><i>&times;</i></li>');
+                                            $("img", picbox).attr("src", n.Path);
+                                            $(picbox).attr("data-index", n.OrderNo);
+                                            $(picbox).attr("data-id", n.GalleryId);
+                                            $(".upload").before(picbox);
+                                        } else if (n.GalleryType == 0) {
+                                            if ($("#gallerybox legend[data-tag=" + n.Tag + "]").size() == 0) {
+                                                var fieldset = $($("#fieldset_gallery").html());
+                                                $("legend", fieldset).attr("data-tag", n.Tag);
+                                                $("legend>label", fieldset).text(n.Tag);
+                                                $("#gallerybox>.form-group").before(fieldset);
+                                            }
+                                            var picbox = $($("#gallery_img").html());
+                                            $("img.img-rounded", picbox).attr("src", n.Path);
+                                            $(picbox).attr("data-id", n.GalleryId);
+                                            $(":text", picbox).val(n.Title);
+                                            $("textarea", picbox).val(n.Resume);
+                                            $("#gallerybox legend[data-tag=" + n.Tag + "] + .form-group").append(picbox);
+                                        }
+                                            @if (channelInfo.AudioSet == 1)
+                                            {
+                                                <text>
+
+                                        else if (n.GalleryType == 1) {
+                                            var box = $("#audiobox");
+                                            if (box.size() > 0) {
+                                                box.attr("data-id", n.GalleryId);
+                                                $("#AudioTitle", box).val(n.Title);
+                                                $("#AudioResume", box).val(n.Resume);
+                                                if (n.Path) {
+                                                    var paths = n.Path.split("::");
+                                                    audiopaths.reset(paths.length, function (b) {
+                                                        b.each(function (i) {
+                                                            $(":text", this).val(paths[i]);
+                                                        });
+                                                    });
+                                                }
+                                            }
+
+                                        }
+                                            </text>
+                                            }
+                                            @if (channelInfo.VideoSet == 1)
+                                            {
+                                                <text>
+                                        else if (n.GalleryType == 2) {
+                                            var box = $("#videobox");
+                                            if (box.size() > 0) {
+                                                box.attr("data-id", n.GalleryId);
+                                                $("#VideoTitle", box).val(n.Title);
+                                                $("#VideoResume", box).val(n.Resume);
+                                                if (n.Path) {
+                                                    var paths = n.Path.split("::");
+                                                    videopaths.reset(paths.length, function (b) {
+                                                        b.each(function (i) {
+                                                            $(":text", this).val(paths[i]);
+                                                        });
+                                                    });
+                                                }
+                                            }
+                                        }
+                                            </text>
+                                            }
+                                            @if (channelInfo.AttachmentSet == 1)
+                                            {
+                                                <text>
+                                        else if (n.GalleryType == 3) {
+                                            attachments.push(n);
+                                        }
+                                        </text>
+                                            }
+                                    });
+                                     @if (channelInfo.AttachmentSet == 1)
+                                     {
+                                                <text>
+                                    if (attachments.length > 0) {
+                                        attachmenttags.reset(attachments.length, function (b) {
+                                            b.each(function (i) {
+                                                var box = $(this);
+                                                box.attr("data-id", attachments[i].GalleryId);
+                                                $(":text", $(".attachmentpath", box)).val(attachments[i].Path);
+                                                $(":text", $(".attachmenttitle", box)).val(attachments[i].Title);
+                                                $("textarea", $(".attachmentresume", box)).val(attachments[i].Resume);
+                                                if ($(".readpower", box).size() > 0) {
+                                                    $(":input", $(".readpower", box)).val(attachments[i].ReadPower);
+                                                }
+                                            });
+                                        });
+                                    }
+                                    </text>
+                                     }
+                                }
+
+                            } else {
+                                ajaxResult(result);
+                            }
+                        });
+                    };
+                    $("#EnabledLink").prop("checked", row.EnabledLink == 1);
+                    $("#Link").val(row.Link);
+                    $("#Link").prop("readonly", row.EnabledLink != 1);
+                    $("#DetailId").val(row.DetailId);
+                    $("#Title").val(row.Title);
+                    $("#SubTitle").val(row.SubTitle);
+                    $("#DetailCode").val(row.DetailCode);
+                    $("#ReadPower").val(row.ReadPower);
+                    $("#CloseReview").prop("checked", row.CloseReview == 1);
+                    $("#Display").prop("checked", row.Display == 1);
+                    $("#Keyword").tagsinput('removeAll');
+                    if (row.Keyword)
+                        $("#Keyword").tagsinput('add', row.Keyword);
+
+                    if (row.GalleryId > 0) {
+                        $("#GalleryId").val(row.PicPath);
+                        $(".img-thumbnail").attr("src", row.PicPath);
+                    } else {
+                        $("#PicPath").val("");
+                        $(".img-thumbnail").attr("src", "/images/pic.png");
+                    }
+
+                    $("#ItemId").val(row.ItemId);
+
+                    $(":checkbox[name=shows]").each(function () {
+                        var val = parseInt($(this).val());
+                        $(this).prop("checked", (row.Show & val) == val);
+                    });
+
+                    setStars(row.Stars);
+                    $("#HitsNum").val(row.HitsNum);
+                    $("#Author").val(row.Author);
+                    $("#UserId").val(row.UserId);
+                    $("#Source").val(row.Source);
+                    var InDate = jsonDateFormat(row.InDate, "yyyy-MM-dd hh:mm");
+                    $("#InDate").val(InDate);
+                    var DisplayTime = jsonDateFormat(row.DisplayTime, "yyyy-MM-dd hh:mm");
+                    $("#DisplayTime").val(DisplayTime);
+                    $("#Resume").val(row.Resume);
+                }
+            });
+
+            //删除菜单
+            $("#btn_del").click(function () {
+                var delrows = table.bootstrapTable('getSelections');
+                if (delrows.length == 0) {
+                    layer.alert("请选择要删除的数据！", { icon: 5 });
+                } else {
+                    layer.confirm('确认删除选中数据！', { title: '删除确认？' },
+                        function () {
+                            var ids = "";
+                            $(delrows).each(function (i, n) {
+                                if (ids.length > 0)
+                                    ids += ",";
+                                ids += n.DetailId;
+                            });
+                            $.post("/admin/detail/delete?channel=@channelInfo.ChannelCode", { "ids": ids }, function (result) {
+                                ajaxResult(result);
+                            });
+                        });
+                    }
+            });
+
+            //验证表单
+            formValidate("#form-submit", {
+                ignore: "[readonly],#Stars",
+                rules: {
+                    DetailCode: {
+                        remote: {
+                            url: "/admin/detail/checkcode",
+                            type: "get",
+                            data: {
+                                detailid: function () { return $("#DetailId").val() }
+                            },
+                            dataFilter: function (data, type) {
+                                var valid = false;
+                                var result = JSON.parse(data);
+                                if (result.error == 0) {
+                                    if (result.data.Count <= 0) {
+                                        valid = true;
+                                    }
+                                }
+                                return valid;
+                            }
+                        },
+                    },
+                    Resume: {
+                        zhLength: [0, 512],
+                    }
+                },
+                submitHandler: function (form) {
+                    setSubmit($("#submit", form));
+                    var gallery = new Array();
+                    var orderno = 0;
+                @if (channelInfo.CoverSet == 1)
+                {
+         <text>
+                    //封面
+                    if ($(".picbox").size() > 0) {
+                        $(".picbox li").each(function (i, n) {
+                            var box = $(n);
+                            if (!box.is(".upload")) {
+                                gallery.push({ "GalleryId": box.attr("data-id"), "Path": $("img", box).attr("src"), "Title": $("#Title").val(), "Cover": 1, "GalleryType": 0, "OrderNo": (orderno++) });
+                            };
+                        });
+                    }
+                    orderno = 0;
+                    </text>
+                }
+                @if (channelInfo.GallerySet != bitcms.Entity.GallerySet.Disabled)
+                {
+         <text>
+                    $("#gallerybox fieldset").each(function (i, n) {
+                        var box = $(n);
+                        if ($("legend[data-tag]", box).size() > 0) {
+                            var tag = $("legend[data-tag]", box).attr("data-tag");
+                            $(".gallery", box).each(function (j, m) {
+                                gallery.push({ "GalleryId": $(m).attr("data-id"), "Path": $("img", m).attr("src"), "Title": $(":text", m).val(), "Resume": $("textarea", m).val(), "GalleryType": 0, "Tag": tag, "OrderNo": (orderno++) });
+                            });
+                        };
+                    });
+                    </text>
+                }
+                @if (channelInfo.AudioSet == 1)
+                {
+         <text>
+                    //音频
+                    if ($("#audiobox").size() > 0) {
+                        var box = $("#audiobox");
+                        var audiopath = "";
+                        $(":text", $(".audiopaths", box)).each(function (i, n) {
+                            if ($(this).val().length > 0) {
+                                if (audiopath.length > 0)
+                                    audiopath += "::";
+                                audiopath += $(this).val();
+                            }
+                        });
+                        if (audiopath != "" || $.trim($("#AudioTitle", box).val()) != "" || $.trim($("#AudioResume", box).val()) != "") {
+                            gallery.push({ "GalleryId": box.attr("data-id"), "Path": audiopath, "Title": $("#AudioTitle", box).val(), "Resume": $("#AudioResume", box).val(), "OrderNo": 0, "GalleryType": 1 });
+                        }
+                    };
+                    </text>
+                }
+              @if (channelInfo.VideoSet == 1)
+              {
+         <text>
+                    //视频
+                    if ($("#videobox").size() > 0) {
+                        var box = $("#videobox");
+                        var videopath = "";
+                        $(":text", $(".videopaths", box)).each(function (i, n) {
+                            if ($(this).val().length > 0) {
+                                if (videopath.length > 0)
+                                    videopath += "::";
+                                videopath += $(this).val();
+                            }
+                        });
+                        if (videopath != "" || $.trim($("#VideoTitle", box).val()) != "" || $.trim($("#VideoResume", box).val()) != "") {
+                            gallery.push({ "GalleryId": box.attr("data-id"), "Path": videopath, "Title": $("#VideoTitle", box).val(), "Resume": $("#VideoResume", box).val(), "OrderNo": 0, "GalleryType": 2 });
+                        }
+                    };
+                    </text>
+              }
+                                @if (channelInfo.AttachmentSet == 1)
+                                {
+         <text>
+                    //附件
+                    if ($("#attachmentbox").size() > 0) {
+                        $("fieldset", $("#attachmentbox")).each(function (i, n) {
+                            var box = $(this);
+                            if ($.trim($(":text", $(".attachmentpath", box)).val()) != "" || $.trim($(":text", $(".attachmenttitle", box)).val()) != "" || $.trim($("textarea", $(".attachmentresume", box)).val()) != "") {
+                                var readpower = -1;
+                                if ($(".readpower", box).size() == 1) {
+                                    readpower = $(":input", $(".readpower", box)).val()
+                                }
+                                gallery.push({ "GalleryId": box.attr("data-id"), "Path": $(":text", $(".attachmentpath", box)).val(), "Title": $(":text", $(".attachmenttitle", box)).val(), "Resume": $("textarea", $(".attachmentresume", box)).val(), "ReadPower": readpower, "OrderNo": 0, "GalleryType": 3 });
+                            }
+
+                        });
+
+                    };
+        </text>
+                                }
+                    $("#Gallery").val(JSON.stringify(gallery));
+                    //内容
+                    setContent();
+                    var contents = new Array();
+                    $(".contentbox .content").each(function (i, n) {
+                        var content = $(n);
+
+                        contents.push({ "Title": $(":text", content).val(), "Content": $("textarea", content).val(), "OrderNo": i });
+                    });
+                    $("#contents").val(JSON.stringify(contents));
+                    $("#Items").val($("#ItemId").val());
+                    $.post("/admin/detail/update/?channel=@channelInfo.ChannelCode", $(form).serialize(), function (result) {
+                        setSubmit($("#submit", form));
+                        ajaxResult(result);
+                    }, "JSON");
+                    return false;
+                }
+            });
+        });
+    </script>
+}
