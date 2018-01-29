@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bitcms.web3.1", "bitcms.web3.1\bitcms.web3.1.csproj", "{EB35E35F-E40B-4B63-B11C-A2AF6A8D7721}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bitcms.Core", "bitcms.Core\bitcms.Core.csproj", "{857B0B77-EAD7-4C4E-9726-B54E48936FF3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EB35E35F-E40B-4B63-B11C-A2AF6A8D7721}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB35E35F-E40B-4B63-B11C-A2AF6A8D7721}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB35E35F-E40B-4B63-B11C-A2AF6A8D7721}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB35E35F-E40B-4B63-B11C-A2AF6A8D7721}.Release|Any CPU.Build.0 = Release|Any CPU
+		{857B0B77-EAD7-4C4E-9726-B54E48936FF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{857B0B77-EAD7-4C4E-9726-B54E48936FF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{857B0B77-EAD7-4C4E-9726-B54E48936FF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{857B0B77-EAD7-4C4E-9726-B54E48936FF3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
